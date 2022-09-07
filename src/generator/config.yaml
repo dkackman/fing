@@ -1,0 +1,10 @@
+model: 
+  model_name: CompVis/stable-diffusion-v1-4
+  guidance_scale: 7.5
+
+generation:
+  output_dir: /mnt/ml/outputs
+
+logging:
+  log_level: DEBUG
+  log_filename: log/generator.log
