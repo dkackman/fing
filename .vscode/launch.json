@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["An impressionist painting of penguin on a bicycle."],
+            "args": ["Block diagram of enterprise architecture."],
             "justMyCode": true
         }
     ]
