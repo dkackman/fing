@@ -1,0 +1,48 @@
+openapi: 3.0.2
+info:
+  title: fing
+  description: >
+    Rest interface to generative art image generator
+  version: 0.1.0
+  contact:
+    name: dkackman
+    url: https://github.com/dkackman/fing
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://fing.kackman.net/api
+  - url: http://localhost:3010/api
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Generator
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+paths:
+  /text2img/{prompt}:
+    get:
+      tags:
+        - Generator
+      security:
+        - ApiKeyAuth: []
+      description: Generates an image from a textual prompt
+      operationId: text2img
+      parameters:
+        - in: path
+          name: prompt
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary

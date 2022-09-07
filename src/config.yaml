@@ -4,9 +4,13 @@ model:
 
 generation:
   output_dir: /mnt/ml/outputs
-  rpc_host: localhost
-  rpc_prt: 9147
-
-logging:
+  host: localhost
+  port: 9147
   log_level: DEBUG
   log_filename: log/generator.log
+
+api:
+  host: 0.0.0.0
+  port: 3010
+  log_level: DEBUG
+  log_filename: log/api.log
