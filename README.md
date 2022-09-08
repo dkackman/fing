@@ -51,6 +51,6 @@ npm start
 
 This will run the service on port 3010 by default:
 
-<http://localhost:3010/api/text2img?prompt=Proof%20of%20space%20and%20time>.
+<http://localhost:3010/api/text2img?prompt=Proof of space and time>.
 
 ![example output](post.jpg)
