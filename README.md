@@ -6,7 +6,7 @@ Generative art + chia + nft oh my
 
 This is the first part of using [stable-diffusion](https://github.com/CompVis/stable-diffusion) to generate art(?) and make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html). Think [DALL-E](https://openai.com/dall-e-2/) but using your own hardware.
 
-This repo handles the image generatration and [a simple REST api](https://github.com/dkackman/fing/blob/main/src/api/open-api.yaml). Eventually it will get integrated into [chia-repl](https://github.com/dkackman/chia-repl) but for now it is just a platground.
+This repo handles the image generatration and [a simple REST api](https://github.com/dkackman/fing/blob/main/src/api/open-api.yaml). Eventually it will get integrated into [chia-repl](https://github.com/dkackman/chia-repl) or something else but for now it is just a playground.
 
 What you will need:
 
@@ -39,6 +39,8 @@ conda activate fing
 python generate.py "An impressionist painting of penguin on a bicycle."
 ```
 
+<img src="pb.jpg" width="200" height="200" alt="An impressionist painting of penguin on a bicycle."/>
+
 ### REST service
 
 This is a node express webservice. It invokes the generator program and waits for the resulting file, which is then retruned to the call.
@@ -51,6 +53,6 @@ npm start
 
 This will run the service on port 3010 by default:
 
-<http://localhost:3010/api/text2img?prompt=Proof of space and time>.
+<<http://localhost:3010/api/text2img?prompt=Proof> of space and time>.
 
-![example output](post.jpg)
+<img src="post.jpg" width="256" height="256" alt="Proof of space and time."/>
