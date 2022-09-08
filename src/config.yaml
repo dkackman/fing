@@ -1,7 +1,8 @@
 model:
   model_name: CompVis/stable-diffusion-v1-4
   guidance_scale: 7.5
-
+  huggingface_token: PLACE YOUR TOKEN HERE
+  
 generation:
   environment_name: fing
   output_dir: /mnt/ml/outputs
@@ -11,6 +12,7 @@ generation:
   port: 9147
   log_level: DEBUG
   log_filename: log/generator.log
+
 
 api:
   port: 3010

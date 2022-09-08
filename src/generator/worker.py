@@ -4,7 +4,7 @@ from diffusers import StableDiffusionPipeline
 from torch.cuda.amp import autocast
 
 # this does the actual image generation
-def generate(model, guidance, raw_prompt):
+def generate(model, guidance, raw_prompt, auth_token):
     prompt = clean(raw_prompt)
     logging.info(f"Prompt is [{prompt}]")
     logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
@@ -13,7 +13,7 @@ def generate(model, guidance, raw_prompt):
         model,
         revision="fp16",
         torch_dtype=torch.float16,
-        use_auth_token=True,
+        use_auth_token=auth_token,
     )
 
     pipe.to("cuda")  # Run on GPU

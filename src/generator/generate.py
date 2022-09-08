@@ -33,7 +33,7 @@ def main(config):
 
         logging.info(f"START generating {id}")
 
-        image = generate(config_dict["model"]["model_name"], config_dict["model"]["guidance_scale"], sys.argv[1])
+        image = generate(config_dict["model"]["model_name"], config_dict["model"]["guidance_scale"], sys.argv[1], config_dict["model"]["huggingface_token"])
 
         outDir = Path(config_dict["generation"]["output_dir"])
         image.save(f'{outDir.joinpath(filename)}')  # TODO write to a temp file and then change to output name
