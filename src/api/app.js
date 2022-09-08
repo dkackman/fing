@@ -6,6 +6,7 @@ const logger = require('morgan');
 const config = require('./config.js')
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
+const rfs = require('rotating-file-stream');
 
 config.loadConfig();
 const configYaml = config.configYaml;
@@ -18,7 +19,11 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+var logStrean = rfs.createStream(config.resolvePath(configYaml.api.log_filename), {
+  interval: '1d', // rotate daily
+})
+app.use(logger('combined', { stream: logStrean }))
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

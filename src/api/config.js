@@ -14,7 +14,11 @@ module.exports = {
         );
     },
 
-    get configYaml() { return _config; }
+    get configYaml() { return _config; },
+
+    resolvePath(pathPart) {
+        return path.resolve(getConfigRootDir(), pathPart);
+    },
 };
 
 function getConfigRootDir() {
