@@ -22,7 +22,7 @@ app.set('view engine', 'pug');
 var logStrean = rfs.createStream(config.resolvePath(configYaml.api.log_filename), {
   interval: '1d', // rotate daily
 })
-app.use(logger('combined', { stream: logStrean }))
+app.use(logger(':date[iso] - :remote-addr ":method :url" :status :res[content-length] - :response-time ms', { stream: logStrean }))
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
