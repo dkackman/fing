@@ -24,9 +24,7 @@ module.exports = {
 function getConfigRootDir() {
     const homedir = os.homedir();
 
-    return 'GENERATOR_ROOT' in process.env
-        ? untildify(process.env.GENERATOR_ROOT)
-        : path.join(homedir, '.fing');
+    return 'GENERATOR_ROOT' in process.env ? untildify(process.env.GENERATOR_ROOT) : path.join(homedir, '.fing');
 }
 
 function untildify(pathWithTilde) {
@@ -34,7 +32,5 @@ function untildify(pathWithTilde) {
         throw new TypeError(`Expected a string, got ${typeof pathWithTilde}`);
     }
 
-    return homeDirectory
-        ? pathWithTilde.replace(/^~(?=$|\/|\\)/, homeDirectory)
-        : pathWithTilde;
+    return homeDirectory ? pathWithTilde.replace(/^~(?=$|\/|\\)/, homeDirectory) : pathWithTilde;
 }
