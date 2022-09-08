@@ -5,10 +5,6 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/src/generator" # Location of package manifests
-    schedule:
-      interval: "weekly"
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/src/api" # Location of package manifests
     schedule:
