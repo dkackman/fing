@@ -14,8 +14,8 @@ def main(config):
     try:
         config_dict=config.config_file
         logging.basicConfig(
-            level=config_dict["logging"]["log_level"],
-            filename=config.resolve_path(config_dict["logging"]["log_filename"]),
+            level=config_dict["generation"]["log_level"],
+            filename=config.resolve_path(config_dict["generation"]["log_filename"]),
             filemode="a",
             format="%(asctime)s - %(levelname)s - %(message)s",
         )

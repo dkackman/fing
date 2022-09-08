@@ -1,8 +1,11 @@
-model: 
+model:
   model_name: CompVis/stable-diffusion-v1-4
   guidance_scale: 7.5
 
 generation:
+  environment_name: fing
+  working_dir: /mnt/ml/github/dkackman/fing/src/generator
+  generator_py: generate.py
   output_dir: /mnt/ml/outputs
   host: localhost
   port: 9147
@@ -10,7 +13,6 @@ generation:
   log_filename: log/generator.log
 
 api:
-  host: 0.0.0.0
   port: 3010
   log_level: DEBUG
   log_filename: log/api.log

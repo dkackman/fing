@@ -1,5 +1,6 @@
 const express = require('express');
 const generator = require('./generator.js');
+var decode = require('urldecode');
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/text2img', function (req, res, next) {
     const prompt = req.query.prompt;
     res.setHeader('Content-Type', 'image/jpeg');
     //res.setHeader('Content-Length', 0);
-    const filepath = generator.generate(prompt)
+    const filepath = generator.generate(decode(prompt));
     res.sendFile(filepath);
   }
   catch (err) {
