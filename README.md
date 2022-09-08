@@ -4,9 +4,9 @@ Generative art + chia + nft oh my
 
 ## Introduction
 
-This is the first part of using [stable-diffusion](https://github.com/CompVis/stable-diffusion) to generate art(?) and make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html). Think [DALL-E](https://openai.com/dall-e-2/) but using your own hardware.
+This is the first part of using [stable-diffusion](https://github.com/CompVis/stable-diffusion) to generate art(?) and make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html). Think [DALL-E](https://openai.com/dall-e-2/) but using your own hardware. Eventually it will get integrated into [chia-repl](https://github.com/dkackman/chia-repl) or something else for NFT minting, but for now it is just a playground for the generative art.
 
-This repo handles the image generatration and [a simple REST api](https://github.com/dkackman/fing/blob/main/src/api/open-api.yaml). Eventually it will get integrated into [chia-repl](https://github.com/dkackman/chia-repl) or something else but for now it is just a playground.
+This repo handles the image generatration and [a simple REST api](https://github.com/dkackman/fing/blob/main/src/api/open-api.yaml).
 
 What you will need:
 
