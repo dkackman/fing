@@ -1,6 +1,8 @@
 const config = require('../config.js')
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { v4 } = require('uuid');
+
 
 exports.generate = function (prompt) {
     sanitized = prompt.replace('/[^a-z0-9áéíóúñü \.,_-]/gim,""')
@@ -12,13 +14,13 @@ exports.generate = function (prompt) {
     const generation = config.configYaml.generation;
     const args = `run -n ${generation.environment_name} --cwd ${generation.working_dir} python ${generation.generator_py}`.split(' ');
     args.push(`"${sanitized}"`);
+    const filename = v4();
+    args.push(filename);
+
     const ps = spawnSync('conda', args);
     if (ps.status === 0) {
-        // the resulting filename will be the first line of stdout
-        const filename = String.fromCharCode(...ps.stdout).split('\n', 1)[0];
-
-        return path.join(generation.output_dir, filename);
+        return path.join(generation.output_dir, filename + '.jpg');
     }
 
     return '';
-}
+};

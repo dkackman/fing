@@ -27,7 +27,10 @@ def main(config):
             raise Exception("no text prompt was provided")
 
         logging.debug(f"Torch version {torch.__version__}")
-        id = uuid.uuid4()
+
+        # get the file name from the command line or generate one
+        id = sys.argv[2] if len(sys.argv) > 2 else uuid.uuid4()
+
         filename = f"{id}.jpg"
         print(filename)  # this let's the caller know what file to look for
 

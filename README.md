@@ -35,7 +35,7 @@ cd src/generator
 conda env create -f environment.yaml
 conda activate fing
 
-python generate.py "An impressionist painting of penguin on a bicycle."
+python cli.py "An impressionist painting of penguin on a bicycle."
 ```
 
 <img src="pb.jpg" width="200" height="200" alt="An impressionist painting of penguin on a bicycle."/>
