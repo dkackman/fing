@@ -7,7 +7,6 @@ from pathlib import Path
 from worker import generate
 
 # TODO
-# create RPC service
 # create lock on gpu
 
 def main(config):
