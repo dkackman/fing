@@ -6,8 +6,6 @@ from config import Config
 from pathlib import Path
 from worker import generate
 import argparse
-# TODO
-# create lock on gpu
 
 def main(config):
     config_dict=config.config_file
@@ -47,7 +45,21 @@ def main(config):
         nargs="?",        
         default=50,
         help="The number of inference steps",
-    )    
+    )     
+    parser.add_argument(
+        "--height",
+        type=int,
+        nargs="?",        
+        default=512,
+        help="The image height in pixels",
+    )
+    parser.add_argument(
+        "--width",
+        type=int,
+        nargs="?",        
+        default=512,
+        help="The image width in pixels",
+    )       
     args = parser.parse_args()
     try:
         logging.basicConfig(
@@ -70,15 +82,13 @@ def main(config):
 
         logging.info(f"START generating {id}")
 
-        prompt = args.prompt
-        guidance_scale = args.guidance_scale
-        num_inference_steps = args.num_inference_steps
-        num_images = args.num_images
         image = generate(config_dict["model"]["model_name"], 
-            guidance_scale,
-            num_inference_steps, 
-            num_images, 
-            prompt, 
+            args.guidance_scale,
+            args.num_inference_steps, 
+            args.num_images, 
+            args.height,
+            args.width,
+            args.prompt,
             config_dict["model"]["huggingface_token"]
         )
 

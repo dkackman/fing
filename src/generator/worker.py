@@ -19,18 +19,18 @@ def load_model(model, auth_token):
     return pipe
 
 
-def generate_with_pipe(pipe, guidance_scale, num_inference_steps, num_images, raw_prompt):
+def generate_with_pipe(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt):
     logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
-    return get_image(pipe, guidance_scale, num_inference_steps, num_images, raw_prompt)
+    return get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt)
 
 
-def generate(model, guidance_scale, num_inference_steps, num_images, raw_prompt, auth_token):
+def generate(model, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt, auth_token):
     pipe = load_model(model, auth_token)
-    return get_image(pipe, guidance_scale, num_inference_steps, num_images, raw_prompt)
+    return get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt)
 
 
 # this does the actual image generation
-def get_image(pipe, guidance_scale, num_inference_steps, num_images, raw_prompt):
+def get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt):
     if num_images > 9:
         raise Exception("The maximum number of images is 9")
 
@@ -43,7 +43,9 @@ def get_image(pipe, guidance_scale, num_inference_steps, num_images, raw_prompt)
         with autocast():
             image = pipe(prompt, 
                 guidance_scale=guidance_scale, 
-                num_inference_steps=num_inference_steps
+                num_inference_steps=num_inference_steps,
+                height=height, 
+                width=width
             )["sample"][0]
             images.append(image)
 

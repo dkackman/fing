@@ -1,4 +1,3 @@
-from socket import NI_NAMEREQD
 from flask import Flask, jsonify, send_file
 from flask_restful import reqparse, abort, Api, Resource
 import logging
@@ -13,6 +12,8 @@ parser.add_argument('prompt', type=str, help="no prompt was provided", location=
 parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
 parser.add_argument('num_inference_steps', location='args', type=int, default=50)
 parser.add_argument('num_images', location='args', type=int, default=1)
+parser.add_argument('height', location='args', type=int, default=512)
+parser.add_argument('width', location='args', type=int, default=512)
 
 mutex = Lock()
 
@@ -31,25 +32,28 @@ def create_app(model_name, auth_token):
     api = Api(app)
 
     api.add_resource(InfoResource, '/')
-    api.add_resource(ImageResource, '/generate')
+    api.add_resource(Text2ImgResource, '/text2img')
 
     return app
 
 
-class ImageResource(Resource):
+class Text2ImgResource(Resource):
     def get(self):
         args = parser.parse_args()
-        prompt = args["prompt"]
-        guidance_scale = args["guidance_scale"]
-        num_inference_steps = args["num_inference_steps"]
-        num_images = args["num_images"]
 
         try:
             # only allow one image generation at a time
             # TODO create a worker per GPU
             locked = mutex.acquire(False)
             if locked:
-                return do_work(guidance_scale, num_inference_steps, num_images, prompt)
+                return do_work(
+                    args.guidance_scale,
+                    args.num_inference_steps, 
+                    args.num_images, 
+                    args.height,
+                    args.width,
+                    args.prompt
+                )
             
             abort(423, "Busy. Try again later.")
 
@@ -58,10 +62,17 @@ class ImageResource(Resource):
                 mutex.release()
 
 
-def do_work(guidance_scale, num_inference_steps, num_images, prompt):
+def do_work(guidance_scale, num_inference_steps, num_images, height, width, prompt):
     try:
         logging.info(f"START generating")
-        image = worker.generate_with_pipe(pipe, guidance_scale, num_inference_steps, num_images, unquote(prompt))
+        image = worker.generate_with_pipe(pipe, 
+            guidance_scale, 
+            num_inference_steps, 
+            num_images, 
+            height, 
+            width, 
+            unquote(prompt)
+        )
         logging.info(f"END generating")
 
         buffer = io.BytesIO()

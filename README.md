@@ -1,10 +1,10 @@
 # fing
 
-Generative art + chia + nft oh my
+A REST API for stable diffusion
 
 ## Introduction
 
-This is the first part of using [stable-diffusion](https://github.com/CompVis/stable-diffusion) to generate art(?) and make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html). Think [DALL-E](https://openai.com/dall-e-2/) but using your own hardware. Eventually it will get integrated into [chia-repl](https://github.com/dkackman/chia-repl) or something else for NFT minting, but for now it is just a playground for the generative art.
+This is a command line and REST interface to [stable-diffusion](https://github.com/CompVis/stable-diffusion). Used in part to generate art(?) and eventually make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html).
 
 What you will need:
 
@@ -32,6 +32,8 @@ These arguments can be passed to both the CLI and REST interfaces
 - `num_images` - Defaults to 1. The number of images to create.
 - `guidance_scale` - Defaults to 7.5. The model guidance scale.
 - `num_inference_steps` - defaults to 50. The number of model inference steps.
+- `height` - defaults to 512. The image height.
+- `width` - defaults to 512. The image width.
 
 ### Command Line
 

@@ -63,7 +63,21 @@ paths:
             maximum: 75
             default: 50
           required: false
-          description: The number of model inference steps      
+          description: The number of model inference steps
+        - in: query
+          name: height
+          schema:
+            type: integer
+            default: 512
+          required: false
+          description: The image height
+        - in: query
+          name: width
+          schema:
+            type: integer
+            default: 512
+          required: false
+          description: The image width
       responses:
         "200":
           description: OK
