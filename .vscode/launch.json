@@ -5,9 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Server",
             "type": "python",
             "request": "launch",
-            "name": "Server",
             "cwd": "${workspaceFolder}/src/generator",
             "program": "/mnt/ml/anaconda3/envs/fing/bin/gunicorn",
             "args": [
@@ -19,20 +19,6 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
-        },
-        {
-            "name": "Launch via NPM",
-            "cwd": "${workspaceFolder}/src/api",
-            "request": "launch",
-            "runtimeArgs": [
-                "run-script",
-                "start"
-            ],
-            "runtimeExecutable": "npm",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "type": "node"
         },
         {
             "name": "CLI",
