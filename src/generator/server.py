@@ -7,12 +7,13 @@ import torch
 import worker
 from urllib.parse import unquote
 import io
+from threading import Thread, Lock
+import threading
 
 # TODO 
 # - run in WSGI server
 # - SSL
 # - auth
-# - mutex on gpu busy
 # - manage multiple gpus
 
 parser = reqparse.RequestParser()
@@ -28,28 +29,44 @@ class InfoResource(Resource):
         }
         return jsonify(info)
 
+mutex = Lock()
 class ImageResource(Resource):
     def get(self):
-        config_dict = config.config_file
         args = parser.parse_args()
         prompt = args["prompt"]
         if prompt is None:
             abort(400, message="prompt argument not found")
 
         try:
-            logging.info(f"START generating")
-            image = worker.generate_with_pipe(pipe, config_dict["model"]["guidance_scale"], unquote(prompt))
-            logging.info(f"END generating")
-
-            buffer = io.BytesIO()
-            image.save(buffer, format="JPEG")
-            buffer.seek(0)
+            # only allow one image generation at a time
+            # TODO create a worker per GPU
+            locked = mutex.acquire(False)
+            if locked:
+                return do_work(prompt)
             
-            return send_file(buffer, mimetype="image/jpeg")
+            abort(423, "Busy. Try again later.")
 
-        except Exception as e:
-            print(e)
-            abort(500)
+        finally:
+            if locked:
+                mutex.release()
+    
+
+def do_work(prompt):
+    config_dict = config.config_file
+    try:
+        logging.info(f"START generating")
+        image = worker.generate_with_pipe(pipe, config_dict["model"]["guidance_scale"], unquote(prompt))
+        logging.info(f"END generating")
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG")
+        buffer.seek(0)
+        
+        return send_file(buffer, mimetype="image/jpeg")
+
+    except Exception as e:
+        print(e)
+        abort(500)
 
 
 def main():
@@ -77,17 +94,17 @@ def main():
 
     api.add_resource(InfoResource, '/')
     api.add_resource(ImageResource, '/generate')
-    print(config_dict["generation"]["port"])
-    app.run()
-    #app.run(config_dict["generation"]["host"], config_dict["generation"]["port"])
+
+    app.run(config_dict["generation"]["host"], config_dict["generation"]["port"])
     logging.info("Server exiting")
 
 if __name__ == "__main__":
     try:
         main()
+
     except Exception as e:
         print(e, file=sys.stderr)
         sys.exit(1)
     except:
         print("Fatal error", file=sys.stderr)
-        sys.exit(1)        
+        sys.exit(1)

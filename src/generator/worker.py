@@ -27,6 +27,7 @@ def generate_with_pipe(pipe, guidance, raw_prompt):
 
     return image
 
+
 # this does the actual image generation
 def generate(model, guidance, raw_prompt, auth_token):
     prompt = clean(raw_prompt)
