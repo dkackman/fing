@@ -31,7 +31,7 @@ def create_app(model_name, auth_token):
     app = Flask("txt2img service")
     api = Api(app)
 
-    api.add_resource(InfoResource, '/')
+    api.add_resource(InfoResource, '/info')
     api.add_resource(txt2imgResource, '/txt2img')
 
     return app
@@ -90,6 +90,7 @@ class InfoResource(Resource):
     def get(self):
         info = {
             'version': "0.1.0",
-            'torch': torch.__version__
+            'torch_version': torch.__version__,
+            'model': pipe.config
         }
         return jsonify(info)

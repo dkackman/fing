@@ -11,8 +11,8 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: https://fing.kackman.net/api
-  - url: http://localhost:3010/api
+  - url: https://fing.kackman.net/
+  - url: https://localhost:9147/
 security:
   - ApiKeyAuth: []
 tags:
@@ -24,7 +24,27 @@ components:
       in: header
       name: X-API-Key
 paths:
-  /txt2img/{prompt}:
+  /info:
+    get:
+      tags:
+        - Generator
+      security:
+        - ApiKeyAuth: []
+      description: Gets information about the generator
+      operationId: info
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  torch_version:
+                    type: string
+  /txt2img:
     get:
       tags:
         - Generator

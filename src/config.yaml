@@ -11,9 +11,3 @@ generation:
   port: 9147
   log_level: DEBUG
   log_filename: log/generator.log
-
-
-api:
-  port: 3010
-  log_level: DEBUG
-  log_filename: log/api.log
