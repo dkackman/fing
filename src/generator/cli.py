@@ -35,12 +35,19 @@ def main(config):
         default=7.5
     )
     parser.add_argument(
+        "--num_images",
+        type=int,
+        nargs="?",        
+        default=1,
+        help="The number of images to generate",
+    )
+    parser.add_argument(
         "--num_inference_steps",
         type=int,
         nargs="?",        
         default=50,
         help="The number of inference steps",
-    )
+    )    
     args = parser.parse_args()
     try:
         logging.basicConfig(
@@ -66,7 +73,14 @@ def main(config):
         prompt = args.prompt
         guidance_scale = args.guidance_scale
         num_inference_steps = args.num_inference_steps
-        image = generate(config_dict["model"]["model_name"], guidance_scale, num_inference_steps, prompt, config_dict["model"]["huggingface_token"])
+        num_images = args.num_images
+        image = generate(config_dict["model"]["model_name"], 
+            guidance_scale,
+            num_inference_steps, 
+            num_images, 
+            prompt, 
+            config_dict["model"]["huggingface_token"]
+        )
 
         outDir = Path(config_dict["generation"]["output_dir"])
         image.save(f'{outDir.joinpath(filename)}')  # TODO write to a temp file and then change to output name

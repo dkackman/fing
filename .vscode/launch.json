@@ -13,7 +13,9 @@
             "args": [
                 "--bind",
                 "0.0.0.0:9147",
-                "server:gunicorn_app"
+                "server:gunicorn_app",
+                "--timeout",
+                "120"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -41,7 +43,9 @@
             "cwd": "${workspaceFolder}/src/generator",            
             "args": [
                 "--prompt",
-                "A rocketship to the moon"
+                "A puppy astronaut",
+                "--num_images",
+                "3"
             ],
             "justMyCode": true
         }
