@@ -21,8 +21,7 @@ logging.basicConfig(
 if __name__ == "__main__":
     try:
         app = create_app(config.config_file["model"]["model_name"], 
-            config.config_file["model"]["huggingface_token"],
-            config.config_file["model"]["guidance_scale"],               
+            config.config_file["model"]["huggingface_token"]            
             )
         host = config.config_file["generation"]["host"]
         port = config.config_file["generation"]["port"]
@@ -30,14 +29,10 @@ if __name__ == "__main__":
         app.run(host, port)
         
         logging.info("Server exiting")
-    except Exception as e:
-        print(e, file=sys.stderr)
-        sys.exit(1)
     except:
         print("Fatal error", file=sys.stderr)
         sys.exit(1)
 else:
     gunicorn_app = create_app(config.config_file["model"]["model_name"], 
-        config.config_file["model"]["huggingface_token"],
-        config.config_file["model"]["guidance_scale"],    
+        config.config_file["model"]["huggingface_token"]  
         )

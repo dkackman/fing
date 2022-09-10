@@ -5,13 +5,37 @@ import torch
 from config import Config
 from pathlib import Path
 from worker import generate
-
+import argparse
 # TODO
 # create lock on gpu
 
 def main(config):
+    config_dict=config.config_file
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        nargs="?",
+        help="the prompt to render",
+        required=True
+    )
+    parser.add_argument(
+        "--outdir",
+        type=str,
+        nargs="?",
+        help="dir to write results to",
+        default=config_dict["generation"]["output_dir"]
+    )    
+    parser.add_argument(
+        "--guidance_scale",
+        type=float,
+        nargs="?",
+        help="model guidance scale",
+        default=7.5
+    )
+    args = parser.parse_args()
     try:
-        config_dict=config.config_file
         logging.basicConfig(
             level=config_dict["generation"]["log_level"],
             filename=config.resolve_path(config_dict["generation"]["log_filename"]),
@@ -21,9 +45,6 @@ def main(config):
 
         if not torch.cuda.is_available():
             raise Exception("unavailable")  # don't try to run this on cpu
-
-        if len(sys.argv) < 2:
-            raise Exception("no text prompt was provided")
 
         logging.debug(f"Torch version {torch.__version__}")
 
@@ -35,7 +56,9 @@ def main(config):
 
         logging.info(f"START generating {id}")
 
-        image = generate(config_dict["model"]["model_name"], config_dict["model"]["guidance_scale"], sys.argv[1], config_dict["model"]["huggingface_token"])
+        prompt = args.prompt
+        guidance_scale = args.guidance_scale
+        image = generate(config_dict["model"]["model_name"], guidance_scale, prompt, config_dict["model"]["huggingface_token"])
 
         outDir = Path(config_dict["generation"]["output_dir"])
         image.save(f'{outDir.joinpath(filename)}')  # TODO write to a temp file and then change to output name

@@ -1,3 +1,4 @@
+from socket import NI_NAMEREQD
 from flask import Flask, jsonify, send_file
 from flask_restful import reqparse, abort, Api, Resource
 import logging
@@ -8,11 +9,12 @@ import io
 from threading import Lock
 
 parser = reqparse.RequestParser()
-parser.add_argument('prompt', type=str, help="no prompt was provided", location='args')
+parser.add_argument('prompt', type=str, help="no prompt was provided", location='args', required=True)
+parser.add_argument('guidance_scale', location='args', type=float)
 
 mutex = Lock()
 
-def create_app(model_name, auth_token, guidance_scale):
+def create_app(model_name, auth_token):
     if not torch.cuda.is_available():
         logging.critical("CUDA not available")
         raise Exception("unavailable")  # don't try to run this on cpu
@@ -36,15 +38,13 @@ class ImageResource(Resource):
     def get(self):
         args = parser.parse_args()
         prompt = args["prompt"]
-        if prompt is None:
-            abort(400, message="prompt argument not found")
-
+        guidance_scale = 7.5 if args["guidance_scale"] is None else args["guidance_scale"]
         try:
             # only allow one image generation at a time
             # TODO create a worker per GPU
             locked = mutex.acquire(False)
             if locked:
-                return do_work(7.5, prompt)
+                return do_work(guidance_scale, prompt)
             
             abort(423, "Busy. Try again later.")
 

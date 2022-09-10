@@ -17,26 +17,26 @@ def load_model(model, auth_token):
     return pipe
 
 
-def generate_with_pipe(pipe, guidance, raw_prompt):
+def generate_with_pipe(pipe, guidance_scale, raw_prompt):
     prompt = clean(raw_prompt)
     logging.info(f"Prompt is [{prompt}]")
     logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
     with autocast():
-        image = pipe(prompt, guidance_scale=guidance)["sample"][0]
+        image = pipe(prompt, guidance_scale=guidance_scale)["sample"][0]
 
     return image
 
 
 # this does the actual image generation
-def generate(model, guidance, raw_prompt, auth_token):
+def generate(model, guidance_scale, raw_prompt, auth_token):
     prompt = clean(raw_prompt)
     logging.info(f"Prompt is [{prompt}]")
 
     pipe = load_model(model, auth_token)
 
     with autocast():
-        image = pipe(prompt, guidance_scale=guidance)["sample"][0]
+        image = pipe(prompt, guidance_scale=guidance_scale)["sample"][0]
 
     return image
 

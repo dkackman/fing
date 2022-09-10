@@ -8,7 +8,7 @@
             "type": "python",
             "request": "launch",
             "name": "Server",
-            "cwd": "${workspaceFolder}/src/generate",
+            "cwd": "${workspaceFolder}/src/generator",
             "program": "/mnt/ml/anaconda3/envs/fing/bin/gunicorn",
             "args": [
                 "--bind",
