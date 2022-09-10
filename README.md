@@ -66,7 +66,7 @@ gunicorn --bind 0.0.0.0:9147 server:gunicorn_app --timeout 120
 This will run [a simple REST api](https://github.com/dkackman/fing/blob/main/src/generator/open-api.yaml) on port 3010:
 
 <div>
-http://localhost:3010/api/text2img?prompt=Proof of space and time
+http://localhost:3010/api/txt2img?prompt=Proof of space and time
 </div>
 
 <br>

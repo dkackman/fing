@@ -24,14 +24,14 @@ components:
       in: header
       name: X-API-Key
 paths:
-  /text2img/{prompt}:
+  /txt2img/{prompt}:
     get:
       tags:
         - Generator
       security:
         - ApiKeyAuth: []
       description: Generates an image from a textual prompt
-      operationId: text2img
+      operationId: txt2img
       parameters:
         - in: query
           name: prompt

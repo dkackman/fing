@@ -28,16 +28,16 @@ def create_app(model_name, auth_token):
     global pipe 
     pipe = worker.load_model(model_name, auth_token)
 
-    app = Flask("text2img service")
+    app = Flask("txt2img service")
     api = Api(app)
 
     api.add_resource(InfoResource, '/')
-    api.add_resource(Text2ImgResource, '/text2img')
+    api.add_resource(txt2imgResource, '/txt2img')
 
     return app
 
 
-class Text2ImgResource(Resource):
+class txt2imgResource(Resource):
     def get(self):
         args = parser.parse_args()
 
