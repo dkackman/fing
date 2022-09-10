@@ -4,27 +4,42 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    {
-        "name": "Launch via NPM",
-        "cwd": "${workspaceFolder}/src/api",
-        "request": "launch",
-        "runtimeArgs": [
-            "run-script",
-            "start"
-        ],
-        "runtimeExecutable": "npm",
-        "skipFiles": [
-            "<node_internals>/**"
-        ],
-        "type": "node"
-    },
+        {
+            "type": "python",
+            "request": "launch",
+            "name": "Server",
+            "cwd": "${workspaceFolder}/src/generate",
+            "program": "/mnt/ml/anaconda3/envs/fing/bin/gunicorn",
+            "args": [
+                "--bind",
+                "0.0.0.0:9147",
+                "server:gunicorn_app"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Launch via NPM",
+            "cwd": "${workspaceFolder}/src/api",
+            "request": "launch",
+            "runtimeArgs": [
+                "run-script",
+                "start"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
         {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["Block diagram of enterprise architecture."],
+            "args": [
+                "Block diagram of enterprise architecture."
+            ],
             "justMyCode": true
         }
     ]
