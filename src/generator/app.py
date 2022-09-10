@@ -10,7 +10,8 @@ from threading import Lock
 
 parser = reqparse.RequestParser()
 parser.add_argument('prompt', type=str, help="no prompt was provided", location='args', required=True)
-parser.add_argument('guidance_scale', location='args', type=float)
+parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
+parser.add_argument('num_inference_steps', location='args', type=int, default=50)
 
 mutex = Lock()
 
@@ -38,13 +39,14 @@ class ImageResource(Resource):
     def get(self):
         args = parser.parse_args()
         prompt = args["prompt"]
-        guidance_scale = 7.5 if args["guidance_scale"] is None else args["guidance_scale"]
+        guidance_scale = args["guidance_scale"]
+        num_inference_steps = args["num_inference_steps"]
         try:
             # only allow one image generation at a time
             # TODO create a worker per GPU
             locked = mutex.acquire(False)
             if locked:
-                return do_work(guidance_scale, prompt)
+                return do_work(guidance_scale, num_inference_steps, prompt)
             
             abort(423, "Busy. Try again later.")
 
@@ -53,10 +55,10 @@ class ImageResource(Resource):
                 mutex.release()
 
 
-def do_work(guidance_scale, prompt):
+def do_work(guidance_scale, num_inference_steps, prompt):
     try:
         logging.info(f"START generating")
-        image = worker.generate_with_pipe(pipe, guidance_scale, unquote(prompt))
+        image = worker.generate_with_pipe(pipe, guidance_scale, num_inference_steps, unquote(prompt))
         logging.info(f"END generating")
 
         buffer = io.BytesIO()

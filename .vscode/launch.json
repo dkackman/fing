@@ -15,7 +15,8 @@
                 "0.0.0.0:9147",
                 "server:gunicorn_app"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": true
         },
         {
             "name": "Launch via NPM",
@@ -32,13 +33,15 @@
             "type": "node"
         },
         {
-            "name": "Python: Current File",
+            "name": "CLI",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "cli.py",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src/generator",            
             "args": [
-                "Block diagram of enterprise architecture."
+                "--prompt",
+                "A rocketship to the moon"
             ],
             "justMyCode": true
         }
