@@ -1,3 +1,4 @@
+from distutils.command.clean import clean
 from flask import jsonify, send_file
 from flask_restful import reqparse, abort, Resource
 import logging
@@ -28,7 +29,7 @@ class txt2imgResource(Resource):
         args = self.parser.parse_args()
 
         try:
-            prompt = unquote(args.prompt).replace('"' , "").replace("'", "")
+            prompt = clean_prompt(args.prompt)
             buffer = generate_image_buffer(
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -51,7 +52,7 @@ class txt2imgMetadataResource(txt2imgResource):
         try:
             args = self.parser.parse_args()
 
-            prompt = unquote(args.prompt).replace('"' , "").replace("'", "")
+            prompt = clean_prompt(args.prompt)
             buffer = generate_image_buffer(
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -117,3 +118,14 @@ def info():
             },
             'model': worker.pipe.config
         }
+
+
+# clean up the string - removing non utf-8 characters, check length
+def clean_prompt(str):
+    encoded = unquote(str).encode("utf8", "ignore")
+    decoded = encoded.decode("utf8", "ignore")  
+    cleaned = decoded.replace('"' , "").replace("'", "").strip()
+    if len(cleaned) > 280: # max length of a tweet
+        raise Exception("prompt must be less than 281 characters")
+        
+    return cleaned

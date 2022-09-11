@@ -18,17 +18,16 @@ def load_model(model, auth_token):
     pipe.to("cuda")  # Run on GPU
 
 
-def generate(guidance_scale, num_inference_steps, num_images, height, width, raw_prompt):
+def generate(guidance_scale, num_inference_steps, num_images, height, width, prompt):
     logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
-    return get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt)
+    return get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, prompt)
 
 
 # this does the actual image generation
-def get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt):
+def get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, prompt):
     if num_images > 9:
         raise Exception("The maximum number of images is 9")
 
-    prompt = clean(raw_prompt)
     logging.info(f"Prompt is [{prompt}]")
 
     images = []
@@ -66,13 +65,3 @@ def image_grid(imgs, rows, cols):
 
     return grid
 
-
-# clean up the string - removing non utf-8 characters, check length
-def clean(str):
-    encoded = str.encode("utf8", "ignore")
-    decoded = encoded.decode("utf8", "ignore")
-    cleaned = decoded.strip()
-    if len(cleaned) > 280: # max length of a tweet
-        raise Exception("prompt must be less than 281 characters")
-        
-    return cleaned

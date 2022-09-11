@@ -151,14 +151,14 @@ paths:
               schema:
                 type: string
                 format: binary
-  /txt2img_metadaa:
+  /txt2img_metadata:
     get:
       tags:
         - Generator
       security:
         - ApiKeyAuth: []
       description: Generates an image from a textual prompt, including metadata
-      operationId: txt2img_metadaa
+      operationId: txt2img_metadata
       parameters:
         - in: query
           name: prompt

@@ -20,6 +20,6 @@ def create_app(model_name, auth_token):
 
     api.add_resource(InfoResource, '/info')
     api.add_resource(txt2imgResource, '/txt2img')
-    api.add_resource(txt2imgMetadataResource, '/txt2img_metadaa')
+    api.add_resource(txt2imgMetadataResource, '/txt2img_metadata')
 
     return app
