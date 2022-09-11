@@ -34,13 +34,14 @@ def get_image(pipe, guidance_scale, num_inference_steps, num_images, height, wid
     # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
     for i in range(num_images):
         with autocast():
-            image = pipe(prompt, 
+            results = pipe(prompt, 
                 guidance_scale=guidance_scale, 
                 num_inference_steps=num_inference_steps,
                 height=height, 
                 width=width
-            )["sample"][0]
-            images.append(image)
+            )["images"]
+            for image in results:
+                images.append(image)
 
     if num_images == 1:
         image = images[0]

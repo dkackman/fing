@@ -29,9 +29,9 @@
             "cwd": "${workspaceFolder}/src/generator",            
             "args": [
                 "--prompt",
-                "The tiatinic hitting an iceberg in space",
+                "The titanic hitting an iceberg in space",
                 "--num_images",
-                "4"
+                "1"
             ],
             "justMyCode": true
         }
