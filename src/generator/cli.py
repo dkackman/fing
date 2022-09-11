@@ -6,6 +6,7 @@ from config import Config
 from pathlib import Path
 from worker import generate, load_model
 import argparse
+from app import setup_logging
 
 def main(config):
     config_dict=config.config_file
@@ -62,12 +63,7 @@ def main(config):
     )       
     args = parser.parse_args()
     try:
-        logging.basicConfig(
-            level=config_dict["generation"]["log_level"],
-            filename=config.resolve_path(config_dict["generation"]["log_filename"]),
-            filemode="a",
-            format="%(asctime)s - %(levelname)s - %(message)s",
-        )
+        setup_logging(config)
 
         if not torch.cuda.is_available():
             raise Exception("unavailable")  # don't try to run this on cpu

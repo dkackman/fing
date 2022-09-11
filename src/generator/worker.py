@@ -50,7 +50,7 @@ def get_image(pipe, guidance_scale, num_inference_steps, num_images, height, wid
     elif num_images <= 4:
         image = image_grid(images, 2, 2)
     elif num_images <= 6:
-        image = image_grid(images, 3, 2)       
+        image = image_grid(images, 2, 3)       
     elif num_images <= 9:
         image = image_grid(images, 3, 3)   
 

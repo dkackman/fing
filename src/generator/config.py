@@ -31,6 +31,6 @@ class Config:
     def resolve_path(self, path):
         path = self.root_dir.joinpath(path)
         # mkae the directory if it doesn't exist
-        path.parent.mkdir(0o770, exist_ok=True)
+        path.parent.mkdir(0o770, parents=True, exist_ok=True)
 
         return path

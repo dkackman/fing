@@ -1,7 +1,7 @@
 import sys
 from config import Config
 import logging
-from app import create_app
+from app import create_app, setup_logging
 import logging
 
 # TODO 
@@ -9,7 +9,7 @@ import logging
 # - manage multiple gpus
 
 config = Config().load()
-
+setup_logging(config)
 logging.basicConfig(
     level=config.config_file["generation"]["log_level"],
     filename=config.resolve_path(config.config_file["generation"]["log_filename"]),
