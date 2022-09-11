@@ -51,7 +51,7 @@ python cli.py --prompt "An impressionist painting of penguin on a bicycle."
 
 <img src="pb.jpg" width="200" height="200" alt="An impressionist painting of penguin on a bicycle."/>
 
-### REST service
+### REST API
 
 There is also a REST service interface:
 
@@ -63,7 +63,7 @@ or
 gunicorn --bind 0.0.0.0:9147 server:gunicorn_app --timeout 120 
 ```
 
-This will run [a simple REST api](https://github.com/dkackman/fing/blob/main/src/generator/open-api.yaml) on port 3010:
+This will run [a simple REST api](https://github.com/dkackman/fing/blob/main/src/generator/open-api.yaml) on port 9147:
 
 <div>
 http://localhost:3010/api/txt2img?prompt=Proof of space and time
