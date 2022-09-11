@@ -4,7 +4,7 @@ import logging
 import torch
 from config import Config
 from pathlib import Path
-from worker import generate
+from worker import generate, load_model
 import argparse
 
 def main(config):
@@ -82,14 +82,14 @@ def main(config):
 
         logging.info(f"START generating {id}")
 
-        image = generate(config_dict["model"]["model_name"], 
+        load_model(config_dict["model"]["model_name"], config_dict["model"]["huggingface_token"])
+        image = generate(
             args.guidance_scale,
             args.num_inference_steps, 
             args.num_images, 
             args.height,
             args.width,
-            args.prompt,
-            config_dict["model"]["huggingface_token"]
+            args.prompt.replace('"' , "").replace("'", "")
         )
 
         outDir = Path(config_dict["generation"]["output_dir"])

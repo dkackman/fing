@@ -7,6 +7,7 @@ from PIL import Image
 
 def load_model(model, auth_token):
     logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    global pipe
     pipe = StableDiffusionPipeline.from_pretrained(
         model,
         revision="fp16",
@@ -16,16 +17,9 @@ def load_model(model, auth_token):
 
     pipe.to("cuda")  # Run on GPU
 
-    return pipe
 
-
-def generate_with_pipe(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt):
+def generate(guidance_scale, num_inference_steps, num_images, height, width, raw_prompt):
     logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
-    return get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt)
-
-
-def generate(model, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt, auth_token):
-    pipe = load_model(model, auth_token)
     return get_image(pipe, guidance_scale, num_inference_steps, num_images, height, width, raw_prompt)
 
 

@@ -5,8 +5,7 @@ from app import create_app
 import logging
 
 # TODO 
-# - SSL
-# - auth
+# - auth https://www.bacancytechnology.com/blog/flask-jwt-authentication
 # - manage multiple gpus
 
 config = Config().load()
