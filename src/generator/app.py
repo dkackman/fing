@@ -10,14 +10,14 @@ from concurrent_log_handler import ConcurrentRotatingFileHandler
 def create_app(model_name, auth_token):
     if not torch.cuda.is_available():
         logging.critical("CUDA not available")
-        raise Exception("unavailable")  # don't try to run this on cpu
+        raise Exception("CUDA unavailable")  # don't try to run this on cpu
     
     logging.debug(f"Torch version {torch.__version__}")
 
     # load the model into the gpu - stays there for the life of the process
     worker.load_model(model_name, auth_token)
 
-    app = Flask("txt2img service")
+    app = Flask("stable-diffusion service")
     api = Api(app)
 
     api.add_resource(InfoResource, '/info')
@@ -34,12 +34,9 @@ def setup_logging(config):
 
     handler = ConcurrentRotatingFileHandler(log_path, "a", maxBytes=50 * 1024 * 1024, backupCount=7)
     handler.setFormatter(
-        logging.Formatter(
-            fmt="%(asctime)s - %(levelname)s - %(message)s",
-            datefmt=log_date_format,
-        )
+        logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(message)s", datefmt=log_date_format)
     )
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.INFO) # unless otherwise specified leglevel will be info
     logging_config = config.config_file["generation"]
     if "log_level" in logging_config:
         if logging_config["log_level"] == "CRITICAL":
