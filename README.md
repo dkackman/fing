@@ -4,7 +4,7 @@ A REST API for stable diffusion
 
 ## Introduction
 
-This is a command line and REST interface to [stable-diffusion](https://github.com/CompVis/stable-diffusion). Used in part to generate art(?) and eventually make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html).
+This is a command line and REST interface to [stable-diffusion](https://github.com/CompVis/stable-diffusion). Used in part to generate art(?) and eventually make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html). ([rough example from with chia-repl](https://github.com/dkackman/chia-repl/blob/main/examples/scripts/txt2nft.js))
 
 What you will need:
 
