@@ -4,9 +4,9 @@ import logging
 import torch
 from config import Config
 from pathlib import Path
-from worker import generate, load_model
+from model import Model
 import argparse
-from app import setup_logging
+from web_app import setup_logging
 
 def main(config):
     config_dict=config.config_file
@@ -77,9 +77,9 @@ def main(config):
         print(filename)  # this let's the caller know what file to look for
 
         logging.info(f"START generating {id}")
-
-        load_model(config_dict["model"]["model_name"], config_dict["model"]["huggingface_token"])
-        image = generate(
+        model = Model()
+        model.load_model(config_dict["model"]["model_name"], config_dict["model"]["huggingface_token"])
+        image = model.generate(
             args.guidance_scale,
             args.num_inference_steps, 
             args.num_images, 

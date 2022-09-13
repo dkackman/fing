@@ -1,20 +1,12 @@
-from distutils.command.clean import clean
 from flask import jsonify, send_file
 from flask_restful import reqparse, abort, Resource
-import logging
-import worker
-from urllib.parse import unquote
-import io
-from threading import Lock
 import base64
-import torch
-
-# TODO #5 create a worker per GPU
-
-mutex = Lock()
+from web_worker import clean_prompt, generate_image_buffer, info
 
 class txt2imgResource(Resource):
-    def __init__(self):
+    model = None
+
+    def __init__(self, **kwargs):
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, help="no prompt was provided", location='args', required=True, trim=True)
         parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
@@ -24,6 +16,8 @@ class txt2imgResource(Resource):
         parser.add_argument('width', location='args', type=int, default=512)
 
         self.parser = parser
+        self.model = kwargs["model"]
+
 
     def get(self):
         args = self.parser.parse_args()
@@ -31,6 +25,7 @@ class txt2imgResource(Resource):
         try:
             prompt = clean_prompt(args.prompt)
             buffer = generate_image_buffer(
+                self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -45,8 +40,9 @@ class txt2imgResource(Resource):
 
 
 class txt2imgMetadataResource(txt2imgResource):
-    def __init__(self):
-        super(txt2imgMetadataResource, self).__init__()
+    def __init__(self, **kwargs):
+        super(txt2imgMetadataResource, self).__init__(**kwargs)
+
 
     def get(self):
         try:
@@ -54,6 +50,7 @@ class txt2imgMetadataResource(txt2imgResource):
 
             prompt = clean_prompt(args.prompt)
             buffer = generate_image_buffer(
+                self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -61,7 +58,7 @@ class txt2imgMetadataResource(txt2imgResource):
                 args.width,
                 prompt
             )
-            metadata = info()
+            metadata = info(self.model)
             metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
             metadata["parameters"] = {
                 'guidance_scale': args.guidance_scale,
@@ -76,56 +73,3 @@ class txt2imgMetadataResource(txt2imgResource):
         except Exception as e:
             print(e)
             abort(500)
-
-
-def generate_image_buffer(guidance_scale, num_inference_steps, num_images, height, width, prompt):
-    try:
-        # only allow one image generation at a time        
-        locked = mutex.acquire(False)
-        if locked:
-            logging.info(f"START generating")
-            image = worker.generate( 
-                guidance_scale, 
-                num_inference_steps, 
-                num_images, 
-                height, 
-                width, 
-                prompt
-            )
-            logging.info(f"END generating")
-        else:
-            abort(423, "Busy. Try again later.")
-    finally:
-        if locked:
-            mutex.release()
-
-    buffer = io.BytesIO()
-    image.save(buffer, format="JPEG")
-    buffer.seek(0)
-
-    return buffer
-
-class InfoResource(Resource):
-    def get(self):
-        return jsonify(info())
-
-def info():
-    return {
-            'software': {
-                'name': "fing",
-                'version': "0.1.0",
-                'torch_version': torch.__version__,
-            },
-            'model': worker.pipe.config
-        }
-
-
-# clean up the string - removing non utf-8 characters, check length
-def clean_prompt(str):
-    encoded = unquote(str).encode("utf8", "ignore")
-    decoded = encoded.decode("utf8", "ignore")  
-    cleaned = decoded.replace('"' , "").replace("'", "").strip()
-    if len(cleaned) > 280: # max length of a tweet
-        raise Exception("prompt must be less than 281 characters")
-        
-    return cleaned

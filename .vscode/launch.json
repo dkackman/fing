@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Server",
+            "name": "Gunicorn",
             "type": "python",
             "request": "launch",
             "cwd": "${workspaceFolder}/src/generator",
@@ -21,6 +21,15 @@
             "justMyCode": true
         },
         {
+            "name": "Server",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src/generator",
+            "program": "server.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },        
+        {
             "name": "CLI",
             "type": "python",
             "request": "launch",
@@ -29,7 +38,7 @@
             "cwd": "${workspaceFolder}/src/generator",            
             "args": [
                 "--prompt",
-                "The titanic hitting an iceberg in space",
+                "A picasso painting of abraham lincoln",
                 "--num_images",
                 "1"
             ],
