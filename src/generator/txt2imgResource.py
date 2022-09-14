@@ -1,7 +1,7 @@
 from flask import jsonify, send_file
 from flask_restful import reqparse, abort, Resource
 import base64
-from web_worker import clean_prompt, generate_image_buffer, info
+from web_worker import clean_prompt, generate_txt2img_buffer, info
 
 class txt2imgResource(Resource):
     model = None
@@ -24,7 +24,7 @@ class txt2imgResource(Resource):
 
         try:
             prompt = clean_prompt(args.prompt)
-            buffer = generate_image_buffer(
+            buffer = generate_txt2img_buffer(
                 self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -49,7 +49,7 @@ class txt2imgMetadataResource(txt2imgResource):
             args = self.parser.parse_args()
 
             prompt = clean_prompt(args.prompt)
-            buffer = generate_image_buffer(
+            buffer = generate_txt2img_buffer(
                 self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 

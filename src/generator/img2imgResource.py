@@ -1,7 +1,7 @@
 from flask import jsonify, send_file
 from flask_restful import reqparse, abort, Resource
 import base64
-from web_worker import clean_prompt, generate_image_buffer, info
+from web_worker import clean_prompt, generate_txt2img_buffer, info
 
 
 class img2imgResource(Resource):
@@ -13,8 +13,6 @@ class img2imgResource(Resource):
         parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
         parser.add_argument('num_inference_steps', location='args', type=int, default=50)
         parser.add_argument('num_images', location='args', type=int, default=1)
-        parser.add_argument('height', location='args', type=int, default=512)
-        parser.add_argument('width', location='args', type=int, default=512)
 
         self.parser = parser
         self.model = kwargs["model"]
@@ -25,13 +23,11 @@ class img2imgResource(Resource):
 
         try:
             prompt = clean_prompt(args.prompt)
-            buffer = generate_image_buffer(
+            buffer = generate_txt2img_buffer(
                 self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
-                args.height,
-                args.width,
                 prompt
             )
             return send_file(buffer, mimetype="image/jpeg")
@@ -49,7 +45,7 @@ class img2imgMetadataResource(img2imgResource):
             args = self.parser.parse_args()
 
             prompt = clean_prompt(args.prompt)
-            buffer = generate_image_buffer(
+            buffer = generate_txt2img_buffer(
                 self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -64,8 +60,6 @@ class img2imgMetadataResource(img2imgResource):
                 'guidance_scale': args.guidance_scale,
                 'num_inference_steps': args.num_inference_steps,
                 'num_images': args.num_images,
-                'height': args.height,
-                'width': args.width,
                 'prompt': prompt
                 }
             return jsonify(metadata)   

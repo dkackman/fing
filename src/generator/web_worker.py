@@ -9,14 +9,14 @@ import torch
 
 mutex = Lock()
 
-def generate_image_buffer(model, guidance_scale, num_inference_steps, num_images, height, width, prompt):
+def generate_txt2img_buffer(model, guidance_scale, num_inference_steps, num_images, height, width, prompt):
     try:
         # only allow one image generation at a time        
         locked = mutex.acquire(False)
         if locked:
-            logging.info(f"START generating")
+            logging.info(f"START txt2img generating")
 
-            image = model.generate( 
+            image = model.get_txt2img( 
                 guidance_scale, 
                 num_inference_steps, 
                 num_images, 
@@ -24,7 +24,7 @@ def generate_image_buffer(model, guidance_scale, num_inference_steps, num_images
                 width, 
                 prompt
             )
-            logging.info(f"END generating")
+            logging.info(f"END txt2img generating")
         else:
             abort(423, "Busy. Try again later.")
     finally:
@@ -37,6 +37,36 @@ def generate_image_buffer(model, guidance_scale, num_inference_steps, num_images
 
     return buffer
 
+
+def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps, num_images, height, width, prompt, init_image):
+    try:
+        # only allow one image generation at a time        
+        locked = mutex.acquire(False)
+        if locked:
+            logging.info(f"START img2img generating")
+
+            image = model.get_img2img( 
+                strength,
+                guidance_scale, 
+                num_inference_steps, 
+                num_images, 
+                height, 
+                width, 
+                prompt,
+                init_image
+            )
+            logging.info(f"END img2img generating")
+        else:
+            abort(423, "Busy. Try again later.")
+    finally:
+        if locked:
+            mutex.release()
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="JPEG")
+    buffer.seek(0)
+
+    return buffer
 
 def info(model):
     return {

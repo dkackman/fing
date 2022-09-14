@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 import logging
 import torch
-from model import Model
+from gpu import Gpu
 from InfoResource import InfoResource
 from txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from img2imgResource import img2imgResource, img2imgMetadataResource
@@ -16,7 +16,7 @@ def create_app(model_name, auth_token):
     
     logging.debug(f"Torch version {torch.__version__}")
 
-    model = Model()
+    model = Gpu()
     # load the model into the gpu - stays there for the life of the process
     model.load_model(model_name, auth_token)
 
