@@ -49,11 +49,17 @@ def main(config):
         default=0.75
     )    
     parser.add_argument(
-        "--init_image_uri",
+        "--image_uri",
         type=str,
         nargs="?",
-        help="Uri of an image to transform - if provided triggers ing2ing instead of text2img",
-    )    
+        help="Uri of an image to transform - if provided triggers img2ing  or imginpaint instead of text2img",
+    )   
+    parser.add_argument(
+        "--mask_uri",
+        type=str,
+        nargs="?",
+        help="Uri of a mask image to use for imginpaint - if provided with --image_uri, triggers imginpaint instead of img2ing",
+    )         
     parser.add_argument(
         "--num_images",
         type=int,
@@ -101,19 +107,33 @@ def main(config):
         gpu = Gpu()
         gpu.load_model(config_dict["model"]["model_name"], config_dict["model"]["huggingface_token"])
         prompt = args.prompt.replace('"' , "").replace("'", "")
-        if args.init_image_uri is not None:
-            init_image = get_image(args.init_image_uri)
+        if args.image_uri is not None:
+            if args.mask_uri is not None:
+                init_image = get_image(args.image_uri)
+                mask_image = get_image(args.mask_uri)
 
-            image = gpu.get_img2img(
-                args.strength,
-                args.guidance_scale,
-                args.num_inference_steps, 
-                args.num_images, 
-                prompt,
-                init_image
-            )
+                image = gpu.get_imginpaint(
+                    args.strength,
+                    args.guidance_scale,
+                    args.num_inference_steps, 
+                    args.num_images, 
+                    prompt,
+                    init_image,
+                    mask_image
+                )
+            else:
+                init_image = get_image(args.image_uri)
+
+                image = gpu.get_img2img(
+                    args.strength,
+                    args.guidance_scale,
+                    args.num_inference_steps, 
+                    args.num_images, 
+                    prompt,
+                    init_image
+                )
         else:
-                image = gpu.get_txt2img(
+            image = gpu.get_txt2img(
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 

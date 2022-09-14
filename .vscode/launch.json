@@ -54,8 +54,27 @@
             "args": [
                 "--prompt",
                 "A landscape on mars",
-                "--init_image_uri",
+                "--image_uri",
                 "https://raw.githubusercontent.com/CompVis/stable-diffusion/main/assets/stable-samples/img2img/sketch-mountains-input.jpg",
+                "--strength",
+                "0.875"
+            ],
+            "justMyCode": true
+        },        
+        {
+            "name": "CLI - imginpaint",
+            "type": "python",
+            "request": "launch",
+            "program": "cli.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src/generator",            
+            "args": [
+                "--prompt",
+                "A landscape on mars",
+                "--image_uri",
+                "https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo.png",
+                "--mask_uri",
+                "https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo_mask.png",
                 "--strength",
                 "0.875"
             ],

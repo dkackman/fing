@@ -1,7 +1,7 @@
 from mimetypes import init
 import torch
 import logging
-from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionInpaintPipeline
 from torch.cuda.amp import autocast
 from PIL import Image
 
@@ -16,25 +16,26 @@ class Gpu():
         #
         # TODO #7 swap the pipeline out the GPU as needed. Leave it resident but switch on demand (loading the pipeline to cuda has a hefty perf imapct)
         # TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
-
-        pipe = StableDiffusionPipeline.from_pretrained(
+        self.pipelines["txt2img"] = StableDiffusionPipeline.from_pretrained(
             model_name,
             revision="fp16",
             torch_dtype=torch.float16,
             use_auth_token=auth_token,
         )
 
-        #pipe.to("cuda")  # Run on GPU
-        self.pipelines["txt2img"] = pipe
-
-        pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+        self.pipelines["img2img"] = StableDiffusionImg2ImgPipeline.from_pretrained(
             model_name,
             revision="fp16", 
             torch_dtype=torch.float16,
             use_auth_token=auth_token,
         )
-        #pipe.to("cuda")  # Run on GPU
-        self.pipelines["img2img"] = pipe      
+
+        self.pipelines["imginpaint"] = StableDiffusionInpaintPipeline.from_pretrained(
+            model_name,
+            revision="fp16", 
+            torch_dtype=torch.float16,
+            use_auth_token=auth_token,
+        )
 
 
     # this does the actual image generation
@@ -45,7 +46,7 @@ class Gpu():
 
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = self.swap_pipelines("txt2img", "img2img")
+        pipe = self.swap_pipelines("txt2img")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -67,7 +68,7 @@ class Gpu():
 
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = self.swap_pipelines("img2img", "txt2img")
+        pipe = self.swap_pipelines("img2img")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -82,12 +83,37 @@ class Gpu():
         return post_process(num_images, images)
 
 
-    def swap_pipelines(self, load, unload):
-        self.pipelines[unload].to("cpu")
-        pipe = self.pipelines[load]
-        pipe.to("cuda")
+    def get_imginpaint(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
+        logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+        if num_images > 9:
+            raise Exception("The maximum number of images is 9")
 
-        return pipe
+        logging.info(f"Prompt is [{prompt}]")
+
+        pipe = self.swap_pipelines("imginpaint")
+
+        # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
+        for i in range(num_images):
+            with autocast():
+                images = pipe(prompt, 
+                    guidance_scale=guidance_scale, 
+                    num_inference_steps=num_inference_steps,
+                    init_image=init_image,
+                    strength=strength,
+                    mask_image=mask_image
+                ).images
+
+        return post_process(num_images, images)
+
+
+    def swap_pipelines(self, pipeline_name):
+        for name in self.pipelines:
+            if name == pipeline_name:
+                self.pipelines[pipeline_name].to("cuda")
+            else:
+                self.pipelines[pipeline_name].to("cpu")
+
+        return self.pipelines[pipeline_name]
 
 
 def post_process(num_images, images_list):
@@ -103,6 +129,7 @@ def post_process(num_images, images_list):
         image = image_grid(images_list, 3, 3)   
 
     return image
+
 
 def image_grid(imgs, rows, cols):
     w, h = imgs[0].size
