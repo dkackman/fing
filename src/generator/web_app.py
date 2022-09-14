@@ -28,8 +28,8 @@ def create_app(model_name, auth_token):
 
     api.add_resource(txt2imgMetadataResource, '/txt2img_metadata', resource_class_kwargs={ 'model': model })
 
-    api.add_resource(img2imgResource, '/img2img')
-    api.add_resource(img2imgMetadataResource, '/img2img_metadata')
+    api.add_resource(img2imgResource, '/img2img', resource_class_kwargs={ 'model': model })
+    api.add_resource(img2imgMetadataResource, '/img2img_metadata', resource_class_kwargs={ 'model': model })
 
     return app
 

@@ -5,7 +5,9 @@ from web_worker import clean_prompt, generate_image_buffer, info
 
 
 class img2imgResource(Resource):
-    def __init__(self):
+    model = None
+
+    def __init__(self, **kwargs):
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, help="no prompt was provided", location='args', required=True, trim=True)
         parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
@@ -15,6 +17,7 @@ class img2imgResource(Resource):
         parser.add_argument('width', location='args', type=int, default=512)
 
         self.parser = parser
+        self.model = kwargs["model"]
 
 
     def get(self):
@@ -23,6 +26,7 @@ class img2imgResource(Resource):
         try:
             prompt = clean_prompt(args.prompt)
             buffer = generate_image_buffer(
+                self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -37,8 +41,8 @@ class img2imgResource(Resource):
 
 
 class img2imgMetadataResource(img2imgResource):
-    def __init__(self):
-        super(img2imgResource, self).__init__()
+    def __init__(self, **kwargs):
+        super(img2imgResource, self).__init__(**kwargs)
 
     def get(self):
         try:
@@ -46,6 +50,7 @@ class img2imgMetadataResource(img2imgResource):
 
             prompt = clean_prompt(args.prompt)
             buffer = generate_image_buffer(
+                self.model,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -53,7 +58,7 @@ class img2imgMetadataResource(img2imgResource):
                 args.width,
                 prompt
             )
-            metadata = info()
+            metadata = info(self.model)
             metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
             metadata["parameters"] = {
                 'guidance_scale': args.guidance_scale,
