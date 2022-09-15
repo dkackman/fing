@@ -105,14 +105,14 @@ def main(config):
 
         logging.info(f"START generating {id}")
         gpu = Gpu()
-        gpu.load_model(config_dict["model"]["model_name"], config_dict["model"]["huggingface_token"])
+        gpu.preload_pipelines(config_dict["model"]["model_name"], config_dict["model"]["huggingface_token"])
         prompt = args.prompt.replace('"' , "").replace("'", "")
         if args.image_uri is not None:
             if args.mask_uri is not None:
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
 
-                image = gpu.get_imginpaint(
+                image, pipe_config = gpu.get_imginpaint(
                     args.strength,
                     args.guidance_scale,
                     args.num_inference_steps, 
@@ -124,7 +124,7 @@ def main(config):
             else:
                 init_image = get_image(args.image_uri)
 
-                image = gpu.get_img2img(
+                image, pipe_config = gpu.get_img2img(
                     args.strength,
                     args.guidance_scale,
                     args.num_inference_steps, 
@@ -133,7 +133,7 @@ def main(config):
                     init_image
                 )
         else:
-            image = gpu.get_txt2img(
+            image, pipe_config= gpu.get_txt2img(
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 

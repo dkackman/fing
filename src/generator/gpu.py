@@ -5,17 +5,18 @@ from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, S
 from torch.cuda.amp import autocast
 from PIL import Image
 
-class Gpu():
+
+class Pipelines():
     pipelines = {}
 
-    def load_model(self, model_name, auth_token):
+    def preload_pipelines(self, model_name, auth_token):
         logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
-        # right now we are loading both stable-diffusions pipelines into te GPU
-        # both take a fair amount of memory
+        # this will preload the pieline into CPU memory
+        # on demand they get swapped into gpu memory
         #
-        # TODO #7 swap the pipeline out the GPU as needed. Leave it resident but switch on demand (loading the pipeline to cuda has a hefty perf imapct)
         # TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
+        # TODO #9 implement img in-painting
         self.pipelines["txt2img"] = StableDiffusionPipeline.from_pretrained(
             model_name,
             revision="fp16",
@@ -58,7 +59,7 @@ class Gpu():
                     width=width
                 ).images
 
-        return post_process(num_images, images)
+        return (post_process(num_images, images), pipe.config)
 
 
     def get_img2img(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
@@ -80,7 +81,7 @@ class Gpu():
                     strength=strength
                 ).images
 
-        return post_process(num_images, images)
+        return (post_process(num_images, images), pipe.config)
 
 
     def get_imginpaint(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
@@ -103,15 +104,14 @@ class Gpu():
                     mask_image=mask_image
                 ).images
 
-        return post_process(num_images, images)
+        return (post_process(num_images, images), pipe.config)
 
 
     def swap_pipelines(self, pipeline_name):
-        for name in self.pipelines:
-            if name == pipeline_name:
-                self.pipelines[pipeline_name].to("cuda")
-            else:
-                self.pipelines[pipeline_name].to("cpu")
+        with torch.no_grad():
+            torch.cuda.empty_cache()
+
+        self.pipelines[pipeline_name].to("cuda")
 
         return self.pipelines[pipeline_name]
 

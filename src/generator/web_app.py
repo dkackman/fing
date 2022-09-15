@@ -16,20 +16,20 @@ def create_app(model_name, auth_token):
     
     logging.debug(f"Torch version {torch.__version__}")
 
-    model = Gpu()
+    default_device = Gpu()
     # load the model into the gpu - stays there for the life of the process
-    model.load_model(model_name, auth_token)
+    default_device.preload_pipelines(model_name, auth_token)
 
     app = Flask("stable-diffusion service")
     api = Api(app)
 
-    api.add_resource(InfoResource, '/info', resource_class_kwargs={ 'model': model })
-    api.add_resource(txt2imgResource, '/txt2img', resource_class_kwargs={ 'model': model })
+    api.add_resource(InfoResource, '/info', resource_class_kwargs={ 'model': default_device })
+    api.add_resource(txt2imgResource, '/txt2img', resource_class_kwargs={ 'model': default_device })
 
-    api.add_resource(txt2imgMetadataResource, '/txt2img_metadata', resource_class_kwargs={ 'model': model })
+    api.add_resource(txt2imgMetadataResource, '/txt2img_metadata', resource_class_kwargs={ 'model': default_device })
 
-    api.add_resource(img2imgResource, '/img2img', resource_class_kwargs={ 'model': model })
-    api.add_resource(img2imgMetadataResource, '/img2img_metadata', resource_class_kwargs={ 'model': model })
+    api.add_resource(img2imgResource, '/img2img', resource_class_kwargs={ 'model': default_device })
+    api.add_resource(img2imgMetadataResource, '/img2img_metadata', resource_class_kwargs={ 'model': default_device })
 
     return app
 

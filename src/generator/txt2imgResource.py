@@ -3,8 +3,9 @@ from flask_restful import reqparse, abort, Resource
 import base64
 from web_worker import clean_prompt, generate_txt2img_buffer, info
 
+
 class txt2imgResource(Resource):
-    model = None
+    gpu = None
 
     def __init__(self, **kwargs):
         parser = reqparse.RequestParser()
@@ -16,7 +17,7 @@ class txt2imgResource(Resource):
         parser.add_argument('width', location='args', type=int, default=512)
 
         self.parser = parser
-        self.model = kwargs["model"]
+        self.gpu = kwargs["model"]
 
 
     def get(self):
@@ -24,8 +25,8 @@ class txt2imgResource(Resource):
 
         try:
             prompt = clean_prompt(args.prompt)
-            buffer = generate_txt2img_buffer(
-                self.model,
+            buffer, pipe_config = generate_txt2img_buffer(
+                self.gpu,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -49,8 +50,8 @@ class txt2imgMetadataResource(txt2imgResource):
             args = self.parser.parse_args()
 
             prompt = clean_prompt(args.prompt)
-            buffer = generate_txt2img_buffer(
-                self.model,
+            buffer, pipe_config = generate_txt2img_buffer(
+                self.gpu,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -58,7 +59,8 @@ class txt2imgMetadataResource(txt2imgResource):
                 args.width,
                 prompt
             )
-            metadata = info(self.model)
+            metadata = info()
+            metadata["pipe_config"] = pipe_config            
             metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
             metadata["parameters"] = {
                 'guidance_scale': args.guidance_scale,

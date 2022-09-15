@@ -4,7 +4,7 @@ from io import BytesIO
 import logging
 
 def get_image(uri):
-    logging.debug(f"Downloadinf {uri}")
+    logging.debug(f"Downloading {uri}")
     response = requests.get(uri)
     init_image = Image.open(BytesIO(response.content)).convert("RGB")
     return init_image.resize((768, 512))

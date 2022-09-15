@@ -16,7 +16,7 @@ def generate_txt2img_buffer(model, guidance_scale, num_inference_steps, num_imag
         if locked:
             logging.info(f"START txt2img generating")
 
-            image = model.get_txt2img( 
+            image, config = model.get_txt2img( 
                 guidance_scale, 
                 num_inference_steps, 
                 num_images, 
@@ -35,23 +35,21 @@ def generate_txt2img_buffer(model, guidance_scale, num_inference_steps, num_imag
     image.save(buffer, format="JPEG")
     buffer.seek(0)
 
-    return buffer
+    return buffer, config
 
 
-def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps, num_images, height, width, prompt, init_image):
+def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
     try:
         # only allow one image generation at a time        
         locked = mutex.acquire(False)
         if locked:
             logging.info(f"START img2img generating")
 
-            image = model.get_img2img( 
+            image, config = model.get_img2img( 
                 strength,
                 guidance_scale, 
                 num_inference_steps, 
                 num_images, 
-                height, 
-                width, 
                 prompt,
                 init_image
             )
@@ -66,16 +64,15 @@ def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps
     image.save(buffer, format="JPEG")
     buffer.seek(0)
 
-    return buffer
+    return buffer, config
 
-def info(model):
+def info():
     return {
             'software': {
                 'name': "fing",
                 'version': "0.1.0",
                 'torch_version': torch.__version__,
-            },
-            'model': model.pipe.config
+            }
         }
 
 
