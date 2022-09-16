@@ -55,6 +55,16 @@ components:
         default: 7.5
       required: false
       description: The model guidance scale
+    strength:
+      in: query
+      name: strength
+      schema:
+        type: number
+        minimum: 0
+        maximum: 1
+        default: 0.75
+      required: false
+      description: The relative amount of noise to add to the init image
     num_images:
       in: query
       name: num_images
@@ -70,6 +80,20 @@ components:
       name: prompt
       schema:
         type: string
+      required: true
+    image_uri:
+      in: query
+      name: image_uri
+      schema:
+        type: string
+        format: uri
+      required: true
+    mask_uri:
+      in: query
+      name: mask_uri
+      schema:
+        type: string
+        format: uri
       required: true
   schemas:
     software_info:
@@ -93,7 +117,7 @@ components:
           $ref: "#/components/schemas/software_info"
         parameters:
           type: object
-          additionalProperties: true          
+          additionalProperties: true
     pipe_config:
       type: object
       properties:
@@ -191,6 +215,98 @@ paths:
         - $ref: "#/components/parameters/num_inference_steps"
         - $ref: "#/components/parameters/height"
         - $ref: "#/components/parameters/width"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/image_metadata"
+  /img2img:
+    get:
+      tags:
+        - Stable Diffusion
+      security:
+        - ApiKeyAuth: []
+      description: Generates an image from an initial image and textual prompt
+      operationId: img2img
+      parameters:
+        - $ref: "#/components/parameters/prompt"
+        - $ref: "#/components/parameters/image_uri"
+        - $ref: "#/components/parameters/num_images"
+        - $ref: "#/components/parameters/guidance_scale"
+        - $ref: "#/components/parameters/num_inference_steps"
+        - $ref: "#/components/parameters/strength"
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+  /img2img_metadata:
+    get:
+      tags:
+        - Stable Diffusion
+      security:
+        - ApiKeyAuth: []
+      description: Generates an image froman initial image, mask, and a textual prompt, including metadata
+      operationId: img2img_metadata
+      parameters:
+        - $ref: "#/components/parameters/prompt"
+        - $ref: "#/components/parameters/image_uri"
+        - $ref: "#/components/parameters/num_images"
+        - $ref: "#/components/parameters/guidance_scale"
+        - $ref: "#/components/parameters/num_inference_steps"
+        - $ref: "#/components/parameters/strength"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/image_metadata"
+  /imginpaint:
+    get:
+      tags:
+        - Stable Diffusion
+      security:
+        - ApiKeyAuth: []
+      description: Inpaints from an initial image and textual prompt
+      operationId: imginpaint
+      parameters:
+        - $ref: "#/components/parameters/prompt"
+        - $ref: "#/components/parameters/image_uri"
+        - $ref: "#/components/parameters/mask_uri"
+        - $ref: "#/components/parameters/num_images"
+        - $ref: "#/components/parameters/guidance_scale"
+        - $ref: "#/components/parameters/num_inference_steps"
+        - $ref: "#/components/parameters/strength"
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+  /imginpaint_metadata:
+    get:
+      tags:
+        - Stable Diffusion
+      security:
+        - ApiKeyAuth: []
+      description: Inpaints from an initial image, mask, and a textual prompt, including metadata
+      operationId: imginpaint_metadata
+      parameters:
+        - $ref: "#/components/parameters/prompt"
+        - $ref: "#/components/parameters/image_uri"
+        - $ref: "#/components/parameters/mask_uri"
+        - $ref: "#/components/parameters/num_images"
+        - $ref: "#/components/parameters/guidance_scale"
+        - $ref: "#/components/parameters/num_inference_steps"
+        - $ref: "#/components/parameters/strength"
       responses:
         "200":
           description: OK

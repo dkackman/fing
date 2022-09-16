@@ -40,7 +40,7 @@ Both the CLI nd REST service share these argument names.
 #### To do image to image guided transformation the above (excpet height and width) and
 
 - `--image_uri` - the URI of the init image
-- `--strength` - The amount of noise to remove. 0 none to 1 all (all essnetially ignores the init image)
+- `--strength` - The relative amount of noise to add to the init image.
 
 #### To do in painting the above (excpet height and width) and
 
