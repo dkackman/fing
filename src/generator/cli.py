@@ -9,7 +9,7 @@ import argparse
 from log_setup import setup_logging
 import torch
 from external_resource import get_image
-from pipelines import preload_pipelines
+from pipelines import Pipelines
 
 def main(config):
     config_dict=config.config_file
@@ -105,14 +105,15 @@ def main(config):
         print(filename)  # this let's the caller know what file to look for
 
         logging.info(f"START generating {id}")
-        gpu = Gpu()
-        model_name = config_dict["model"]["model_name"]
+
         auth_token = config_dict["model"]["huggingface_token"]
+        pipelines = Pipelines(config_dict["model"]["model_name"])
 
         prompt = args.prompt.replace('"' , "").replace("'", "")
         if args.image_uri is not None:
             if args.mask_uri is not None:
-                preload_pipelines(model_name, auth_token, ["imginpaint"])
+                pipelines.preload_pipelines(auth_token, ["imginpaint"])
+                gpu = Gpu(pipelines)
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
 
@@ -126,7 +127,8 @@ def main(config):
                     mask_image
                 )
             else:
-                preload_pipelines(model_name, auth_token, ["img2img"])
+                pipelines.preload_pipelines(auth_token, ["img2img"])
+                gpu = Gpu(pipelines)
                 init_image = get_image(args.image_uri)
 
                 image, pipe_config = gpu.get_img2img(
@@ -138,7 +140,8 @@ def main(config):
                     init_image
                 )
         else:
-            preload_pipelines(model_name, auth_token, ["txt2img"])            
+            pipelines.preload_pipelines(auth_token, ["txt2img"])            
+            gpu = Gpu(pipelines)
             image, pipe_config= gpu.get_txt2img(
                 args.guidance_scale,
                 args.num_inference_steps, 

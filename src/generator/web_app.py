@@ -7,7 +7,7 @@ from InfoResource import InfoResource
 from txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from img2imgResource import img2imgResource, img2imgMetadataResource
 from imginpaintResource import imginpaintResource, imginpaintMetadataResource
-from pipelines import preload_pipelines
+from pipelines import Pipelines
 
 
 def create_app(model_name, auth_token):
@@ -17,9 +17,10 @@ def create_app(model_name, auth_token):
     
     logging.debug(f"Torch version {torch.__version__}")
 
-    default_device = Gpu()
+    pipelines = Pipelines(model_name)
     # load the model into ram - stays there for the life of the process
-    preload_pipelines(model_name, auth_token)
+    pipelines.preload_pipelines(auth_token)
+    default_device = Gpu(pipelines)
 
     app = Flask("stable-diffusion service")
     api = Api(app)

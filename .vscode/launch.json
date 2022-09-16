@@ -38,11 +38,9 @@
             "cwd": "${workspaceFolder}/src/generator",
             "args": [
                 "--prompt",
-                "A picasso painting of abraham lincoln",
+                "A gentleman otter in a 17th century portrait",
                 "--num_images",
-                "1",
-                "--num_inference_steps",
-                "10"
+                "1"
             ],
             "justMyCode": true
         },

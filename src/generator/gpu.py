@@ -2,11 +2,16 @@ import torch
 import logging
 from torch.cuda.amp import autocast
 from PIL import Image
-from pipelines import get_pipeline
 
 
 # TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
 class Gpu():
+    pipelines = None
+
+    def __init__(self, pipelines) -> None:
+        self.pipelines = pipelines
+
+
     # this does the actual image generation
     def get_txt2img(self, guidance_scale, num_inference_steps, num_images, height, width, prompt):
         logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
@@ -15,7 +20,7 @@ class Gpu():
 
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = get_pipeline("txt2img")
+        pipe = self.pipelines.get_pipeline("txt2img")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -37,7 +42,7 @@ class Gpu():
 
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = get_pipeline("img2img")
+        pipe = self.pipelines.get_pipeline("img2img")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -59,7 +64,7 @@ class Gpu():
 
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = get_pipeline("imginpaint")
+        pipe = self.pipelines.get_pipeline("imginpaint")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
