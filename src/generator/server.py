@@ -1,8 +1,9 @@
 import sys
 from config import Config
 import logging
-from web_app import create_app, setup_logging
+from web_app import create_app
 import logging
+from log_setup import setup_logging
 
 # TODO 
 # - auth https://www.bacancytechnology.com/blog/flask-jwt-authentication

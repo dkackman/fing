@@ -28,29 +28,31 @@
             "program": "server.py",
             "console": "integratedTerminal",
             "justMyCode": true
-        },        
+        },
         {
             "name": "CLI - txt2img",
             "type": "python",
             "request": "launch",
             "program": "cli.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src/generator",            
+            "cwd": "${workspaceFolder}/src/generator",
             "args": [
                 "--prompt",
                 "A picasso painting of abraham lincoln",
                 "--num_images",
-                "1"
+                "1",
+                "--num_inference_steps",
+                "10"
             ],
             "justMyCode": true
-        },        
+        },
         {
             "name": "CLI - img2img",
             "type": "python",
             "request": "launch",
             "program": "cli.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src/generator",            
+            "cwd": "${workspaceFolder}/src/generator",
             "args": [
                 "--prompt",
                 "A landscape on mars",
@@ -60,14 +62,14 @@
                 "0.875"
             ],
             "justMyCode": true
-        },        
+        },
         {
             "name": "CLI - imginpaint",
             "type": "python",
             "request": "launch",
             "program": "cli.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src/generator",            
+            "cwd": "${workspaceFolder}/src/generator",
             "args": [
                 "--prompt",
                 "A landscape on mars",

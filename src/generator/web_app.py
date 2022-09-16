@@ -7,7 +7,6 @@ from InfoResource import InfoResource
 from txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from img2imgResource import img2imgResource, img2imgMetadataResource
 from imginpaintResource import imginpaintResource, imginpaintMetadataResource
-from concurrent_log_handler import ConcurrentRotatingFileHandler
 from pipelines import preload_pipelines
 
 
@@ -37,27 +36,3 @@ def create_app(model_name, auth_token):
     api.add_resource(imginpaintMetadataResource, '/imginpaint_metadata', resource_class_kwargs={ 'model': default_device })
 
     return app
-
-def setup_logging(config):
-    log_path = config.resolve_path(config.config_file["generation"]["log_filename"])
-    log_date_format = "%Y-%m-%dT%H:%M:%S"
-    
-    logger = logging.getLogger()
-
-    handler = ConcurrentRotatingFileHandler(log_path, "a", maxBytes=50 * 1024 * 1024, backupCount=7)
-    handler.setFormatter(
-        logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(message)s", datefmt=log_date_format)
-    )
-    logger.setLevel(logging.INFO) # unless otherwise specified leglevel will be info
-    logging_config = config.config_file["generation"]
-    if "log_level" in logging_config:
-        if logging_config["log_level"] == "CRITICAL":
-            logger.setLevel(logging.CRITICAL)
-        elif logging_config["log_level"] == "ERROR":
-            logger.setLevel(logging.ERROR)
-        elif logging_config["log_level"] == "WARNING":
-            logger.setLevel(logging.WARNING)
-        elif logging_config["log_level"] == "DEBUG":
-            logger.setLevel(logging.DEBUG)
-
-    logger.addHandler(handler)

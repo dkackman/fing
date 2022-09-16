@@ -6,7 +6,7 @@ from config import Config
 from pathlib import Path
 from gpu import Gpu
 import argparse
-from web_app import setup_logging
+from log_setup import setup_logging
 import torch
 from external_resource import get_image
 from pipelines import preload_pipelines
