@@ -7,7 +7,6 @@ from InfoResource import InfoResource
 from txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from img2imgResource import img2imgResource, img2imgMetadataResource
 from imginpaintResource import imginpaintResource, imginpaintMetadataResource
-import logging
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 from pipelines import preload_pipelines
 

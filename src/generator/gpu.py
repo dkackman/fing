@@ -4,6 +4,8 @@ from torch.cuda.amp import autocast
 from PIL import Image
 from pipelines import get_pipeline
 
+
+# TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
 class Gpu():
     # this does the actual image generation
     def get_txt2img(self, guidance_scale, num_inference_steps, num_images, height, width, prompt):
