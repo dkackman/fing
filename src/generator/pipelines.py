@@ -1,3 +1,4 @@
+from token import EXACT_TOKEN_TYPES
 import torch
 import logging
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionInpaintPipeline
@@ -10,6 +11,8 @@ class Pipelines:
     torch_dtype = None
     model_name = None
     files = {}
+    last_pipe = None    # this only works for single gpu implementation right now
+                        # TODO #12 cache the last pipeline per device
 
     def __init__(self, model_name, revision="fp16", torch_dtype=torch.float16) -> None:
         self.revision = revision
@@ -66,10 +69,23 @@ class Pipelines:
     def get_pipeline(self, pipeline_name):
         logging.debug(f"Deserializeg {pipeline_name} to {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
 
+        # if the last pipeline is already loaded, just return it
+        if self.last_pipe is not None:
+            if self.last_pipe[0] == pipeline_name:
+                return self.last_pipe[1]
+            else:
+                del self.last_pipe      # if there is a loaded pipeline but it's different   
+                self.last_pipe = None   # clean up memory and leave last_pipe in a known state
+
+        # clear gpu memory
         with torch.no_grad():
             torch.cuda.empty_cache()
 
+        # resurrect the new pipeline, send it to the gpu and cache it
         file = self.files[pipeline_name]
         pipe = pickle.load(file)
         file.seek(0, 0) # set the file stream back to the beginning
-        return pipe.to("cuda")
+        cuda_pipe = pipe.to("cuda")
+        self.last_pipe = (pipeline_name, cuda_pipe)
+
+        return cuda_pipe
