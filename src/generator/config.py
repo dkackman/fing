@@ -1,5 +1,4 @@
 import os
-from tkinter import N
 import yaml
 from pathlib import Path
 

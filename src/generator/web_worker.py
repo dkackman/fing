@@ -66,6 +66,37 @@ def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps
 
     return buffer, config
 
+
+def generate_imginpaint_buffer(model, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
+    try:
+        # only allow one image generation at a time        
+        locked = mutex.acquire(False)
+        if locked:
+            logging.info(f"START img2img generating")
+
+            image, config = model.get_imginpaint( 
+                strength,
+                guidance_scale, 
+                num_inference_steps, 
+                num_images, 
+                prompt,
+                init_image,
+                mask_image
+            )
+            logging.info(f"END img2img generating")
+        else:
+            abort(423, "Busy. Try again later.")
+    finally:
+        if locked:
+            mutex.release()
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="JPEG")
+    buffer.seek(0)
+
+    return buffer, config
+
+
 def info():
     return {
             'software': {

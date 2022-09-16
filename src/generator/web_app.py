@@ -6,8 +6,11 @@ from gpu import Gpu
 from InfoResource import InfoResource
 from txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from img2imgResource import img2imgResource, img2imgMetadataResource
+from imginpaintResource import imginpaintResource, imginpaintMetadataResource
 import logging
 from concurrent_log_handler import ConcurrentRotatingFileHandler
+from pipelines import preload_pipelines
+
 
 def create_app(model_name, auth_token):
     if not torch.cuda.is_available():
@@ -17,8 +20,8 @@ def create_app(model_name, auth_token):
     logging.debug(f"Torch version {torch.__version__}")
 
     default_device = Gpu()
-    # load the model into the gpu - stays there for the life of the process
-    default_device.preload_pipelines(model_name, auth_token)
+    # load the model into ram - stays there for the life of the process
+    preload_pipelines(model_name, auth_token)
 
     app = Flask("stable-diffusion service")
     api = Api(app)
@@ -30,6 +33,9 @@ def create_app(model_name, auth_token):
 
     api.add_resource(img2imgResource, '/img2img', resource_class_kwargs={ 'model': default_device })
     api.add_resource(img2imgMetadataResource, '/img2img_metadata', resource_class_kwargs={ 'model': default_device })
+
+    api.add_resource(imginpaintResource, '/imginpaint', resource_class_kwargs={ 'model': default_device })
+    api.add_resource(imginpaintMetadataResource, '/imginpaint_metadata', resource_class_kwargs={ 'model': default_device })
 
     return app
 
