@@ -26,14 +26,25 @@ These settings need to be set specific to your environment:
 
 ### Arguments
 
-These arguments can be passed to both the CLI and REST interfaces
+Both the CLI nd REST service share these argument names.
 
-- `prompt` - Required. The textual prompt to base the image on.
-- `num_images` - Defaults to 1. The number of images to create.
-- `guidance_scale` - Defaults to 7.5. The model guidance scale.
-- `num_inference_steps` - defaults to 50. The number of model inference steps.
-- `height` - defaults to 512. The image height.
-- `width` - defaults to 512. The image width.
+#### These arguments can be passed to do text to image
+
+- `--prompt` - Required. The textual prompt to base the image on.
+- `--num_images` - Defaults to 1. The number of images to create.
+- `--guidance_scale` - Defaults to 7.5. The model guidance scale.
+- `--num_inference_steps` - defaults to 50. The number of model inference steps.
+- `--height` - defaults to 512. The image height.
+- `--width` - defaults to 512. The image width.
+
+#### To do image to image guided transformation the above (excpet height and width) and
+
+- `--image_uri` - the URI of the init image
+- `--strength` - The amount of noise to remove. 0 none to 1 all (all essnetially ignores the init image)
+
+#### To do in painting the above (excpet height and width) and
+
+- `--mask_uri` - The URI of the mask image
 
 ### Command Line
 
