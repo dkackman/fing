@@ -67,7 +67,7 @@ class Pipelines:
 
 
     def get_pipeline(self, pipeline_name):
-        # if the last pipeline is the one request, just return it
+        # if the last pipeline is the one requested, just return it
         if self.last_pipe is not None:
             if self.last_pipe[0] == pipeline_name:
                 logging.debug(f"{pipeline_name} already present in device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
