@@ -74,7 +74,7 @@ or
 gunicorn --bind 0.0.0.0:9147 server:gunicorn_app --timeout 120 
 ```
 
-This will run [a simple REST api](https://github.com/dkackman/fing/blob/main/src/generator/open-api.yaml) on port 9147:
+This will run [a simple REST api](https://dkackman.github.io/chia-api/) on port 9147:
 
 <div>
 http://localhost:3010/api/txt2img?prompt=Proof of space and time
