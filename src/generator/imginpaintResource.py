@@ -5,7 +5,7 @@ from web_worker import clean_prompt, generate_imginpaint_buffer, info
 from external_resource import get_image
 
 class imginpaintResource(Resource):
-    model = None
+    device = None
 
     def __init__(self, **kwargs):
         parser = reqparse.RequestParser()
@@ -18,7 +18,7 @@ class imginpaintResource(Resource):
         parser.add_argument('num_images', location='args', type=int, default=1)
 
         self.parser = parser
-        self.model = kwargs["model"]
+        self.device = kwargs["device"]
 
 
     def get(self):
@@ -29,7 +29,7 @@ class imginpaintResource(Resource):
             mask_image = get_image(args.mask_uri)
             prompt = clean_prompt(args.prompt)
             buffer, pipe_config = generate_imginpaint_buffer(
-                self.model,
+                self.device,
                 args.strength,
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -57,7 +57,7 @@ class imginpaintMetadataResource(imginpaintResource):
             mask_image = get_image(args.mask_uri)
             prompt = clean_prompt(args.prompt)
             buffer, pipe_config = generate_imginpaint_buffer(
-                self.model,
+                self.device,
                 args.strength,
                 args.guidance_scale,
                 args.num_inference_steps, 

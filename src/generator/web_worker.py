@@ -9,14 +9,14 @@ import torch
 
 mutex = Lock()
 
-def generate_txt2img_buffer(model, guidance_scale, num_inference_steps, num_images, height, width, prompt):
+def generate_txt2img_buffer(device, guidance_scale, num_inference_steps, num_images, height, width, prompt):
     try:
         # only allow one image generation at a time        
         locked = mutex.acquire(False)
         if locked:
             logging.info(f"START txt2img generating")
 
-            image, config = model.get_txt2img( 
+            image, config = device.get_txt2img( 
                 guidance_scale, 
                 num_inference_steps, 
                 num_images, 
@@ -38,14 +38,14 @@ def generate_txt2img_buffer(model, guidance_scale, num_inference_steps, num_imag
     return buffer, config
 
 
-def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
+def generate_img2img_buffer(device, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
     try:
         # only allow one image generation at a time        
         locked = mutex.acquire(False)
         if locked:
             logging.info(f"START img2img generating")
 
-            image, config = model.get_img2img( 
+            image, config = device.get_img2img( 
                 strength,
                 guidance_scale, 
                 num_inference_steps, 
@@ -67,14 +67,14 @@ def generate_img2img_buffer(model, strength, guidance_scale, num_inference_steps
     return buffer, config
 
 
-def generate_imginpaint_buffer(model, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
+def generate_imginpaint_buffer(device, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
     try:
         # only allow one image generation at a time        
         locked = mutex.acquire(False)
         if locked:
             logging.info(f"START img2img generating")
 
-            image, config = model.get_imginpaint( 
+            image, config = device.get_imginpaint( 
                 strength,
                 guidance_scale, 
                 num_inference_steps, 

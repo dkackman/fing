@@ -75,13 +75,12 @@ class Pipelines:
                 return self.last_pipe[1]
             else:
                 del self.last_pipe      # if there is a loaded pipeline but it's different   
-                self.last_pipe = None   # clean up memory and leave last_pipe in a known state
 
         # clear gpu memory
         with torch.no_grad():
             torch.cuda.empty_cache()
 
-        # resurrect the new pipeline, send it to the gpu and cache it
+        # resurrect the new pipeline, send it to the gpu, and cache it in memory
         file = self.files[pipeline_name]
         pipe = pickle.load(file)
         file.seek(0, 0) # set the file stream back to the beginning

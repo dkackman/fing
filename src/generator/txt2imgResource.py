@@ -5,7 +5,7 @@ from web_worker import clean_prompt, generate_txt2img_buffer, info
 
 
 class txt2imgResource(Resource):
-    gpu = None
+    device = None
 
     def __init__(self, **kwargs):
         parser = reqparse.RequestParser()
@@ -17,7 +17,7 @@ class txt2imgResource(Resource):
         parser.add_argument('width', location='args', type=int, default=512)
 
         self.parser = parser
-        self.gpu = kwargs["model"]
+        self.device = kwargs["device"]
 
 
     def get(self):
@@ -26,7 +26,7 @@ class txt2imgResource(Resource):
         try:
             prompt = clean_prompt(args.prompt)
             buffer, pipe_config = generate_txt2img_buffer(
-                self.gpu,
+                self.device,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -51,7 +51,7 @@ class txt2imgMetadataResource(txt2imgResource):
 
             prompt = clean_prompt(args.prompt)
             buffer, pipe_config = generate_txt2img_buffer(
-                self.gpu,
+                self.device,
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 

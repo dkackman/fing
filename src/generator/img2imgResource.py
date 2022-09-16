@@ -5,7 +5,7 @@ from web_worker import clean_prompt, generate_img2img_buffer, info
 from external_resource import get_image
 
 class img2imgResource(Resource):
-    model = None
+    device = None
 
     def __init__(self, **kwargs):
         parser = reqparse.RequestParser()
@@ -17,7 +17,7 @@ class img2imgResource(Resource):
         parser.add_argument('num_images', location='args', type=int, default=1)
 
         self.parser = parser
-        self.model = kwargs["model"]
+        self.device = kwargs["device"]
 
 
     def get(self):
@@ -27,7 +27,7 @@ class img2imgResource(Resource):
             init_image = get_image(args.image_uri)
             prompt = clean_prompt(args.prompt)
             buffer, pipe_config = generate_img2img_buffer(
-                self.model,
+                self.device,
                 args.strength,
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -53,7 +53,7 @@ class img2imgMetadataResource(img2imgResource):
             init_image = get_image(args.image_uri)
             prompt = clean_prompt(args.prompt)
             buffer, pipe_config = generate_img2img_buffer(
-                self.model,
+                self.device,
                 args.strength,
                 args.guidance_scale,
                 args.num_inference_steps, 
