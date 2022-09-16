@@ -14,7 +14,6 @@ def preload_pipelines(model_name, auth_token, pipeline_names = ["txt2img", "img2
     # on demand they get deserialized and pushed to the gpu
     #
     # TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
-    # TODO #10 memory manage the pipelines so they don't all need to be in RAM at the same time (load, serialize, deserialize on demand)
     if "txt2img" in pipeline_names:
         pipeline = StableDiffusionPipeline.from_pretrained(
             model_name,
