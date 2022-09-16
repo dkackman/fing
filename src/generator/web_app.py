@@ -24,9 +24,9 @@ def create_app(model_name, auth_token):
     app = Flask("stable-diffusion service")
     api = Api(app)
 
-    api.add_resource(InfoResource, '/info', resource_class_kwargs={ 'model': default_device })
-    api.add_resource(txt2imgResource, '/txt2img', resource_class_kwargs={ 'model': default_device })
+    api.add_resource(InfoResource, '/info')
 
+    api.add_resource(txt2imgResource, '/txt2img', resource_class_kwargs={ 'model': default_device })
     api.add_resource(txt2imgMetadataResource, '/txt2img_metadata', resource_class_kwargs={ 'model': default_device })
 
     api.add_resource(img2imgResource, '/img2img', resource_class_kwargs={ 'model': default_device })
