@@ -67,15 +67,16 @@ class Pipelines:
 
 
     def get_pipeline(self, pipeline_name):
-        logging.debug(f"Deserializeg {pipeline_name} to {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
 
         # if the last pipeline is already loaded, just return it
         if self.last_pipe is not None:
             if self.last_pipe[0] == pipeline_name:
+                logging.debug(f"{pipeline_name} already present in device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
                 return self.last_pipe[1]
             else:
                 del self.last_pipe      # if there is a loaded pipeline but it's different   
 
+        logging.debug(f"Deserializeg {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
         # clear gpu memory
         with torch.no_grad():
             torch.cuda.empty_cache()
