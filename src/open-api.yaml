@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: fing
   description: >
-    Rest interface to generative art image generator
+    Rest interface to stable-diffusion image generator
   version: 0.1.0
   contact:
     name: dkackman
@@ -16,8 +16,61 @@ servers:
 security:
   - ApiKeyAuth: []
 tags:
-  - name: Generator
+  - name: Service
+  - name: Stable Diffusion
 components:
+  parameters:
+    height:
+      in: query
+      name: height
+      schema:
+        type: integer
+        default: 512
+      required: false
+      description: The image height
+    num_inference_steps:
+      in: query
+      name: num_inference_steps
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 75
+        default: 50
+      required: false
+      description: The number of model inference steps
+    width:
+      in: query
+      name: width
+      schema:
+        type: integer
+        default: 512
+      required: false
+      description: The image width
+    guidance_scale:
+      in: query
+      name: guidance_scale
+      schema:
+        type: number
+        minimum: 0
+        default: 7.5
+      required: false
+      description: The model guidance scale
+    num_images:
+      in: query
+      name: num_images
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 4
+        default: 1
+      required: false
+      description: The numbers of imges to generate
+    prompt:
+      in: query
+      name: prompt
+      schema:
+        type: string
+      required: true
   schemas:
     software_info:
       type: object
@@ -28,7 +81,20 @@ components:
           type: string
         torch_version:
           type: string
-    model_config:
+    image_metadata:
+      type: object
+      properties:
+        image:
+          type: string
+          format: base64
+        pipe_config:
+          $ref: "#/components/schemas/pipe_config"
+        software:
+          $ref: "#/components/schemas/software_info"
+        parameters:
+          type: object
+          additionalProperties: true          
+    pipe_config:
       type: object
       properties:
         _class_name:
@@ -72,7 +138,7 @@ paths:
   /info:
     get:
       tags:
-        - Generator
+        - Service
       security:
         - ApiKeyAuth: []
       description: Gets information about the generator
@@ -85,64 +151,23 @@ paths:
               schema:
                 type: object
                 properties:
-                  model:
-                    $ref: "#/components/schemas/model_config"
                   software:
                     $ref: "#/components/schemas/software_info"
   /txt2img:
     get:
       tags:
-        - Generator
+        - Stable Diffusion
       security:
         - ApiKeyAuth: []
       description: Generates an image from a textual prompt
       operationId: txt2img
       parameters:
-        - in: query
-          name: prompt
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: num_images
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 4
-            default: 1
-          required: false
-          description: The numbers of imges to generate
-        - in: query
-          name: guidance_scale
-          schema:
-            type: number
-            minimum: 0
-            default: 7.5
-          required: false
-          description: The model guidance scale
-        - in: query
-          name: num_inference_steps
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 75
-            default: 50
-          required: false
-          description: The number of model inference steps
-        - in: query
-          name: height
-          schema:
-            type: integer
-            default: 512
-          required: false
-          description: The image height
-        - in: query
-          name: width
-          schema:
-            type: integer
-            default: 512
-          required: false
-          description: The image width
+        - $ref: "#/components/parameters/prompt"
+        - $ref: "#/components/parameters/num_images"
+        - $ref: "#/components/parameters/guidance_scale"
+        - $ref: "#/components/parameters/num_inference_steps"
+        - $ref: "#/components/parameters/height"
+        - $ref: "#/components/parameters/width"
       responses:
         "200":
           description: OK
@@ -154,69 +179,22 @@ paths:
   /txt2img_metadata:
     get:
       tags:
-        - Generator
+        - Stable Diffusion
       security:
         - ApiKeyAuth: []
       description: Generates an image from a textual prompt, including metadata
       operationId: txt2img_metadata
       parameters:
-        - in: query
-          name: prompt
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: num_images
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 4
-            default: 1
-          required: false
-          description: The numbers of imges to generate
-        - in: query
-          name: guidance_scale
-          schema:
-            type: number
-            minimum: 0
-            default: 7.5
-          required: false
-          description: The model guidance scale
-        - in: query
-          name: num_inference_steps
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 75
-            default: 50
-          required: false
-          description: The number of model inference steps
-        - in: query
-          name: height
-          schema:
-            type: integer
-            default: 512
-          required: false
-          description: The image height
-        - in: query
-          name: width
-          schema:
-            type: integer
-            default: 512
-          required: false
-          description: The image width
+        - $ref: "#/components/parameters/prompt"
+        - $ref: "#/components/parameters/num_images"
+        - $ref: "#/components/parameters/guidance_scale"
+        - $ref: "#/components/parameters/num_inference_steps"
+        - $ref: "#/components/parameters/height"
+        - $ref: "#/components/parameters/width"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  image:
-                    type: string
-                    format: base64
-                  model:
-                    $ref: "#/components/schemas/model_config"
-                  software:
-                    $ref: "#/components/schemas/software_info"                    
+                $ref: "#/components/schemas/image_metadata"
