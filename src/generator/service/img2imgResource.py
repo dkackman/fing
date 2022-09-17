@@ -1,8 +1,10 @@
 from flask import jsonify, send_file
 from flask_restful import reqparse, abort, Resource
 import base64
-from web_worker import clean_prompt, generate_img2img_buffer, info
-from external_resource import get_image
+from generator.service.web_worker import clean_prompt, generate_img2img_buffer
+from generator.external_resource import get_image
+from .. import info
+
 
 class img2imgResource(Resource):
     device = None

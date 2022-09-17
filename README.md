@@ -56,7 +56,7 @@ cd src
 conda env create -f environment.yaml
 conda activate fing
 
-python generator/cli.py --prompt "An impressionist painting of penguin on a bicycle."
+python -m generator.main --prompt "An impressionist painting of penguin on a bicycle."
 ```
 
 <img src="pb.jpg" width="200" height="200" alt="An impressionist painting of penguin on a bicycle."/>
@@ -66,11 +66,12 @@ python generator/cli.py --prompt "An impressionist painting of penguin on a bicy
 There is also a REST service interface:
 
 ```bash
-cd src/generator
+cd src
 conda activate fing
-python server.py
+
+python -m generator.server
 or 
-gunicorn --bind 0.0.0.0:9147 server:gunicorn_app --timeout 120 
+gunicorn --bind 0.0.0.0:9147 generator.server:gunicorn_app --timeout 120
 ```
 
 This will run [a simple REST api](https://dkackman.github.io/fing/) on port 9147:

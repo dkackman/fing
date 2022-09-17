@@ -1,4 +1,3 @@
-from token import EXACT_TOKEN_TYPES
 import torch
 import logging
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionInpaintPipeline

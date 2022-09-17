@@ -3,7 +3,6 @@ import logging
 from urllib.parse import unquote
 import io
 from threading import Lock
-import torch
 
 # TODO #5 create a worker per GPU
 
@@ -95,16 +94,6 @@ def generate_imginpaint_buffer(device, strength, guidance_scale, num_inference_s
     buffer.seek(0)
 
     return buffer, config
-
-
-def info():
-    return {
-            'software': {
-                'name': "fing",
-                'version': "0.1.0",
-                'torch_version': torch.__version__,
-            }
-        }
 
 
 # clean up the string - removing non utf-8 characters, check length

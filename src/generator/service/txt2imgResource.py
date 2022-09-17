@@ -1,7 +1,8 @@
 from flask import jsonify, send_file
 from flask_restful import reqparse, abort, Resource
 import base64
-from web_worker import clean_prompt, generate_txt2img_buffer, info
+from generator.service.web_worker import clean_prompt, generate_txt2img_buffer
+from .. import info
 
 
 class txt2imgResource(Resource):

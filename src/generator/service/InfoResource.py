@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_restful import Resource
-from web_worker import info
+from .. import info
 
 class InfoResource(Resource):
     def get(self):

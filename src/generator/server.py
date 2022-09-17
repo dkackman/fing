@@ -1,13 +1,10 @@
 import sys
-from config import Config
 import logging
-from web_app import create_app
-import logging
-from log_setup import setup_logging
+from generator.config import Config
+from generator.service.web_app import create_app
+from . import setup_logging
 
-# TODO 
-# - auth https://www.bacancytechnology.com/blog/flask-jwt-authentication
-# - manage multiple gpus
+# TODO #13 auth https://www.bacancytechnology.com/blog/flask-jwt-authentication
 
 config = Config().load()
 setup_logging(config)

@@ -2,8 +2,8 @@ openapi: 3.0.2
 info:
   title: fing
   description: >
-    Rest interface to stable-diffusion image generator
-  version: 0.1.0
+    Rest interface to stable-diffusion image generation
+  version: 0.2.0
   contact:
     name: dkackman
     url: https://github.com/dkackman/fing
@@ -11,7 +11,6 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: https://fing.kackman.net/
   - url: https://localhost:9147/
 security:
   - ApiKeyAuth: []

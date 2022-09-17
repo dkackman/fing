@@ -2,14 +2,14 @@ import sys
 import uuid
 import logging
 import torch
-from config import Config
-from pathlib import Path
-from device import Device
 import argparse
-from log_setup import setup_logging
+from pathlib import Path
 import torch
-from external_resource import get_image
-from pipelines import Pipelines
+from . import setup_logging
+from generator.external_resource import get_image
+from generator.diffusion.pipelines import Pipelines
+from generator.config import Config
+from generator.diffusion.device import Device
 
 def main(config):
     if not torch.cuda.is_available():
