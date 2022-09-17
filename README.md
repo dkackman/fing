@@ -20,7 +20,6 @@ What you will need:
 Create a directory `~/.fing/` and place a copy of [the config file](https://github.com/dkackman/fing/blob/main/src/config.yaml) there.
 These settings need to be set specific to your environment:
 
-- `working_dir` - The absolute path to the location of `generate.py` from the repo (will be something like `<your repo root>/src/generator`)
 - `output_dir` - Currently python and node communicate via the file system. This is the absolute path where the image will be generated and the node api will pick it up. Can be anywhere that both parts have access to.
 - `huggingface_token` - The access token you got above. This is needed to use the model developed by _CompVis_ and licensed under the [OpenRAIL-M](https://github.com/CompVis/stable-diffusion/blob/main/LICENSE) CreativeML license.
 
