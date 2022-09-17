@@ -14,10 +14,10 @@ class Device():
 
     # this does the actual image generation
     def get_txt2img(self, guidance_scale, num_inference_steps, num_images, height, width, prompt):
-        log_device()
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
+        log_device()
         logging.info(f"Prompt is [{prompt}]")
 
         pipe = self.pipelines.get_pipeline("txt2img")
@@ -36,10 +36,10 @@ class Device():
 
 
     def get_img2img(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
-        log_device()
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
+        log_device()
         logging.info(f"Prompt is [{prompt}]")
 
         pipe = self.pipelines.get_pipeline("img2img")
@@ -58,10 +58,10 @@ class Device():
 
 
     def get_imginpaint(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
-        log_device()
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
+        log_device()
         logging.info(f"Prompt is [{prompt}]")
 
         pipe = self.pipelines.get_pipeline("imginpaint")
