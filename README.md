@@ -36,7 +36,7 @@ Both the CLI nd REST service share these argument names.
 - `--height` - defaults to 512. The image height.
 - `--width` - defaults to 512. The image width.
 
-#### To do image to image guided transformation the above (excpet height and width) and
+#### To do image to image guided transformation the above (except height and width) and
 
 - `--image_uri` - the URI of the init image
 - `--strength` - The relative amount of noise to add to the init image.
