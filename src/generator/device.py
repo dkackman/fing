@@ -5,7 +5,7 @@ from PIL import Image
 
 
 # TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
-class Gpu():
+class Device():
     pipelines = None
 
     def __init__(self, pipelines) -> None:

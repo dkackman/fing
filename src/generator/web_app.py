@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 import logging
 import torch
-from gpu import Gpu
+from device import Device
 from InfoResource import InfoResource
 from txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from img2imgResource import img2imgResource, img2imgMetadataResource
@@ -11,15 +11,12 @@ from pipelines import Pipelines
 
 
 def create_app(model_name, auth_token):
-    if not torch.cuda.is_available():
-        logging.critical("CUDA not available")
-        raise Exception("CUDA unavailable")  # don't try to run this on cpu
-    
+    logging.debug(f"CUDA {torch.cuda.is_available()}")
     logging.debug(f"Torch version {torch.__version__}")
 
     pipelines = Pipelines(model_name)
     pipelines.preload_pipelines(auth_token)
-    default_device = Gpu(pipelines)
+    default_device = Device(pipelines)
 
     app = Flask("stable-diffusion service")
     api = Api(app)

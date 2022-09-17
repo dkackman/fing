@@ -4,7 +4,7 @@ import logging
 import torch
 from config import Config
 from pathlib import Path
-from gpu import Gpu
+from device import Device
 import argparse
 from log_setup import setup_logging
 import torch
@@ -93,9 +93,6 @@ def main(config):
     try:
         setup_logging(config)
 
-        if not torch.cuda.is_available():
-            raise Exception("unavailable")  # don't try to run this on cpu
-
         logging.debug(f"Torch version {torch.__version__}")
 
         # get the file name from the command line or generate one
@@ -113,11 +110,11 @@ def main(config):
         if args.image_uri is not None:
             if args.mask_uri is not None:
                 pipelines.preload_pipelines(auth_token, ["imginpaint"])
-                gpu = Gpu(pipelines)
+                device = Device(pipelines)
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
 
-                image, pipe_config = gpu.get_imginpaint(
+                image, pipe_config = device.get_imginpaint(
                     args.strength,
                     args.guidance_scale,
                     args.num_inference_steps, 
@@ -128,10 +125,10 @@ def main(config):
                 )
             else:
                 pipelines.preload_pipelines(auth_token, ["img2img"])
-                gpu = Gpu(pipelines)
+                device = Device(pipelines)
                 init_image = get_image(args.image_uri)
 
-                image, pipe_config = gpu.get_img2img(
+                image, pipe_config = device.get_img2img(
                     args.strength,
                     args.guidance_scale,
                     args.num_inference_steps, 
@@ -141,8 +138,8 @@ def main(config):
                 )
         else:
             pipelines.preload_pipelines(auth_token, ["txt2img"])            
-            gpu = Gpu(pipelines)
-            image, pipe_config= gpu.get_txt2img(
+            device = Device(pipelines)
+            image, pipe_config= device.get_txt2img(
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 

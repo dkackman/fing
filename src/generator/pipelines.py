@@ -70,21 +70,24 @@ class Pipelines:
         # if the last pipeline is the one requested, just return it
         if self.last_pipe is not None:
             if self.last_pipe[0] == pipeline_name:
-                logging.debug(f"{pipeline_name} already present in device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
+                logging.debug(f"{pipeline_name} already loaded") 
                 return self.last_pipe[1]
             else:
                 del self.last_pipe      # if there is a loaded pipeline but it's different clean up the memory
 
-        logging.debug(f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
-        # clear gpu memory
-        with torch.no_grad():
-            torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            logging.debug(f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
+            # clear gpu memory
+            with torch.no_grad():
+                torch.cuda.empty_cache()
+        else:
+            logging.debug(f"Deserializing {pipeline_name} to cpu") 
 
-        # resurrect the new pipeline, send it to the gpu, and cache it in memory
+        # resurrect the new pipeline, send it to the device, and cache it in memory
         file = self.files[pipeline_name]
         pipe = pickle.load(file)
         file.seek(0, 0) # set the file stream back to the beginning
-        cuda_pipe = pipe.to("cuda")
-        self.last_pipe = (pipeline_name, cuda_pipe)
+        the_pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
+        self.last_pipe = (pipeline_name, the_pipe)
 
-        return cuda_pipe
+        return the_pipe
