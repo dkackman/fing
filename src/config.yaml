@@ -5,7 +5,6 @@ model:
 generation:
   environment_name: fing
   output_dir: /mnt/ml/outputs
-  working_dir: /mnt/ml/github/dkackman/fing/src/generator
   generator_py: cli.py  
   host: localhost
   port: 9147
