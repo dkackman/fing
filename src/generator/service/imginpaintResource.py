@@ -1,9 +1,7 @@
-from flask import jsonify, send_file
+from flask import jsonify
 from flask_restful import abort
 import base64
-import logging
-import io
-from .SDResource import SDResource, mutex
+from .SDResource import SDResource
 from .. import info
 from ..external_resource import get_image
 
@@ -18,56 +16,16 @@ class imginpaintResource(SDResource):
         self.parser.add_argument('strength', location='args', type=float, default=0.75)
 
 
-    def get(self):
-        args = self.parser.parse_args()
-
-        try:
-            init_image = get_image(args.image_uri)
-            mask_image = get_image(args.mask_uri)
-            prompt = SDResource.clean_prompt(args.prompt)
-            buffer, pipe_config = self.generate_imginpaint_buffer(
-                args.strength,
-                args.guidance_scale,
-                args.num_inference_steps, 
-                args.num_images, 
-                prompt,
-                init_image,
-                mask_image
-            )
-            return send_file(buffer, mimetype="image/jpeg")
-        except Exception as e:
-            print(e)
-            abort(500)
-
-
-    def generate_imginpaint_buffer(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
-        try:
-            # only allow one image generation at a time        
-            locked = mutex.acquire(False)
-            if locked:
-                logging.info(f"START img2img generating")
-
-                image, config = self.device.get_imginpaint( 
-                    strength,
-                    guidance_scale, 
-                    num_inference_steps, 
-                    num_images, 
-                    prompt,
-                    init_image,
-                    mask_image
-                )
-                logging.info(f"END img2img generating")
-            else:
-                abort(423, "Busy. Try again later.")
-        finally:
-            if locked:
-                mutex.release()
-
-        buffer = io.BytesIO()
-        image.save(buffer, format="JPEG")
-        buffer.seek(0)
-
-        return buffer, config
+    def generate_buffer(self, args):
+        return super().generate_buffer(
+                        pipeline_name="imginpaint",
+                        guidance_scale=args.guidance_scale,
+                        num_inference_steps=args.num_inference_steps, 
+                        num_images=args.num_images, 
+                        prompt=args.prompt,
+                        init_image=get_image(args.image_uri),
+                        mask_image=get_image(args.mask_uri)
+                    )
 
 
 class imginpaintMetadataResource(imginpaintResource):
@@ -76,33 +34,13 @@ class imginpaintMetadataResource(imginpaintResource):
 
 
     def get(self):
+        args = self.parser.parse_args()
         try:
-            args = self.parser.parse_args()
-
-            init_image = get_image(args.image_uri)
-            mask_image = get_image(args.mask_uri)
-            prompt = SDResource.clean_prompt(args.prompt)
-            buffer, pipe_config = self.generate_imginpaint_buffer(
-                args.strength,
-                args.guidance_scale,
-                args.num_inference_steps, 
-                args.num_images, 
-                prompt,
-                init_image,
-                mask_image
-            )
+            buffer, pipe_config = self.generate_buffer(args)
             metadata = info()
-            metadata["pipe_config"] = pipe_config
+            metadata["pipe_config"] = pipe_config            
             metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
-            metadata["parameters"] = {
-                'guidance_scale': args.guidance_scale,
-                'num_inference_steps': args.num_inference_steps,
-                'num_images': args.num_images,
-                'prompt': prompt,
-                'strength': args.strength,
-                'image_uri': args.image_uri,
-                'mask_uri': args.mask_uri
-            }
+            metadata["parameters"] = args
             return jsonify(metadata)   
 
         except Exception as e:

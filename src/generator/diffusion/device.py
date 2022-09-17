@@ -11,72 +11,23 @@ class Device():
         self.pipelines = pipelines
 
 
-    # this does the actual image generation
-    def get_txt2img(self, guidance_scale, num_inference_steps, num_images, height, width, prompt):
+    def __call__(self, **kwargs):
+        num_images = kwargs["num_images"] if "num_images" in kwargs else 1
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
+        logging.info(f"Prompt is [{kwargs['prompt']}")
         log_device()
-        logging.info(f"Prompt is [{prompt}]")
 
-        pipe = self.pipelines.load_pipeline("txt2img")
+        pipeline = self.pipelines.load_pipeline(kwargs["pipeline_name"])
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
             with autocast():
-                images = pipe(prompt, 
-                    guidance_scale=guidance_scale, 
-                    num_inference_steps=num_inference_steps,
-                    height=height, 
-                    width=width
-                ).images
+                # this comprehension expresssion strips items from kwargs that aren't recognized by the pipeline
+                images = pipeline(**{key: value for key, value in kwargs.items() if key != 'pipeline_name' and key != 'num_images'}).images
 
-        return (post_process(num_images, images), pipe.config)
-
-
-    def get_img2img(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
-        if num_images > 9:
-            raise Exception("The maximum number of images is 9")
-
-        log_device()
-        logging.info(f"Prompt is [{prompt}]")
-
-        pipe = self.pipelines.load_pipeline("img2img")
-
-        # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
-        for i in range(num_images):
-            with autocast():
-                images = pipe(prompt, 
-                    guidance_scale=guidance_scale, 
-                    num_inference_steps=num_inference_steps,
-                    init_image=init_image,
-                    strength=strength
-                ).images
-
-        return (post_process(num_images, images), pipe.config)
-
-
-    def get_imginpaint(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
-        if num_images > 9:
-            raise Exception("The maximum number of images is 9")
-
-        log_device()
-        logging.info(f"Prompt is [{prompt}]")
-
-        pipe = self.pipelines.load_pipeline("imginpaint")
-
-        # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
-        for i in range(num_images):
-            with autocast():
-                images = pipe(prompt, 
-                    guidance_scale=guidance_scale, 
-                    num_inference_steps=num_inference_steps,
-                    init_image=init_image,
-                    strength=strength,
-                    mask_image=mask_image
-                ).images
-
-        return (post_process(num_images, images), pipe.config)
+        return (post_process(num_images, images), pipeline.config)
 
 
 def log_device():

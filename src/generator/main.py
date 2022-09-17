@@ -6,10 +6,10 @@ import argparse
 from pathlib import Path
 import torch
 from . import setup_logging
-from generator.external_resource import get_image
-from generator.diffusion.pipelines import Pipelines
-from generator.config import Config
-from generator.diffusion.device import Device
+from .external_resource import get_image
+from .diffusion.pipelines import Pipelines
+from .config import Config
+from .diffusion.device import Device
 
 def main(config):
     if not torch.cuda.is_available():
@@ -96,6 +96,11 @@ def main(config):
         '--dont_conserve_memory', 
         action=argparse.BooleanOptionalAction,
         help="Use revision fp16 and enable_attention_slicing",
+    )
+    parser.add_argument(
+        '--verbose', 
+        action=argparse.BooleanOptionalAction,
+        help="Verbose output",
     )      
     args = parser.parse_args()
     try:
@@ -122,42 +127,48 @@ def main(config):
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
 
-                image, pipe_config = device.get_imginpaint(
-                    args.strength,
-                    args.guidance_scale,
-                    args.num_inference_steps, 
-                    args.num_images, 
-                    prompt,
-                    init_image,
-                    mask_image
-                )
+                image, pipe_config = device(
+                    pipeline_name="imginpaint",
+                    strength=args.strength,
+                    guidance_scale=args.guidance_scale,
+                    num_inference_steps=args.num_inference_steps, 
+                    num_images=args.num_images,
+                    prompt=prompt,
+                    init_image=init_image,
+                    mask_image=mask_image
+                )                
             else:
                 pipelines.preload_pipelines(auth_token, ["img2img"], not args.dont_conserve_memory)
                 device = Device(pipelines)
                 init_image = get_image(args.image_uri)
 
-                image, pipe_config = device.get_img2img(
-                    args.strength,
-                    args.guidance_scale,
-                    args.num_inference_steps, 
-                    args.num_images, 
-                    prompt,
-                    init_image
+                image, pipe_config = device(
+                    pipeline_name="img2img",
+                    strength=args.strength,
+                    guidance_scale=args.guidance_scale,
+                    num_inference_steps=args.num_inference_steps, 
+                    num_images=args.num_images,
+                    prompt=prompt,
+                    init_image=init_image
                 )
         else:
             pipelines.preload_pipelines(auth_token, ["txt2img"], not args.dont_conserve_memory)            
             device = Device(pipelines)
-            image, pipe_config = device.get_txt2img(
-                args.guidance_scale,
-                args.num_inference_steps, 
-                args.num_images, 
-                args.height,
-                args.width,
-                prompt
+
+            image, pipe_config = device(
+                pipeline_name="txt2img",
+                guidance_scale=args.guidance_scale,
+                num_inference_steps=args.num_inference_steps, 
+                num_images=args.num_images, 
+                height=args.height,
+                width=args.width,
+                prompt=prompt
             )
 
         outDir = Path(config_dict["generation"]["output_dir"])
-        image.save(f'{outDir.joinpath(filename)}')  # TODO write to a temp file and then change to output name
+        image.save(f'{outDir.joinpath(filename)}')
+        if args.verbose:
+            print(pipe_config)
 
         logging.info(f"END generating {id}")
     except Exception as e:

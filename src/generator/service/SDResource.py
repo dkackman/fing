@@ -1,6 +1,9 @@
-from flask_restful import reqparse, Resource
+from flask import send_file
+from flask_restful import reqparse, Resource, abort
 from threading import Lock
 from urllib.parse import unquote
+import logging
+import io
 
 # TODO #5 create a worker (and mutex) per GPU
 # there is only one of these per process right now
@@ -21,12 +24,47 @@ class SDResource(Resource):
         self.device = kwargs["device"]
 
 
-    # clean up the string - removing non utf-8 characters, check length
-    def clean_prompt(str):
-        encoded = unquote(str).encode("utf8", "ignore")
-        decoded = encoded.decode("utf8", "ignore")  
-        cleaned = decoded.replace('"' , "").replace("'", "").strip()
-        if len(cleaned) > 280: # max length of a tweet
-            raise Exception("prompt must be less than 281 characters")
-            
-        return cleaned
+    def get(self):
+        args = self.parser.parse_args()
+
+        try:
+            buffer, pipe_config = self.generate_buffer(args)
+            return send_file(buffer, mimetype="image/jpeg")
+        except Exception as e:
+            print(e)
+            abort(500)
+
+
+    def generate_buffer(self, **kwargs):
+        try:
+            # only allow one image generation at a time        
+            locked = mutex.acquire(False)
+            if locked:
+                logging.info(f"START generating {kwargs['pipeline_name']}")
+
+                kwargs["prompt"] = clean_prompt(kwargs["prompt"])
+
+                image, pipe_config = self.device(**kwargs)
+                logging.info(f"END generating {kwargs['pipeline_name']}")
+            else:
+                abort(423, "Busy. Try again later.")
+        finally:
+            if locked:
+                mutex.release()
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG")
+        buffer.seek(0)
+
+        return buffer, pipe_config
+
+
+# clean up the string - removing non utf-8 characters, check length
+def clean_prompt(str):
+    encoded = unquote(str).encode("utf8", "ignore")
+    decoded = encoded.decode("utf8", "ignore")  
+    cleaned = decoded.replace('"' , "").replace("'", "").strip()
+    if len(cleaned) > 280: # max length of a tweet
+        raise Exception("prompt must be less than 281 characters")
+        
+    return cleaned
