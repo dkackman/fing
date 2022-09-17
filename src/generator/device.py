@@ -4,7 +4,6 @@ from torch.cuda.amp import autocast
 from PIL import Image
 
 
-# TODO #8 model the GPU as a class; including what pipeline is loaded and if it has a workload or not
 class Device():
     pipelines = None
 
@@ -20,7 +19,7 @@ class Device():
         log_device()
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = self.pipelines.get_pipeline("txt2img")
+        pipe = self.pipelines.load_pipeline("txt2img")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -42,7 +41,7 @@ class Device():
         log_device()
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = self.pipelines.get_pipeline("img2img")
+        pipe = self.pipelines.load_pipeline("img2img")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -64,7 +63,7 @@ class Device():
         log_device()
         logging.info(f"Prompt is [{prompt}]")
 
-        pipe = self.pipelines.get_pipeline("imginpaint")
+        pipe = self.pipelines.load_pipeline("imginpaint")
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -81,10 +80,7 @@ class Device():
 
 
 def log_device():
-    if torch.cuda.is_available():
-        logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
-    else:
-        logging.debug("Using cpu")
+    logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
 
 def post_process(num_images, images_list):

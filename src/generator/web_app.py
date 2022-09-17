@@ -11,6 +11,9 @@ from pipelines import Pipelines
 
 
 def create_app(model_name, auth_token):
+    if not torch.cuda.is_available():
+        raise("CUDA not present. Quitting.")
+
     logging.debug(f"CUDA {torch.cuda.is_available()}")
     logging.debug(f"Torch version {torch.__version__}")
 

@@ -12,6 +12,9 @@ from external_resource import get_image
 from pipelines import Pipelines
 
 def main(config):
+    if not torch.cuda.is_available():
+        raise("CUDA not present. Quitting.")
+
     config_dict=config.config_file
     parser = argparse.ArgumentParser()
 

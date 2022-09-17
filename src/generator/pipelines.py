@@ -66,7 +66,7 @@ class Pipelines:
             self.files["imginpaint"] = open(f"/tmp/{model_name_path_part}.{self.revision}.imginpaint.pipeline", "rb")
 
 
-    def get_pipeline(self, pipeline_name):
+    def load_pipeline(self, pipeline_name):
         # if the last pipeline is the one requested, just return it
         if self.last_pipe is not None:
             if self.last_pipe[0] == pipeline_name:
@@ -75,13 +75,10 @@ class Pipelines:
             else:
                 del self.last_pipe      # if there is a loaded pipeline but it's different clean up the memory
 
-        if torch.cuda.is_available():
-            logging.debug(f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
-            # clear gpu memory
-            with torch.no_grad():
-                torch.cuda.empty_cache()
-        else:
-            logging.debug(f"Deserializing {pipeline_name} to cpu") 
+        logging.debug(f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}") 
+        # clear gpu memory
+        with torch.no_grad():
+            torch.cuda.empty_cache()
 
         # resurrect the new pipeline, send it to the device, and cache it in memory
         file = self.files[pipeline_name]
