@@ -24,7 +24,7 @@ class Device():
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
-            with autocast():
+            with autocast("cuda" if torch.cuda.is_available() else "cpu"):
                 images = pipe(prompt, 
                     guidance_scale=guidance_scale, 
                     num_inference_steps=num_inference_steps,
@@ -46,7 +46,7 @@ class Device():
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
-            with autocast():
+            with autocast("cuda" if torch.cuda.is_available() else "cpu"):
                 images = pipe(prompt, 
                     guidance_scale=guidance_scale, 
                     num_inference_steps=num_inference_steps,
@@ -68,7 +68,7 @@ class Device():
 
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
-            with autocast():
+            with autocast("cuda" if torch.cuda.is_available() else "cpu"):
                 images = pipe(prompt, 
                     guidance_scale=guidance_scale, 
                     num_inference_steps=num_inference_steps,
