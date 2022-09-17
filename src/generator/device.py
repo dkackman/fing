@@ -14,7 +14,7 @@ class Device():
 
     # this does the actual image generation
     def get_txt2img(self, guidance_scale, num_inference_steps, num_images, height, width, prompt):
-        logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+        log_device()
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
@@ -36,7 +36,7 @@ class Device():
 
 
     def get_img2img(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
-        logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+        log_device()
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
@@ -58,7 +58,7 @@ class Device():
 
 
     def get_imginpaint(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image, mask_image):
-        logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+        log_device()
         if num_images > 9:
             raise Exception("The maximum number of images is 9")
 
@@ -78,6 +78,13 @@ class Device():
                 ).images
 
         return (post_process(num_images, images), pipe.config)
+
+
+def log_device():
+    if torch.cuda.is_available():
+        logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    else:
+        logging.debug("Using cpu")
 
 
 def post_process(num_images, images_list):
