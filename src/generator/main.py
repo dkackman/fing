@@ -91,7 +91,12 @@ def main(config):
         nargs="?",        
         default=512,
         help="The image width in pixels",
-    )       
+    )
+    parser.add_argument(
+        '--dont_conserve_memory', 
+        action=argparse.BooleanOptionalAction,
+        help="Use revision fp16 and enable_attention_slicing",
+    )      
     args = parser.parse_args()
     try:
         setup_logging(config)
@@ -112,7 +117,7 @@ def main(config):
         prompt = args.prompt.replace('"' , "").replace("'", "")
         if args.image_uri is not None:
             if args.mask_uri is not None:
-                pipelines.preload_pipelines(auth_token, ["imginpaint"])
+                pipelines.preload_pipelines(auth_token, ["imginpaint"], not args.dont_conserve_memory)
                 device = Device(pipelines)
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
@@ -127,7 +132,7 @@ def main(config):
                     mask_image
                 )
             else:
-                pipelines.preload_pipelines(auth_token, ["img2img"])
+                pipelines.preload_pipelines(auth_token, ["img2img"], not args.dont_conserve_memory)
                 device = Device(pipelines)
                 init_image = get_image(args.image_uri)
 
@@ -140,9 +145,9 @@ def main(config):
                     init_image
                 )
         else:
-            pipelines.preload_pipelines(auth_token, ["txt2img"])            
+            pipelines.preload_pipelines(auth_token, ["txt2img"], not args.dont_conserve_memory)            
             device = Device(pipelines)
-            image, pipe_config= device.get_txt2img(
+            image, pipe_config = device.get_txt2img(
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 

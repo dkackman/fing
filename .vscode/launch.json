@@ -37,8 +37,7 @@
             "args": [
                 "--prompt",
                 "A gentleman otter in a 17th century portrait",
-                "--num_images",
-                "1"
+
             ],
             "justMyCode": true
         },
