@@ -2,12 +2,12 @@ from flask import Flask
 from flask_restful import Api
 import logging
 import torch
-from generator.diffusion.device import Device
-from generator.service.InfoResource import InfoResource
-from generator.service.txt2imgResource import txt2imgResource, txt2imgMetadataResource
-from generator.service.img2imgResource import img2imgResource, img2imgMetadataResource
-from generator.service.imginpaintResource import imginpaintResource, imginpaintMetadataResource
-from generator.diffusion.pipelines import Pipelines
+from ..diffusion.device import Device
+from ..diffusion.pipelines import Pipelines
+from .InfoResource import InfoResource
+from .txt2imgResource import txt2imgResource, txt2imgMetadataResource
+from .img2imgResource import img2imgResource, img2imgMetadataResource
+from .imginpaintResource import imginpaintResource, imginpaintMetadataResource
 
 
 def create_app(model_name, auth_token):

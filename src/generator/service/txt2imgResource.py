@@ -1,33 +1,26 @@
 from flask import jsonify, send_file
-from flask_restful import reqparse, abort, Resource
+from flask_restful import abort
 import base64
-from generator.service.web_worker import clean_prompt, generate_txt2img_buffer
+import logging
+import io
+from .SDResource import SDResource, mutex
 from .. import info
 
 
-class txt2imgResource(Resource):
-    device = None
+class txt2imgResource(SDResource):
 
     def __init__(self, **kwargs):
-        parser = reqparse.RequestParser()
-        parser.add_argument('prompt', type=str, help="no prompt was provided", location='args', required=True, trim=True)
-        parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
-        parser.add_argument('num_inference_steps', location='args', type=int, default=50)
-        parser.add_argument('num_images', location='args', type=int, default=1)
-        parser.add_argument('height', location='args', type=int, default=512)
-        parser.add_argument('width', location='args', type=int, default=512)
-
-        self.parser = parser
-        self.device = kwargs["device"]
+        super(txt2imgResource, self).__init__(**kwargs)
+        self.parser.add_argument('height', location='args', type=int, default=512)
+        self.parser.add_argument('width', location='args', type=int, default=512)
 
 
     def get(self):
         args = self.parser.parse_args()
 
         try:
-            prompt = clean_prompt(args.prompt)
-            buffer, pipe_config = generate_txt2img_buffer(
-                self.device,
+            prompt = SDResource.clean_prompt(args.prompt)
+            buffer, pipe_config = self.generate_txt2img_buffer(
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 
@@ -41,6 +34,35 @@ class txt2imgResource(Resource):
             abort(500)
 
 
+    def generate_txt2img_buffer(self, guidance_scale, num_inference_steps, num_images, height, width, prompt):
+        try:
+            # only allow one image generation at a time        
+            locked = mutex.acquire(False)
+            if locked:
+                logging.info(f"START txt2img generating")
+
+                image, config = self.device.get_txt2img( 
+                    guidance_scale, 
+                    num_inference_steps, 
+                    num_images, 
+                    height, 
+                    width, 
+                    prompt
+                )
+                logging.info(f"END txt2img generating")
+            else:
+                abort(423, "Busy. Try again later.")
+        finally:
+            if locked:
+                mutex.release()
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG")
+        buffer.seek(0)
+
+        return buffer, config
+
+
 class txt2imgMetadataResource(txt2imgResource):
     def __init__(self, **kwargs):
         super(txt2imgMetadataResource, self).__init__(**kwargs)
@@ -50,9 +72,8 @@ class txt2imgMetadataResource(txt2imgResource):
         try:
             args = self.parser.parse_args()
 
-            prompt = clean_prompt(args.prompt)
-            buffer, pipe_config = generate_txt2img_buffer(
-                self.device,
+            prompt = SDResource.clean_prompt(args.prompt)
+            buffer, pipe_config = self.generate_txt2img_buffer(
                 args.guidance_scale,
                 args.num_inference_steps, 
                 args.num_images, 

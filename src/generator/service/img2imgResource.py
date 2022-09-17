@@ -1,25 +1,20 @@
 from flask import jsonify, send_file
-from flask_restful import reqparse, abort, Resource
+from flask_restful import abort
 import base64
-from generator.service.web_worker import clean_prompt, generate_img2img_buffer
-from generator.external_resource import get_image
+import logging
+import io
+from .SDResource import SDResource, mutex
 from .. import info
+from ..external_resource import get_image
 
 
-class img2imgResource(Resource):
-    device = None
+class img2imgResource(SDResource):
 
     def __init__(self, **kwargs):
-        parser = reqparse.RequestParser()
-        parser.add_argument('prompt', type=str, help="no prompt was provided", location='args', required=True, trim=True)
-        parser.add_argument('image_uri', type=str, help="no image uri was provided", location='args', required=True, trim=True)
-        parser.add_argument('strength', location='args', type=float, default=0.75)
-        parser.add_argument('guidance_scale', location='args', type=float, default=7.5)
-        parser.add_argument('num_inference_steps', location='args', type=int, default=50)
-        parser.add_argument('num_images', location='args', type=int, default=1)
+        super(img2imgResource, self).__init__(**kwargs)
 
-        self.parser = parser
-        self.device = kwargs["device"]
+        self.parser.add_argument('image_uri', type=str, help="no image uri was provided", location='args', required=True, trim=True)
+        self.parser.add_argument('strength', location='args', type=float, default=0.75)
 
 
     def get(self):
@@ -27,9 +22,8 @@ class img2imgResource(Resource):
 
         try:
             init_image = get_image(args.image_uri)
-            prompt = clean_prompt(args.prompt)
-            buffer, pipe_config = generate_img2img_buffer(
-                self.device,
+            prompt = SDResource.clean_prompt(args.prompt)
+            buffer, pipe_config = self.generate_img2img_buffer(
                 args.strength,
                 args.guidance_scale,
                 args.num_inference_steps, 
@@ -43,6 +37,34 @@ class img2imgResource(Resource):
             abort(500)
 
 
+    def generate_img2img_buffer(self, strength, guidance_scale, num_inference_steps, num_images, prompt, init_image):
+        try:
+            locked = mutex.acquire(False)
+            if locked:
+                logging.info(f"START img2img generating")
+
+                image, config = self.device.get_img2img( 
+                    strength,
+                    guidance_scale, 
+                    num_inference_steps, 
+                    num_images, 
+                    prompt,
+                    init_image
+                )
+                logging.info(f"END img2img generating")
+            else:
+                abort(423, "Busy. Try again later.")
+        finally:
+            if locked:
+                mutex.release()
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG")
+        buffer.seek(0)
+
+        return buffer, config
+
+
 class img2imgMetadataResource(img2imgResource):
     def __init__(self, **kwargs):
         super(img2imgMetadataResource, self).__init__(**kwargs)
@@ -53,9 +75,8 @@ class img2imgMetadataResource(img2imgResource):
             args = self.parser.parse_args()
 
             init_image = get_image(args.image_uri)
-            prompt = clean_prompt(args.prompt)
-            buffer, pipe_config = generate_img2img_buffer(
-                self.device,
+            prompt = SDResource.clean_prompt(args.prompt)
+            buffer, pipe_config = self.generate_img2img_buffer(
                 args.strength,
                 args.guidance_scale,
                 args.num_inference_steps, 
