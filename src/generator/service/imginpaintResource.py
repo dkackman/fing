@@ -4,6 +4,7 @@ import base64
 from .SDResource import SDResource
 from .. import info
 from ..external_resource import get_image
+from .x_api import api_key_required
 
 
 class imginpaintResource(SDResource):
@@ -33,6 +34,7 @@ class imginpaintMetadataResource(imginpaintResource):
         super(imginpaintMetadataResource, self).__init__(**kwargs)
 
 
+    @api_key_required
     def get(self):
         args = self.parser.parse_args()
         try:

@@ -4,6 +4,7 @@ from threading import Lock
 from urllib.parse import unquote
 import logging
 import io
+from .x_api import api_key_required
 
 # TODO #5 create a worker (and mutex) per GPU
 # there is only one of these per process right now
@@ -23,7 +24,7 @@ class SDResource(Resource):
         self.parser = parser
         self.device = kwargs["device"]
 
-
+    @api_key_required
     def get(self):
         args = self.parser.parse_args()
 

@@ -3,6 +3,7 @@ from flask_restful import abort
 import base64
 from .SDResource import SDResource
 from .. import info
+from .x_api import api_key_required
 
 
 class txt2imgResource(SDResource):
@@ -30,6 +31,7 @@ class txt2imgMetadataResource(txt2imgResource):
         super(txt2imgMetadataResource, self).__init__(**kwargs)
 
 
+    @api_key_required
     def get(self):
         args = self.parser.parse_args()
         try:

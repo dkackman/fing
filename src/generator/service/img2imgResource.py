@@ -4,6 +4,7 @@ import base64
 from .SDResource import SDResource
 from .. import info
 from ..external_resource import get_image
+from .x_api import api_key_required
 
 
 class img2imgResource(SDResource):
@@ -32,6 +33,7 @@ class img2imgMetadataResource(img2imgResource):
         super(img2imgMetadataResource, self).__init__(**kwargs)
 
 
+    @api_key_required
     def get(self):
         args = self.parser.parse_args()
         try:
