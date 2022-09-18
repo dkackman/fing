@@ -174,18 +174,11 @@ def main(config):
     except Exception as e:
         logging.exception(e)
         print(e, file=sys.stderr)
-        print("FAIL")
+        raise("FAIL")
     except:
         logging.exception("Unhandled error occurred")
-        print("FAIL")
+        raise("FAIL")
 
 
 if __name__ == "__main__":
-    try:
-        main(Config().load())
-    except Exception as e:
-        print(e, file=sys.stderr)
-        sys.exit(1)
-    except:
-        print("Fatal error", file=sys.stderr)
-        sys.exit(1)        
+     main(Config().load())
