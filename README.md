@@ -11,7 +11,7 @@ What you will need:
 - A machine with a decent [CUDA](https://developer.nvidia.com/cuda-downloads) capable graphics card. (NVIDIA RTX 3060 or so - 8GB or more)
 - [Anaconda](https://www.anaconda.com/) version 2022.05 (might work on older versions) on that machine
 - [Node](https://nodejs.org/en/) on that machine
-- I've done this all on ubuntu 22.04. Should work on other linuxes. Might even work on Windows.
+- I've done this all on ubuntu 22.04. Should work on other linuxes.
 - A [Huggingface account](https://huggingface.co/welcome) and [access token](https://huggingface.co/settings/tokens)
   - You will also need to accept [the model license agreement](https://huggingface.co/CompVis/stable-diffusion-v1-4)
 
