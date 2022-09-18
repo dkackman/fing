@@ -9,3 +9,5 @@ generation:
   port: 9147
   log_level: DEBUG
   log_filename: log/generator.log
+  x_api_key_enabled: false
+  x_api_key_list:

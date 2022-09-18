@@ -8,11 +8,16 @@ from .InfoResource import InfoResource
 from .txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from .img2imgResource import img2imgResource, img2imgMetadataResource
 from .imginpaintResource import imginpaintResource, imginpaintMetadataResource
+from .x_api import enable_x_api_enforcement
 
 
-def create_app(model_name, auth_token):
+def create_app(model_name, auth_token, enable_x_api, valid_key_list):
     if not torch.cuda.is_available():
         raise("CUDA not present. Quitting.")
+        
+    if enable_x_api:
+        logging.debug("Enabling x-api-key validation")
+        enable_x_api_enforcement(valid_key_list)
 
     logging.debug(f"CUDA {torch.cuda.is_available()}")
     logging.debug(f"Torch version {torch.__version__}")
