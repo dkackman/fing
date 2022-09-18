@@ -95,7 +95,7 @@ def main(config):
     parser.add_argument(
         '--dont_conserve_memory', 
         action=argparse.BooleanOptionalAction,
-        help="Use revision fp16 and enable_attention_slicing",
+        help="Don't use revision fp16 or enable_attention_slicing",
     )
     parser.add_argument(
         '--verbose', 
