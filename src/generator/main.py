@@ -14,97 +14,90 @@ from .init_config import init
 
 
 if not torch.cuda.is_available():
-    raise("CUDA not present. Quitting.")
+    raise ("CUDA not present. Quitting.")
 
 
 def main(config):
-    config_dict=config.config_file
+    config_dict = config.config_file
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--prompt",
-        type=str,
-        nargs="?",
-        help="the prompt to render",
-        required=True
+        "--prompt", type=str, nargs="?", help="the prompt to render", required=True
     )
     parser.add_argument(
         "--outdir",
         type=str,
         nargs="?",
         help="dir to write results to",
-        default=config_dict["generation"]["output_dir"]
+        default=config_dict["generation"]["output_dir"],
     )
     parser.add_argument(
-        "--output_name",
-        type=str,
-        nargs="?",
-        help="The name of the output file"
-    )        
+        "--output_name", type=str, nargs="?", help="The name of the output file"
+    )
     parser.add_argument(
         "--guidance_scale",
         type=float,
         nargs="?",
         help="model guidance scale",
-        default=7.5
+        default=7.5,
     )
     parser.add_argument(
         "--strength",
         type=float,
         nargs="?",
         help="0-1 indicates how much to transform the reference (img2img only)",
-        default=0.75
-    )    
+        default=0.75,
+    )
     parser.add_argument(
         "--image_uri",
         type=str,
         nargs="?",
         help="Uri of an image to transform - if provided triggers img2ing  or imginpaint instead of text2img",
-    )   
+    )
     parser.add_argument(
         "--mask_uri",
         type=str,
         nargs="?",
         help="Uri of a mask image to use for imginpaint - if provided with --image_uri, triggers imginpaint instead of img2ing",
-    )         
+    )
     parser.add_argument(
         "--num_images",
         type=int,
-        nargs="?",        
+        nargs="?",
         default=1,
         help="The number of images to generate",
     )
     parser.add_argument(
         "--num_inference_steps",
         type=int,
-        nargs="?",        
+        nargs="?",
         default=50,
         help="The number of inference steps",
-    )     
+    )
     parser.add_argument(
         "--height",
         type=int,
-        nargs="?",        
+        nargs="?",
         default=512,
         help="The image height in pixels",
     )
     parser.add_argument(
         "--width",
         type=int,
-        nargs="?",        
+        nargs="?",
         default=512,
         help="The image width in pixels",
     )
     parser.add_argument(
-        '--dont_conserve_memory', 
+        "--dont_conserve_memory",
         action=argparse.BooleanOptionalAction,
         help="Don't use revision fp16 or enable_attention_slicing",
     )
     parser.add_argument(
-        '--verbose', 
+        "--verbose",
         action=argparse.BooleanOptionalAction,
         help="Verbose output",
-    )      
+    )
     args = parser.parse_args()
     try:
         setup_logging(config)
@@ -120,12 +113,17 @@ def main(config):
         logging.info(f"START generating {id}")
 
         auth_token = config_dict["model"]["huggingface_token"]
-        pipelines = Pipelines(config_dict["model"]["model_name"], config_dict["generation"]["model_cache_dir"])
+        pipelines = Pipelines(
+            config_dict["model"]["model_name"],
+            config_dict["generation"]["model_cache_dir"],
+        )
 
-        prompt = args.prompt.replace('"' , "").replace("'", "")
+        prompt = args.prompt.replace('"', "").replace("'", "")
         if args.image_uri is not None:
             if args.mask_uri is not None:
-                pipelines.preload_pipelines(auth_token, ["imginpaint"], not args.dont_conserve_memory)
+                pipelines.preload_pipelines(
+                    auth_token, ["imginpaint"], not args.dont_conserve_memory
+                )
                 device = Device(pipelines)
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
@@ -134,14 +132,16 @@ def main(config):
                     pipeline_name="imginpaint",
                     strength=args.strength,
                     guidance_scale=args.guidance_scale,
-                    num_inference_steps=args.num_inference_steps, 
+                    num_inference_steps=args.num_inference_steps,
                     num_images=args.num_images,
                     prompt=prompt,
                     init_image=init_image,
-                    mask_image=mask_image
-                )                
+                    mask_image=mask_image,
+                )
             else:
-                pipelines.preload_pipelines(auth_token, ["img2img"], not args.dont_conserve_memory)
+                pipelines.preload_pipelines(
+                    auth_token, ["img2img"], not args.dont_conserve_memory
+                )
                 device = Device(pipelines)
                 init_image = get_image(args.image_uri)
 
@@ -149,27 +149,29 @@ def main(config):
                     pipeline_name="img2img",
                     strength=args.strength,
                     guidance_scale=args.guidance_scale,
-                    num_inference_steps=args.num_inference_steps, 
+                    num_inference_steps=args.num_inference_steps,
                     num_images=args.num_images,
                     prompt=prompt,
-                    init_image=init_image
+                    init_image=init_image,
                 )
         else:
-            pipelines.preload_pipelines(auth_token, ["txt2img"], not args.dont_conserve_memory)            
+            pipelines.preload_pipelines(
+                auth_token, ["txt2img"], not args.dont_conserve_memory
+            )
             device = Device(pipelines)
 
             image, pipe_config = device(
                 pipeline_name="txt2img",
                 guidance_scale=args.guidance_scale,
-                num_inference_steps=args.num_inference_steps, 
-                num_images=args.num_images, 
+                num_inference_steps=args.num_inference_steps,
+                num_images=args.num_images,
                 height=args.height,
                 width=args.width,
-                prompt=prompt
+                prompt=prompt,
             )
 
         outDir = Path(config_dict["generation"]["output_dir"])
-        image.save(f'{outDir.joinpath(filename)}')
+        image.save(f"{outDir.joinpath(filename)}")
         if args.verbose:
             print(pipe_config)
 
@@ -177,14 +179,14 @@ def main(config):
     except Exception as e:
         logging.exception(e)
         print(e, file=sys.stderr)
-        raise("FAIL")
+        raise ("FAIL")
     except:
         logging.exception("Unhandled error occurred")
-        raise("FAIL")
+        raise ("FAIL")
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1].lower() == "init":
         init()
-    else:  
+    else:
         main(Config().load())

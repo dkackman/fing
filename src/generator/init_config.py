@@ -4,11 +4,12 @@ import os
 import yaml
 import sys
 
+
 def init():
     if Config.exists():
         print("Config already set. Nothing to do.")
         return
-    
+
     this_dir = Path(os.path.realpath(__file__)).parent
     config = Config.load_from(this_dir.joinpath("config.yaml"))
 
@@ -20,7 +21,7 @@ def init():
 
     model_cache_dir = input("Model cache directory (/tmp): ").strip()
     model_cache_dir = "/tmp" if len(model_cache_dir) == 0 else model_cache_dir
-        
+
     host = input("Service host (localhost): ").strip()
     host = "localhost" if len(host) == 0 else host
 

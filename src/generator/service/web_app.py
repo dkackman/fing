@@ -11,7 +11,7 @@ from .imginpaintResource import imginpaintResource, imginpaintMetadataResource
 from .x_api import enable_x_api_enforcement
 
 
-def create_app(model_name, auth_token, enable_x_api, valid_key_list, model_cache_dir):      
+def create_app(model_name, auth_token, enable_x_api, valid_key_list, model_cache_dir):
     if enable_x_api:
         logging.debug("Enabling x-api-key validation")
         enable_x_api_enforcement(valid_key_list)
@@ -26,15 +26,35 @@ def create_app(model_name, auth_token, enable_x_api, valid_key_list, model_cache
     app = Flask("stable-diffusion service")
     api = Api(app)
 
-    api.add_resource(InfoResource, '/info')
+    api.add_resource(InfoResource, "/info")
 
-    api.add_resource(txt2imgResource, '/txt2img', resource_class_kwargs={ 'device': default_device })
-    api.add_resource(txt2imgMetadataResource, '/txt2img_metadata', resource_class_kwargs={ 'device': default_device })
+    api.add_resource(
+        txt2imgResource, "/txt2img", resource_class_kwargs={"device": default_device}
+    )
+    api.add_resource(
+        txt2imgMetadataResource,
+        "/txt2img_metadata",
+        resource_class_kwargs={"device": default_device},
+    )
 
-    api.add_resource(img2imgResource, '/img2img', resource_class_kwargs={ 'device': default_device })
-    api.add_resource(img2imgMetadataResource, '/img2img_metadata', resource_class_kwargs={ 'device': default_device })
+    api.add_resource(
+        img2imgResource, "/img2img", resource_class_kwargs={"device": default_device}
+    )
+    api.add_resource(
+        img2imgMetadataResource,
+        "/img2img_metadata",
+        resource_class_kwargs={"device": default_device},
+    )
 
-    api.add_resource(imginpaintResource, '/imginpaint', resource_class_kwargs={ 'device': default_device })
-    api.add_resource(imginpaintMetadataResource, '/imginpaint_metadata', resource_class_kwargs={ 'device': default_device })
+    api.add_resource(
+        imginpaintResource,
+        "/imginpaint",
+        resource_class_kwargs={"device": default_device},
+    )
+    api.add_resource(
+        imginpaintMetadataResource,
+        "/imginpaint_metadata",
+        resource_class_kwargs={"device": default_device},
+    )
 
     return app

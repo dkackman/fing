@@ -4,12 +4,11 @@ from torch.cuda.amp import autocast
 from PIL import Image
 
 
-class Device():
+class Device:
     pipelines = None
 
     def __init__(self, pipelines) -> None:
         self.pipelines = pipelines
-
 
     def __call__(self, **kwargs):
         num_images = kwargs["num_images"] if "num_images" in kwargs else 1
@@ -25,13 +24,21 @@ class Device():
         for i in range(num_images):
             with autocast():
                 # this comprehension expresssion strips items from kwargs that aren't recognized by the pipeline
-                images = pipeline(**{key: value for key, value in kwargs.items() if key != 'pipeline_name' and key != 'num_images'}).images
+                images = pipeline(
+                    **{
+                        key: value
+                        for key, value in kwargs.items()
+                        if key != "pipeline_name" and key != "num_images"
+                    }
+                ).images
 
         return (post_process(num_images, images), pipeline.config)
 
 
 def log_device():
-    logging.debug(f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    logging.debug(
+        f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}"
+    )
 
 
 def post_process(num_images, images_list):
@@ -42,18 +49,18 @@ def post_process(num_images, images_list):
     elif num_images <= 4:
         image = image_grid(images_list, 2, 2)
     elif num_images <= 6:
-        image = image_grid(images_list, 2, 3)       
+        image = image_grid(images_list, 2, 3)
     elif num_images <= 9:
-        image = image_grid(images_list, 3, 3)   
+        image = image_grid(images_list, 3, 3)
 
     return image
 
 
 def image_grid(imgs, rows, cols):
     w, h = imgs[0].size
-    grid = Image.new('RGB', size=(cols*w, rows*h))
-    
+    grid = Image.new("RGB", size=(cols * w, rows * h))
+
     for i, img in enumerate(imgs):
-        grid.paste(img, box=(i%cols*w, i//cols*h))
+        grid.paste(img, box=(i % cols * w, i // cols * h))
 
     return grid
