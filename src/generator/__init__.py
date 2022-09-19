@@ -1,12 +1,13 @@
 import logging
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 import torch
+from .config import Config
 
 __version__ = "0.3.0"
 
 
 def setup_logging(config):
-    log_path = config.resolve_path(config.config_file["generation"]["log_filename"])
+    log_path = Config.resolve_path(config.config_file["generation"]["log_filename"])
     log_date_format = "%Y-%m-%dT%H:%M:%S"
     
     logger = logging.getLogger()

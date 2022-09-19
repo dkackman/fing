@@ -1,9 +1,11 @@
-import sys
+import torch
 import logging
 from generator.config import Config
 from generator.service.web_app import create_app
 from . import setup_logging
 
+if not torch.cuda.is_available():
+    raise("CUDA not present. Quitting.")
 
 config = Config().load()
 setup_logging(config)

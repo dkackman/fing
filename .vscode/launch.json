@@ -29,6 +29,17 @@
             "justMyCode": true
         },
         {
+            "name": "CLI - init",
+            "type": "python",
+            "request": "launch",
+            "module": "generator.main",
+            "cwd": "${workspaceFolder}/src/",
+            "args": [
+                "init",
+            ],
+            "justMyCode": true
+        },
+        {
             "name": "CLI - txt2img",
             "type": "python",
             "request": "launch",
@@ -40,7 +51,7 @@
 
             ],
             "justMyCode": true
-        },
+        },        
         {
             "name": "CLI - img2img",
             "type": "python",

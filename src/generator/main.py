@@ -3,18 +3,21 @@ import uuid
 import logging
 import torch
 import argparse
-from pathlib import Path
 import torch
+from pathlib import Path
 from . import setup_logging
 from .external_resource import get_image
-from .diffusion.pipelines import Pipelines
 from .config import Config
+from .diffusion.pipelines import Pipelines
 from .diffusion.device import Device
+from .init_config import init
+
+
+if not torch.cuda.is_available():
+    raise("CUDA not present. Quitting.")
+
 
 def main(config):
-    if not torch.cuda.is_available():
-        raise("CUDA not present. Quitting.")
-
     config_dict=config.config_file
     parser = argparse.ArgumentParser()
 
@@ -181,4 +184,7 @@ def main(config):
 
 
 if __name__ == "__main__":
-     main(Config().load())
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "init":
+        init()
+    else:  
+        main(Config().load())
