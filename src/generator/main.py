@@ -117,7 +117,7 @@ def main(config):
         logging.info(f"START generating {id}")
 
         auth_token = config_dict["model"]["huggingface_token"]
-        pipelines = Pipelines(config_dict["model"]["model_name"])
+        pipelines = Pipelines(config_dict["model"]["model_name"], config_dict["generation"]["model_cache_dir"])
 
         prompt = args.prompt.replace('"' , "").replace("'", "")
         if args.image_uri is not None:

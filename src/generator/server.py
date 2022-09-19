@@ -13,6 +13,7 @@ if __name__ == "__main__":
         config.config_file["model"]["huggingface_token"],
         config.config_file["generation"]["x_api_key_enabled"],
         config.config_file["generation"]["x_api_key_list"],
+        config.config_file["generation"]["model_cache_dir"],
     )
     host = config.config_file["generation"]["host"]
     port = config.config_file["generation"]["port"]
@@ -27,4 +28,5 @@ else:
             config.config_file["model"]["huggingface_token"],
             config.config_file["generation"]["x_api_key_enabled"],
             config.config_file["generation"]["x_api_key_list"],
+            config.config_file["generation"]["model_cache_dir"],
         )

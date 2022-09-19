@@ -11,7 +11,7 @@ from .imginpaintResource import imginpaintResource, imginpaintMetadataResource
 from .x_api import enable_x_api_enforcement
 
 
-def create_app(model_name, auth_token, enable_x_api, valid_key_list):
+def create_app(model_name, auth_token, enable_x_api, valid_key_list, model_cache_dir):
     if not torch.cuda.is_available():
         raise("CUDA not present. Quitting.")
         
@@ -22,7 +22,7 @@ def create_app(model_name, auth_token, enable_x_api, valid_key_list):
     logging.debug(f"CUDA {torch.cuda.is_available()}")
     logging.debug(f"Torch version {torch.__version__}")
 
-    pipelines = Pipelines(model_name)
+    pipelines = Pipelines(model_name, model_cache_dir)
     pipelines.preload_pipelines(auth_token)
     default_device = Device(pipelines)
 

@@ -7,14 +7,14 @@ import pickle
 class Pipelines:
 
     model_name = None
+    model_cache_dir = None
     files = {}
     last_pipe = None    # this only works for single gpu implementation right now
                         # TODO #12 cache the last pipeline per device
 
-    def __init__(self, model_name, revision="fp16", torch_dtype=torch.float16) -> None:
-        self.revision = revision
-        self.torch_dtype = torch_dtype
+    def __init__(self, model_name, model_cache_dir = "/tmp") -> None:
         self.model_name = model_name
+        self.model_cache_dir = model_cache_dir
 
 
     def preload_pipelines(self, auth_token, pipeline_names = ["txt2img", "img2img", "imginpaint"], conserve_memory = True):
