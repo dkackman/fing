@@ -12,6 +12,7 @@ from collections import namedtuple
 
 pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
 
+
 class Pipelines:
 
     model_name: str = ""
