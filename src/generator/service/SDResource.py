@@ -1,15 +1,9 @@
 from flask import send_file
 from flask_restful import reqparse, Resource, abort
-from threading import Lock
 from urllib.parse import unquote
 import logging
 import io
 from .x_api import api_key_required
-
-# TODO #5 create a worker (and mutex) per GPU
-# there is only one of these per process right now
-# this means only one job can be active at one time
-mutex = Lock()
 
 
 class SDResource(Resource):
@@ -47,20 +41,14 @@ class SDResource(Resource):
 
     def generate_buffer(self, **kwargs):
         try:
-            # only allow one image generation at a time
-            locked = mutex.acquire(False)
-            if locked:
-                logging.info(f"START generating {kwargs['pipeline_name']}")
+            logging.info(f"START generating {kwargs['pipeline_name']}")
 
-                kwargs["prompt"] = clean_prompt(kwargs["prompt"])
+            kwargs["prompt"] = clean_prompt(kwargs["prompt"])
+            image, pipe_config = self.device(**kwargs)
 
-                image, pipe_config = self.device(**kwargs)
-                logging.info(f"END generating {kwargs['pipeline_name']}")
-            else:
-                abort(423, "Busy. Try again later.")
-        finally:
-            if locked:
-                mutex.release()
+            logging.info(f"END generating {kwargs['pipeline_name']}")
+        except:
+            abort(423)
 
         buffer = io.BytesIO()
         image.save(buffer, format="JPEG")

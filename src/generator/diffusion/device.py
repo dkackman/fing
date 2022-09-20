@@ -3,6 +3,7 @@ import logging
 from torch.cuda.amp import autocast
 from PIL import Image
 from collections import namedtuple
+from threading import Lock
 
 
 pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
@@ -11,34 +12,41 @@ pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
 class Device:
     pipelines = None
     last_pipeline = None
+    mutex = Lock()
 
     def __init__(self, pipelines) -> None:
         self.pipelines = pipelines
 
     def __call__(self, **kwargs):
-        num_images = kwargs["num_images"] if "num_images" in kwargs else 1
-        if num_images > 4:
-            raise Exception("The maximum number of images is 4")
+        if not self.mutex.acquire(False):
+            raise (Exception("busy"))
 
-        logging.info(f"Prompt is {kwargs['prompt']}")
-        log_device()
+        try:
+            num_images = kwargs["num_images"] if "num_images" in kwargs else 1
+            if num_images > 4:
+                raise Exception("The maximum number of images is 4")
 
-        pipeline = self.get_pipeline(kwargs["pipeline_name"])
-        image_list = []
-        # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
-        for i in range(num_images):
-            with autocast():
-                # this comprehension expresssion strips items from kwargs that aren't recognized by the pipeline
-                image = pipeline(
-                    **{
-                        key: value
-                        for key, value in kwargs.items()
-                        if key != "pipeline_name" and key != "num_images"
-                    }
-                ).images[0]
-                image_list.append(image)
+            logging.info(f"Prompt is {kwargs['prompt']}")
+            log_device()
 
-        return (post_process(image_list), pipeline.config)
+            pipeline = self.get_pipeline(kwargs["pipeline_name"])
+            image_list = []
+            # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
+            for i in range(num_images):
+                with autocast():
+                    # this comprehension expresssion strips items from kwargs that aren't recognized by the pipeline
+                    image = pipeline(
+                        **{
+                            key: value
+                            for key, value in kwargs.items()
+                            if key != "pipeline_name" and key != "num_images"
+                        }
+                    ).images[0]
+                    image_list.append(image)
+
+            return (post_process(image_list), pipeline.config)
+        finally:
+            self.mutex.release()
 
     def get_pipeline(self, pipeline_name):
         # if the last pipeline is the one requested, just return it
