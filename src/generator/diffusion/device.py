@@ -2,10 +2,15 @@ import torch
 import logging
 from torch.cuda.amp import autocast
 from PIL import Image
+from collections import namedtuple
+
+
+pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
 
 
 class Device:
     pipelines = None
+    last_pipeline = None
 
     def __init__(self, pipelines) -> None:
         self.pipelines = pipelines
@@ -18,7 +23,7 @@ class Device:
         logging.info(f"Prompt is {kwargs['prompt']}")
         log_device()
 
-        pipeline = self.pipelines.load_pipeline(kwargs["pipeline_name"])
+        pipeline = self.get_pipeline(kwargs["pipeline_name"])
         image_list = []
         # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
         for i in range(num_images):
@@ -34,6 +39,20 @@ class Device:
                 image_list.append(image)
 
         return (post_process(image_list), pipeline.config)
+
+    def get_pipeline(self, pipeline_name):
+        # if the last pipeline is the one requested, just return it
+        if self.last_pipeline is not None:
+            if self.last_pipeline.name == pipeline_name:
+                logging.debug(f"{pipeline_name} already loaded")
+                return self.last_pipeline.pipeline
+            else:
+                # if there is a loaded pipeline but it's different clean up the memory
+                del self.last_pipeline
+
+        new_pipeline = self.pipelines.load_pipeline(pipeline_name)
+        self.last_pipeline = pipeline_reference(pipeline_name, new_pipeline)
+        return new_pipeline
 
 
 def log_device():
