@@ -14,7 +14,7 @@ from .init_config import init
 
 
 if not torch.cuda.is_available():
-    raise ("CUDA not present. Quitting.")
+    raise Exception("CUDA not present. Quitting.")
 
 
 def main(config):
@@ -29,7 +29,7 @@ def main(config):
         type=str,
         nargs="?",
         help="dir to write results to",
-        default=config_dict["generation"]["output_dir"],
+        default=".",
     )
     parser.add_argument(
         "--output_name", type=str, nargs="?", help="The name of the output file"
@@ -170,7 +170,7 @@ def main(config):
                 prompt=prompt,
             )
 
-        outDir = Path(config_dict["generation"]["output_dir"])
+        outDir = Path(args.outdir)
         image.save(f"{outDir.joinpath(filename)}")
         if args.verbose:
             print(pipe_config)
@@ -179,10 +179,10 @@ def main(config):
     except Exception as e:
         logging.exception(e)
         print(e, file=sys.stderr)
-        raise ("FAIL")
+        raise e
     except:
         logging.exception("Unhandled error occurred")
-        raise ("FAIL")
+        raise Exception("FAIL")
 
 
 if __name__ == "__main__":

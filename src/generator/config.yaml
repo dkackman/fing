@@ -4,7 +4,6 @@ model:
   
 generation:
   environment_name: fing
-  output_dir: /mnt/ml/outputs
   host: localhost
   port: 9147
   log_level: DEBUG

@@ -7,7 +7,10 @@ from diffusers import (
     StableDiffusionInpaintPipeline,
 )
 import pickle
+from collections import namedtuple
 
+
+pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
 
 class Pipelines:
 
@@ -15,7 +18,7 @@ class Pipelines:
     model_cache_dir: str = ""
     files: Dict[str, str] = {}
     # this only works for single gpu implementation right now
-    last_pipe: Dict[str, Any] = {}
+    last_pipe = None
     # TODO #12 cache the last pipeline per device
 
     def __init__(self, model_name, model_cache_dir="/tmp") -> None:
@@ -82,9 +85,9 @@ class Pipelines:
     def load_pipeline(self, pipeline_name):
         # if the last pipeline is the one requested, just return it
         if self.last_pipe is not None:
-            if self.last_pipe[0] == pipeline_name:
+            if self.last_pipe.name == pipeline_name:
                 logging.debug(f"{pipeline_name} already loaded")
-                return self.last_pipe[1]
+                return self.last_pipe.pipeline
             else:
                 # if there is a loaded pipeline but it's different clean up the memory
                 del self.last_pipe
@@ -101,6 +104,6 @@ class Pipelines:
         pipe = pickle.load(file)
         file.seek(0, 0)  # set the file stream back to the beginning
         the_pipe = pipe.to("cuda")
-        self.last_pipe = (pipeline_name, the_pipe)
+        self.last_pipe = pipeline_reference(pipeline_name, the_pipe)
 
         return the_pipe

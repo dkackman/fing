@@ -48,8 +48,9 @@
             "args": [
                 "--prompt",
                 "A gentleman otter in a 17th century portrait",
-
-            ],
+                "--outdir",
+                "/mnt/ml/outputs",
+            ],  
             "justMyCode": true
         },        
         {
@@ -64,7 +65,9 @@
                 "--image_uri",
                 "https://raw.githubusercontent.com/CompVis/stable-diffusion/main/assets/stable-samples/img2img/sketch-mountains-input.jpg",
                 "--strength",
-                "0.875"
+                "0.875",
+                "--outdir",
+                "/mnt/ml/outputs",
             ],
             "justMyCode": true
         },
@@ -82,7 +85,9 @@
                 "--mask_uri",
                 "https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo_mask.png",
                 "--strength",
-                "0.875"
+                "0.875",
+                "--outdir",
+                "/mnt/ml/outputs",
             ],
             "justMyCode": true
         }
