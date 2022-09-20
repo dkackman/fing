@@ -1,26 +1,24 @@
-from flask import Flask
-from flask_restful import Api
 import logging
 import torch
+from flask import Flask
+from flask_restful import Api
 from ..diffusion.device import Device
 from ..diffusion.pipelines import Pipelines
 from .InfoResource import InfoResource
 from .txt2imgResource import txt2imgResource, txt2imgMetadataResource
 from .img2imgResource import img2imgResource, img2imgMetadataResource
 from .imginpaintResource import imginpaintResource, imginpaintMetadataResource
-from .x_api import enable_x_api_enforcement
+from .x_api import enable_x_api_keys
 
 
 def create_app(model_name, auth_token, enable_x_api, valid_key_list, model_cache_dir):
     if enable_x_api:
         logging.debug("Enabling x-api-key validation")
-        enable_x_api_enforcement(valid_key_list)
+        enable_x_api_keys(valid_key_list)
 
-    logging.debug(f"CUDA {torch.cuda.is_available()}")
     logging.debug(f"Torch version {torch.__version__}")
 
-    pipelines = Pipelines(model_name, model_cache_dir)
-    pipelines.preload_pipelines(auth_token)
+    pipelines = Pipelines(model_name, model_cache_dir).preload_pipelines(auth_token)
     default_device = Device(pipelines)
 
     app = Flask("stable-diffusion service")

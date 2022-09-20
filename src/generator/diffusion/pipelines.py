@@ -1,3 +1,4 @@
+from typing import Dict, Any
 import torch
 import logging
 from diffusers import (
@@ -10,10 +11,11 @@ import pickle
 
 class Pipelines:
 
-    model_name = None
-    model_cache_dir = None
-    files = {}
-    last_pipe = None  # this only works for single gpu implementation right now
+    model_name: str = ""
+    model_cache_dir: str = ""
+    files: Dict[str, str] = {}
+    # this only works for single gpu implementation right now
+    last_pipe: Dict[str, Any] = {}
     # TODO #12 cache the last pipeline per device
 
     def __init__(self, model_name, model_cache_dir="/tmp") -> None:
@@ -59,6 +61,8 @@ class Pipelines:
                 pipeline, pipe_line_name, "fp16" if conserve_memory else "full"
             )
 
+        return self
+
     def serialize_pipeline(self, pipeline, pipeline_name, revision):
         logging.debug(f"Serializing {pipeline_name}")
 
@@ -82,9 +86,8 @@ class Pipelines:
                 logging.debug(f"{pipeline_name} already loaded")
                 return self.last_pipe[1]
             else:
-                del (
-                    self.last_pipe
-                )  # if there is a loaded pipeline but it's different clean up the memory
+                # if there is a loaded pipeline but it's different clean up the memory
+                del self.last_pipe
 
         logging.debug(
             f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}"
