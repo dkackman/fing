@@ -4,11 +4,12 @@ from ..diffusion.device import Device
 from ..diffusion.device_pool import get_device
 from .generator import generate_buffer, package_metadata
 from ..external_resource import get_image
+from .x_api_key import x_api_key_auth
 
 img2img_router = APIRouter()
 
 
-@img2img_router.get("/img2img")
+@img2img_router.get("/img2img", dependencies=[Depends(x_api_key_auth)])
 def get_img2img(
     prompt: str,
     image_uri: str,
@@ -30,7 +31,7 @@ def get_img2img(
     return StreamingResponse(buffer, media_type="image/jpeg")
 
 
-@img2img_router.get("/img2img_metadata")
+@img2img_router.get("/img2img_metadata", dependencies=[Depends(x_api_key_auth)])
 def get_img2img_metadata(
     prompt: str,
     image_uri: str,

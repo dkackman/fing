@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseSettings
 import json
 import os
@@ -47,3 +48,5 @@ class Settings(BaseSettings):
     log_level: str = "DEBUG"
     log_filename: str = "log/generator.log"
     model_cache_dir: str = "/tmp"
+    x_api_key_enabled: bool = False
+    x_api_key_list: List[str] = []

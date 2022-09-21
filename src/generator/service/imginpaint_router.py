@@ -4,11 +4,12 @@ from ..diffusion.device import Device
 from ..diffusion.device_pool import get_device
 from .generator import generate_buffer, package_metadata
 from ..external_resource import get_image
+from .x_api_key import x_api_key_auth
 
 imginpaint_router = APIRouter()
 
 
-@imginpaint_router.get("/imginpaint")
+@imginpaint_router.get("/imginpaint", dependencies=[Depends(x_api_key_auth)])
 def get_imginpaint(
     prompt: str,
     image_uri: str,
@@ -32,7 +33,7 @@ def get_imginpaint(
     return StreamingResponse(buffer, media_type="image/jpeg")
 
 
-@imginpaint_router.get("/imginpaint_metadata")
+@imginpaint_router.get("/imginpaint_metadata", dependencies=[Depends(x_api_key_auth)])
 def get_imginpaint_metadata(
     prompt: str,
     image_uri: str,

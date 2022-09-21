@@ -1,6 +1,7 @@
+from typing import List
 from .device import Device
 
-device_list = []
+device_list: List[Device] = []
 
 
 def add_device(device: Device):
