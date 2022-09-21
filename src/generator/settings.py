@@ -1,3 +1,4 @@
+from operator import truediv
 from typing import List
 from pydantic import BaseSettings
 import json
@@ -50,3 +51,4 @@ class Settings(BaseSettings):
     model_cache_dir: str = "/tmp"
     x_api_key_enabled: bool = False
     x_api_key_list: List[str] = []
+    conserve_memory: bool = True

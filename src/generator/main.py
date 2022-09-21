@@ -9,14 +9,13 @@ from .external_resource import get_image
 from .diffusion.pipelines import Pipelines
 from .diffusion.device import Device
 from .init_app import init
-from .settings import Settings, load_settings
 
 
 if not torch.cuda.is_available():
     raise Exception("CUDA not present. Quitting.")
 
 
-def main(settings: Settings):
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -96,9 +95,11 @@ def main(settings: Settings):
         action=argparse.BooleanOptionalAction,
         help="Verbose output",
     )
+
     args = parser.parse_args()
     try:
-        setup_logging(settings.log_filename, settings.log_level)
+        outDir = Path(args.outdir)
+        setup_logging(outDir.joinpath("generator.log"), "DEBUG")
 
         logging.debug(f"Torch version {torch.__version__}")
 
@@ -110,8 +111,8 @@ def main(settings: Settings):
 
         logging.info(f"START generating {id}")
 
-        auth_token = settings.huggingface_token
-        pipelines = Pipelines(settings.model_name, settings.model_cache_dir)
+        auth_token = True
+        pipelines = Pipelines("CompVis/stable-diffusion-v1-4", "/tmp")
 
         prompt = args.prompt.replace('"', "").replace("'", "")
         if args.image_uri is not None:
@@ -165,7 +166,6 @@ def main(settings: Settings):
                 prompt=prompt,
             )
 
-        outDir = Path(args.outdir)
         image.save(f"{outDir.joinpath(filename)}")
         if args.verbose:
             print(pipe_config)
@@ -184,4 +184,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1].lower() == "init":
         init()
     else:
-        main(load_settings())
+        main()

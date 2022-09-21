@@ -1,6 +1,5 @@
 from .settings import Settings, settings_exist, save_settings, get_settings_full_path
-import sys
-import json
+from .diffusion.pipelines import Pipelines
 
 
 def init():
@@ -25,10 +24,14 @@ def init():
     port = input("Service port (9147): ").strip()
     port = 9147 if len(port) == 0 else int(port)
 
+    conserve = input("Conserve GPU memory by default? (Y/n): ").strip().lower()
+    conserve_memory = True if len(conserve) == 0 or conserve.startswith("y") else False
+
     settings.huggingface_token = token
     settings.model_cache_dir = model_cache_dir
     settings.host = host
     settings.port = port
+    settings.conserve_memory = conserve_memory
 
     print("\n")
     print(settings.json(indent=2))
@@ -39,3 +42,8 @@ def init():
         print(f"Configuraiton saved to {get_settings_full_path()}")
     else:
         print("Cancelled")
+        return
+
+    print("Preloading pipelines. This may take awhile...")
+    pipelines = Pipelines(settings.model_name, settings.model_cache_dir)
+    pipelines.preload_pipelines(settings.huggingface_token, settings.conserve_memory)
