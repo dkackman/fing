@@ -126,7 +126,9 @@
                         "description": "The generated image.",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "$ref": "#/components/schemas/PackageMetaDataModel"
+                                }
                             },
                             "image/jpeg": {},
                             "image/png": {}
@@ -402,6 +404,96 @@
                 "properties": {
                     "software": {
                         "$ref": "#/components/schemas/Software"
+                    }
+                }
+            },
+            "PackageMetaDataModel": {
+                "title": "PackageMetaDataModel",
+                "required": [
+                    "pipeline_config",
+                    "software",
+                    "image",
+                    "parameters"
+                ],
+                "type": "object",
+                "properties": {
+                    "pipeline_config": {
+                        "$ref": "#/components/schemas/PipelineConfig"
+                    },
+                    "software": {
+                        "$ref": "#/components/schemas/Software"
+                    },
+                    "image": {
+                        "title": "Image",
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "title": "Parameters",
+                        "type": "object"
+                    }
+                }
+            },
+            "PipelineConfig": {
+                "title": "PipelineConfig",
+                "required": [
+                    "vae",
+                    "text_encoder",
+                    "tokenizer",
+                    "unet",
+                    "scheduler",
+                    "safety_checker",
+                    "feature_extractor"
+                ],
+                "type": "object",
+                "properties": {
+                    "vae": {
+                        "title": "Vae",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "text_encoder": {
+                        "title": "Text Encoder",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "tokenizer": {
+                        "title": "Tokenizer",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "unet": {
+                        "title": "Unet",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "scheduler": {
+                        "title": "Scheduler",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "safety_checker": {
+                        "title": "Safety Checker",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "feature_extractor": {
+                        "title": "Feature Extractor",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },

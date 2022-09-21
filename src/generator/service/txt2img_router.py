@@ -3,7 +3,12 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
 from ..diffusion.device_pool import get_device
-from .generator import generate_buffer, package_metadata, format_enum, PackageMetaDataModel
+from .generator import (
+    generate_buffer,
+    package_metadata,
+    format_enum,
+    PackageMetaDataModel,
+)
 from .x_api_key import x_api_key_auth
 
 txt2img_router = APIRouter()
@@ -20,10 +25,10 @@ txt2img_router = APIRouter()
                 "image/png": {},
                 "application/json": {},
             },
-            "description": "The generated image.",         
-        }, 
+            "description": "The generated image.",
+        },
     },
-    response_model=PackageMetaDataModel
+    response_model=PackageMetaDataModel,
 )
 def get_txt2img(
     prompt: str,
