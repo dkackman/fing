@@ -1,36 +1,26 @@
 import torch
-import logging
-from generator.config import Config
-from generator.service.web_app import create_app
-from . import setup_logging
+from .settings import load_settings
+
+from .service.web_app import create_app
+from . import setup_logging, __version__
+import uvicorn
+
 
 if not torch.cuda.is_available():
-    raise ("CUDA not present. Quitting.")
+    raise Exception("CUDA not present. Quitting.")
 
-config = Config().load()
-setup_logging(config)
+
+settings = load_settings()
+setup_logging(settings.log_filename, settings.log_level)
+
+app = create_app(
+    settings.model_name,
+    settings.huggingface_token,
+    settings.model_cache_dir,
+    settings.x_api_key_enabled,
+    settings.x_api_key_list,
+)
+
 
 if __name__ == "__main__":
-    app = create_app(
-        config.config_file["model"]["model_name"],
-        config.config_file["model"]["huggingface_token"],
-        config.config_file["generation"]["x_api_key_enabled"],
-        config.config_file["generation"]["x_api_key_list"],
-        config.config_file["generation"]["model_cache_dir"],
-    )
-    host = config.config_file["generation"]["host"]
-    port = config.config_file["generation"]["port"]
-
-    logging.info(f"Starting server at {host}:{port}")
-    app.run(host, port)
-    logging.info("Server exiting")
-
-else:
-    logging.info("Starting with WSGI server")
-    gunicorn_app = create_app(
-        config.config_file["model"]["model_name"],
-        config.config_file["model"]["huggingface_token"],
-        config.config_file["generation"]["x_api_key_enabled"],
-        config.config_file["generation"]["x_api_key_list"],
-        config.config_file["generation"]["model_cache_dir"],
-    )
+    uvicorn.run("generator.server:app", host=settings.host, port=settings.port)

@@ -1,17 +1,14 @@
-from .config import Config
-from pathlib import Path
-import os
-import yaml
+from .settings import Settings, settings_exist, save_settings, get_settings_full_path
 import sys
+import json
 
 
 def init():
-    if Config.exists():
+    if settings_exist():
         print("Config already set. Nothing to do.")
         return
 
-    this_dir = Path(os.path.realpath(__file__)).parent
-    config = Config.load_from(this_dir.joinpath("config.yaml"))
+    settings = Settings()
 
     print("Provide the following details for the intial configuration:\n")
     token = input("Huggingface API token: ").strip()
@@ -28,17 +25,17 @@ def init():
     port = input("Service port (9147): ").strip()
     port = 9147 if len(port) == 0 else int(port)
 
-    config["model"]["huggingface_token"] = token
-    config["generation"]["model_cache_dir"] = model_cache_dir
-    config["generation"]["host"] = host
-    config["generation"]["port"] = port
+    settings.huggingface_token = token
+    settings.model_cache_dir = model_cache_dir
+    settings.host = host
+    settings.port = port
 
     print("\n")
-    yaml.dump(config, sys.stdout)
+    print(settings.json(indent=2))
 
     confirm = input("Is this corrent? (Y/n): ").strip().lower()
     if len(confirm) == 0 or confirm.startswith("y"):
-        Config.save_config(config)
-        print(f"Configuraiton saved to {Config.get_full_path()}")
+        save_settings(settings)
+        print(f"Configuraiton saved to {get_settings_full_path()}")
     else:
         print("Cancelled")

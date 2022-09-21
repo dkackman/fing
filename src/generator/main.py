@@ -1,24 +1,22 @@
 import sys
 import uuid
 import logging
-import torch
 import argparse
 import torch
 from pathlib import Path
 from . import setup_logging
 from .external_resource import get_image
-from .config import Config
 from .diffusion.pipelines import Pipelines
 from .diffusion.device import Device
-from .init_config import init
+from .init_app import init
+from .settings import Settings, load_settings
 
 
 if not torch.cuda.is_available():
     raise Exception("CUDA not present. Quitting.")
 
 
-def main(config):
-    config_dict = config.config_file
+def main(settings: Settings):
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -100,7 +98,7 @@ def main(config):
     )
     args = parser.parse_args()
     try:
-        setup_logging(config)
+        setup_logging(settings.log_filename, settings.log_level)
 
         logging.debug(f"Torch version {torch.__version__}")
 
@@ -112,11 +110,8 @@ def main(config):
 
         logging.info(f"START generating {id}")
 
-        auth_token = config_dict["model"]["huggingface_token"]
-        pipelines = Pipelines(
-            config_dict["model"]["model_name"],
-            config_dict["generation"]["model_cache_dir"],
-        )
+        auth_token = settings.huggingface_token
+        pipelines = Pipelines(settings.model_name, settings.model_cache_dir)
 
         prompt = args.prompt.replace('"', "").replace("'", "")
         if args.image_uri is not None:
@@ -189,4 +184,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1].lower() == "init":
         init()
     else:
-        main(Config().load())
+        main(load_settings())

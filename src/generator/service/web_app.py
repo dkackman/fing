@@ -1,58 +1,33 @@
 import logging
 import torch
-from flask import Flask
-from flask_restful import Api
+from fastapi import FastAPI
 from ..diffusion.device import Device
 from ..diffusion.pipelines import Pipelines
-from .InfoResource import InfoResource
-from .txt2imgResource import txt2imgResource, txt2imgMetadataResource
-from .img2imgResource import img2imgResource, img2imgMetadataResource
-from .imginpaintResource import imginpaintResource, imginpaintMetadataResource
-from .x_api import enable_x_api_keys
+from .info_router import info_router
+from .txt2img_router import txt2img_router
+from .img2img_router import img2img_router
+from .imginpaint_router import imginpaint_router
+from ..diffusion.device_pool import add_device
+from .. import __version__
+from .x_api_key import enable_x_api_keys
 
 
-def create_app(model_name, auth_token, enable_x_api, valid_key_list, model_cache_dir):
-    if enable_x_api:
-        logging.debug("Enabling x-api-key validation")
-        enable_x_api_keys(valid_key_list)
-
+def create_app(
+    model_name, auth_token, model_cache_dir, x_api_key_enabled, x_api_key_list
+):
     logging.debug(f"Torch version {torch.__version__}")
 
     pipelines = Pipelines(model_name, model_cache_dir).preload_pipelines(auth_token)
-    default_device = Device(pipelines)
+    add_device(Device(pipelines))
 
-    app = Flask("stable-diffusion service")
-    api = Api(app)
+    if x_api_key_enabled:
+        enable_x_api_keys(x_api_key_list)
 
-    api.add_resource(InfoResource, "/info")
+    app = FastAPI(title="stable-diffusion service", version=__version__)
 
-    api.add_resource(
-        txt2imgResource, "/txt2img", resource_class_kwargs={"device": default_device}
-    )
-    api.add_resource(
-        txt2imgMetadataResource,
-        "/txt2img_metadata",
-        resource_class_kwargs={"device": default_device},
-    )
-
-    api.add_resource(
-        img2imgResource, "/img2img", resource_class_kwargs={"device": default_device}
-    )
-    api.add_resource(
-        img2imgMetadataResource,
-        "/img2img_metadata",
-        resource_class_kwargs={"device": default_device},
-    )
-
-    api.add_resource(
-        imginpaintResource,
-        "/imginpaint",
-        resource_class_kwargs={"device": default_device},
-    )
-    api.add_resource(
-        imginpaintMetadataResource,
-        "/imginpaint_metadata",
-        resource_class_kwargs={"device": default_device},
-    )
+    app.include_router(info_router)
+    app.include_router(txt2img_router)
+    app.include_router(img2img_router)
+    app.include_router(imginpaint_router)
 
     return app
