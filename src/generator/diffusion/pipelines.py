@@ -81,15 +81,8 @@ class Pipelines:
         )
 
     def load_pipeline(self, pipeline_name):
-        logging.debug(
-            f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}"
-        )
-        # clear gpu memory
-        with torch.no_grad():
-            torch.cuda.empty_cache()
-
-        # resurrect the new pipeline, send it to the device, and cache it in memory
+        # resurrect the requested pipeline
         file = self.files[pipeline_name]
-        pipe = pickle.load(file)
+        pipeline = pickle.load(file)
         file.seek(0, 0)  # set the file stream back to the beginning
-        return pipe.to("cuda")
+        return pipeline

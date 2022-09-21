@@ -60,9 +60,21 @@ class Device:
                 # if there is a loaded pipeline but it's different clean up the memory
                 del self.last_pipeline
 
+        logging.debug(
+            f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}"
+        )
+        # clear gpu memory
+        with torch.no_grad():
+            torch.cuda.empty_cache()
+
+        # get the cached pipeline and send it to the gpu
         new_pipeline = self.pipelines.load_pipeline(pipeline_name)
-        self.last_pipeline = pipeline_reference(pipeline_name, new_pipeline)
-        return new_pipeline
+        gpu_pipeline = new_pipeline.to("cuda")
+        # then delete the one in main memory right away since it is quite large
+        del new_pipeline
+        # and keep a reference to the one in the gpu
+        self.last_pipeline = pipeline_reference(pipeline_name, gpu_pipeline)
+        return gpu_pipeline
 
 
 def log_device():
