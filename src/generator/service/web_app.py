@@ -10,18 +10,23 @@ from .imginpaint_router import imginpaint_router
 from ..diffusion.device_pool import add_device
 from .. import __version__
 from .x_api_key import enable_x_api_keys
+from .settings import load_settings, resolve_path
+from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 
-def create_app(
-    model_name, auth_token, model_cache_dir, x_api_key_enabled, x_api_key_list
-):
+def create_app():
+    settings = load_settings()
+    setup_logging(settings.log_filename, settings.log_level)
+
     logging.debug(f"Torch version {torch.__version__}")
 
-    pipelines = Pipelines(model_name, model_cache_dir).preload_pipelines(auth_token)
+    pipelines = Pipelines(
+        settings.model_name, settings.model_cache_dir
+    ).preload_pipelines(settings.huggingface_token)
     add_device(Device(pipelines))
 
-    if x_api_key_enabled:
-        enable_x_api_keys(x_api_key_list)
+    if settings.x_api_key_enabled:
+        enable_x_api_keys(settings.x_api_key_list)
 
     app = FastAPI(title="stable-diffusion service", version=__version__)
 
@@ -30,4 +35,33 @@ def create_app(
     app.include_router(img2img_router)
     app.include_router(imginpaint_router)
 
-    return app
+    return app, settings
+
+
+def setup_logging(log_path, log_level):
+    log_path = resolve_path(log_path)
+    log_date_format = "%Y-%m-%dT%H:%M:%S"
+
+    logger = logging.getLogger()
+
+    handler = ConcurrentRotatingFileHandler(
+        log_path, "a", maxBytes=50 * 1024 * 1024, backupCount=7
+    )
+    handler.setFormatter(
+        logging.Formatter(
+            fmt="%(asctime)s - %(levelname)s - %(message)s", datefmt=log_date_format
+        )
+    )
+
+    if log_level == "CRITICAL":
+        logger.setLevel(logging.CRITICAL)
+    elif log_level == "ERROR":
+        logger.setLevel(logging.ERROR)
+    elif log_level == "WARNING":
+        logger.setLevel(logging.WARNING)
+    elif log_level == "DEBUG":
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+
+    logger.addHandler(handler)

@@ -4,7 +4,6 @@ import logging
 import argparse
 import torch
 from pathlib import Path
-from . import setup_logging
 from .external_resource import get_image
 from .diffusion.pipelines import Pipelines
 from .diffusion.device import Device
@@ -99,7 +98,6 @@ def main():
     args = parser.parse_args()
     try:
         outDir = Path(args.outdir)
-        setup_logging(outDir.joinpath("generator.log"), "DEBUG")
 
         logging.debug(f"Torch version {torch.__version__}")
 

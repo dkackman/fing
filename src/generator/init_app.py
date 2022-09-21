@@ -1,4 +1,9 @@
-from .settings import Settings, settings_exist, save_settings, get_settings_full_path
+from .service.settings import (
+    Settings,
+    settings_exist,
+    save_settings,
+    get_settings_full_path,
+)
 from .diffusion.pipelines import Pipelines
 
 

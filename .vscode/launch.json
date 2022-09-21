@@ -5,22 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Gunicorn",
-            "type": "python",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/src/",
-            "program": "/mnt/ml/anaconda3/envs/fing/bin/gunicorn",
-            "args": [
-                "--bind",
-                "0.0.0.0:9147",
-                "generator.server:gunicorn_app",
-                "--timeout",
-                "120"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
             "name": "Server",
             "type": "python",
             "request": "launch",
