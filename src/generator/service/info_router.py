@@ -9,7 +9,7 @@ info_router = APIRouter()
     "/info",
     dependencies=[Depends(x_api_key_auth)],
     tags=["Service Information"],
-    response_model=InfoModel
+    response_model=InfoModel,
 )
 def get_info() -> InfoModel:
     return info()

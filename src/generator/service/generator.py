@@ -1,10 +1,12 @@
-from .. import info
+from .. import info, Software
 from urllib.parse import unquote
 import logging
 import io
 import base64
 from enum import auto
 from fastapi_restful.enums import StrEnum
+from typing import Any, Dict, List
+from pydantic import BaseModel
 
 
 class format_enum(StrEnum):
@@ -13,13 +15,43 @@ class format_enum(StrEnum):
     png = auto()
 
 
-def package_metadata(buffer, pipeline_config, args):
-    metadata = info()
-    metadata["pipeline_config"] = pipeline_config
-    metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
-    metadata["parameters"] = args
+class PipelineConfig(BaseModel):
+    vae: List[str]
+    _class_name: str
+    _diffusers_version: str
+    text_encoder: List[str]
+    tokenizer: List[str]
+    unet: List[str]
+    scheduler: List[str]
+    safety_checker: List[str]
+    feature_extractor: List[str]
 
-    return metadata
+
+class PipelineConfigModel(BaseModel):
+    pipeline_config: PipelineConfig
+
+
+class PackageMetaDataModel(BaseModel):
+    pipeline_config: PipelineConfig
+    software: Software
+    image: str
+    parameters: Dict[str, Any]
+
+
+def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
+    software = info().software
+    pipeline_config = PipelineConfig.parse_obj(pipeline_config)
+    image = base64.b64encode(buffer.getvalue()).decode("UTF-8")
+
+    # dyanmically typed version in case this is too brittle
+    # metaddata = info().dict
+    # metadata["pipeline_config"] = pipeline_config
+    # metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
+    # metadata["parameters"] = args
+
+    return PackageMetaDataModel(
+        pipeline_config=pipeline_config, software=software, image=image, parameters=args
+    )
 
 
 def generate_buffer(device, **kwargs):
