@@ -3,6 +3,14 @@ from urllib.parse import unquote
 import logging
 import io
 import base64
+from enum import auto
+from fastapi_restful.enums import StrEnum
+
+
+class format_enum(StrEnum):
+    jpeg = auto()
+    json = auto()
+    png = auto()
 
 
 def package_metadata(buffer, pipeline_config, args):
@@ -26,11 +34,14 @@ def generate_buffer(device, **kwargs):
     except:
         raise Exception(423)
 
+    format = (
+        "JPEG" if kwargs["format"] == format_enum.json else kwargs["format"].upper()
+    )
     buffer = io.BytesIO()
-    image.save(buffer, format="JPEG")
+    image.save(buffer, format=format)
     buffer.seek(0)
 
-    # we return kwargs so that it can be returnd as metadata if needed
+    # we return kwargs so that it can be used as metadata if needed
     return buffer, pipe_config, kwargs
 
 

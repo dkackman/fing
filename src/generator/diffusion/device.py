@@ -39,7 +39,9 @@ class Device:
                         **{
                             key: value
                             for key, value in kwargs.items()
-                            if key != "pipeline_name" and key != "num_images"
+                            if key != "pipeline_name"
+                            and key != "num_images"
+                            and key != "format"
                         }
                     ).images[0]
                     image_list.append(image)

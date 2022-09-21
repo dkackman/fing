@@ -2,19 +2,34 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
 from ..diffusion.device_pool import get_device
-from .generator import generate_buffer, package_metadata
+from .generator import generate_buffer, package_metadata, format_enum
 from ..external_resource import get_image
 from .x_api_key import x_api_key_auth
 
 imginpaint_router = APIRouter()
 
 
-@imginpaint_router.get("/imginpaint", dependencies=[Depends(x_api_key_auth)])
+@imginpaint_router.get(
+    "/imginpaint",
+    dependencies=[Depends(x_api_key_auth)],
+    responses={
+        200: {
+            "content": {
+                "image/jpeg": {},
+                "image/png": {},
+                "application/json": {},
+            },
+            "description": "The generated image.",
+        }
+    },
+)
 def get_imginpaint(
     prompt: str,
     image_uri: str,
     mask_uri: str,
+    format: format_enum = format_enum.jpeg,
     guidance_scale: float = 7.5,
+    strength: float = 0.75,
     num_inference_steps: int = 50,
     num_images: int = 1,
     device: Device = Depends(get_device),
@@ -23,41 +38,20 @@ def get_imginpaint(
         device,
         pipeline_name="imginpaint",
         guidance_scale=guidance_scale,
+        strength=strength,
         num_inference_steps=num_inference_steps,
         num_images=num_images,
         prompt=prompt,
         init_image=get_image(image_uri),
         mask_image=get_image(mask_uri),
+        format=format,
     )
 
-    return StreamingResponse(buffer, media_type="image/jpeg")
+    if format == format_enum.jpeg:
+        return StreamingResponse(buffer, media_type="image/jpeg")
 
+    if format == format_enum.png:
+        return StreamingResponse(buffer, media_type="image/png")
 
-@imginpaint_router.get("/imginpaint_metadata", dependencies=[Depends(x_api_key_auth)])
-def get_imginpaint_metadata(
-    prompt: str,
-    image_uri: str,
-    mask_uri: str,
-    guidance_scale: float = 7.5,
-    num_inference_steps: int = 50,
-    num_images: int = 1,
-    device: Device = Depends(get_device),
-):
-    buffer, pipeline_config, args = generate_buffer(
-        device,
-        pipeline_name="imginpaint",
-        guidance_scale=guidance_scale,
-        num_inference_steps=num_inference_steps,
-        num_images=num_images,
-        prompt=prompt,
-        init_image=get_image(image_uri),
-        mask_image=get_image(mask_uri),
-    )
-
-    # don't serialize the image, just the uri as part of the parameters json
-    # the buffer is serialized as base64
-    args.pop("init_image")
-    args.pop("mask_image")
-    args["image_uri"] = image_uri
-    args["mask_uri"] = mask_uri
-    return package_metadata(buffer, pipeline_config, args)
+    if format == format_enum.json:
+        return package_metadata(buffer, pipeline_config, args)
