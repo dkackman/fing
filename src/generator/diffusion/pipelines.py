@@ -25,6 +25,10 @@ class Pipelines:
         pipeline_names=["txt2img", "img2img", "imginpaint"],
         conserve_memory=True,
     ):
+        if len(self.files) > 0:
+            logging.debug("Pipelines already loaded")
+            return self
+
         # this will preload all the pipelines and serialize them to disk.
         # the pre_load function then opens and keeps open a handle to each file to keep them locked
         # get_pipeline will then retrive from disk, accomplishing two things:

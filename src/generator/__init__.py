@@ -1,13 +1,13 @@
 import logging
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 import torch
-from .config import Config
+from .settings import resolve_path
 
 __version__ = "0.3.0"
 
 
-def setup_logging(config):
-    log_path = Config.resolve_path(config.config_file["generation"]["log_filename"])
+def setup_logging(log_path, log_level):
+    log_path = resolve_path(log_path)
     log_date_format = "%Y-%m-%dT%H:%M:%S"
 
     logger = logging.getLogger()
@@ -20,17 +20,19 @@ def setup_logging(config):
             fmt="%(asctime)s - %(levelname)s - %(message)s", datefmt=log_date_format
         )
     )
-    logger.setLevel(logging.INFO)  # unless otherwise specified leglevel will be info
-    logging_config = config.config_file["generation"]
-    if "log_level" in logging_config:
-        if logging_config["log_level"] == "CRITICAL":
-            logger.setLevel(logging.CRITICAL)
-        elif logging_config["log_level"] == "ERROR":
-            logger.setLevel(logging.ERROR)
-        elif logging_config["log_level"] == "WARNING":
-            logger.setLevel(logging.WARNING)
-        elif logging_config["log_level"] == "DEBUG":
-            logger.setLevel(logging.DEBUG)
+
+    if log_level == "CRITICAL":
+        logger.setLevel(logging.CRITICAL)
+    elif log_level == "ERROR":
+        logger.setLevel(logging.ERROR)
+    elif log_level == "WARNING":
+        logger.setLevel(logging.WARNING)
+    elif log_level == "DEBUG":
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(
+            logging.INFO
+        )  # unless otherwise specified leglevel will be info
 
     logger.addHandler(handler)
 
