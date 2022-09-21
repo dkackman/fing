@@ -12,6 +12,7 @@ txt2img_router = APIRouter()
 @txt2img_router.get(
     "/txt2img",
     dependencies=[Depends(x_api_key_auth)],
+    tags=["Stable Diffusion"],
     responses={
         200: {
             "content": {

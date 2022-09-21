@@ -12,6 +12,7 @@ imginpaint_router = APIRouter()
 @imginpaint_router.get(
     "/imginpaint",
     dependencies=[Depends(x_api_key_auth)],
+    tags=["Stable Diffusion"],
     responses={
         200: {
             "content": {

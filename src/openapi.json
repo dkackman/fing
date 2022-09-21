@@ -1,0 +1,483 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "stable-diffusion service",
+        "description": "Rest interface to stable-diffusion image generation",
+        "contact": {
+            "name": "dkackman",
+            "url": "https://github.com/dkackman/fing"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.3.0"
+    },
+    "paths": {
+        "/info": {
+            "get": {
+                "tags": [
+                    "Service Information"
+                ],
+                "summary": "Get Info",
+                "operationId": "get_info_info_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InfoModel"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/txt2img": {
+            "get": {
+                "tags": [
+                    "Stable Diffusion"
+                ],
+                "summary": "Get Txt2Img",
+                "operationId": "get_txt2img_txt2img_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Prompt",
+                            "type": "string"
+                        },
+                        "name": "prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/format_enum"
+                                }
+                            ],
+                            "default": "jpeg"
+                        },
+                        "name": "format",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Guidance Scale",
+                            "type": "number",
+                            "default": 7.5
+                        },
+                        "name": "guidance_scale",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Inference Steps",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "num_inference_steps",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Images",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "num_images",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Height",
+                            "type": "integer",
+                            "default": 512
+                        },
+                        "name": "height",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Width",
+                            "type": "integer",
+                            "default": 512
+                        },
+                        "name": "width",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            },
+                            "image/jpeg": {},
+                            "image/png": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/img2img": {
+            "get": {
+                "tags": [
+                    "Stable Diffusion"
+                ],
+                "summary": "Get Img2Img",
+                "operationId": "get_img2img_img2img_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Prompt",
+                            "type": "string"
+                        },
+                        "name": "prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Image Uri",
+                            "type": "string"
+                        },
+                        "name": "image_uri",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/format_enum"
+                                }
+                            ],
+                            "default": "jpeg"
+                        },
+                        "name": "format",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Guidance Scale",
+                            "type": "number",
+                            "default": 7.5
+                        },
+                        "name": "guidance_scale",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Strength",
+                            "type": "number",
+                            "default": 0.75
+                        },
+                        "name": "strength",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Inference Steps",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "num_inference_steps",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Images",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "num_images",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            },
+                            "image/jpeg": {},
+                            "image/png": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/imginpaint": {
+            "get": {
+                "tags": [
+                    "Stable Diffusion"
+                ],
+                "summary": "Get Imginpaint",
+                "operationId": "get_imginpaint_imginpaint_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Prompt",
+                            "type": "string"
+                        },
+                        "name": "prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Image Uri",
+                            "type": "string"
+                        },
+                        "name": "image_uri",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Mask Uri",
+                            "type": "string"
+                        },
+                        "name": "mask_uri",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/format_enum"
+                                }
+                            ],
+                            "default": "jpeg"
+                        },
+                        "name": "format",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Guidance Scale",
+                            "type": "number",
+                            "default": 7.5
+                        },
+                        "name": "guidance_scale",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Strength",
+                            "type": "number",
+                            "default": 0.75
+                        },
+                        "name": "strength",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Inference Steps",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "num_inference_steps",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Images",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "num_images",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            },
+                            "image/jpeg": {},
+                            "image/png": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "InfoModel": {
+                "title": "InfoModel",
+                "required": [
+                    "software"
+                ],
+                "type": "object",
+                "properties": {
+                    "software": {
+                        "$ref": "#/components/schemas/Software"
+                    }
+                }
+            },
+            "Software": {
+                "title": "Software",
+                "required": [
+                    "name",
+                    "version",
+                    "torch_version"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "type": "string"
+                    },
+                    "torch_version": {
+                        "title": "Torch Version",
+                        "type": "string"
+                    }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            },
+            "format_enum": {
+                "title": "format_enum",
+                "enum": [
+                    "jpeg",
+                    "json",
+                    "png"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+            }
+        },
+        "securitySchemes": {
+            "APIKeyHeader": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key"
+            }
+        }
+    }
+}

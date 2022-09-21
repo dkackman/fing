@@ -28,7 +28,19 @@ def create_app():
     if settings.x_api_key_enabled:
         enable_x_api_keys(settings.x_api_key_list)
 
-    app = FastAPI(title="stable-diffusion service", version=__version__)
+    app = FastAPI(
+        title="stable-diffusion service",
+        version=__version__,
+        description="Rest interface to stable-diffusion image generation",
+        license_info={
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html",
+        },
+        contact={
+            "name": "dkackman",
+            "url": "https://github.com/dkackman/fing",
+        },
+    )
 
     app.include_router(info_router)
     app.include_router(txt2img_router)
