@@ -23,7 +23,7 @@ def create_app():
     pipelines = Pipelines(
         settings.model_name, settings.model_cache_dir
     ).preload_pipelines(settings.huggingface_token)
-    add_device(Device(pipelines))
+    add_device(Device(0, pipelines))
 
     if settings.x_api_key_enabled:
         enable_x_api_keys(settings.x_api_key_list)

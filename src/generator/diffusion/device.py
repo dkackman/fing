@@ -10,11 +10,13 @@ pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
 
 
 class Device:
+    device_id = None
     pipelines = None
     last_pipeline = None
     mutex = Lock()
 
-    def __init__(self, pipelines) -> None:
+    def __init__(self, device_id, pipelines) -> None:
+        self.device_id = device_id
         self.pipelines = pipelines
 
     def __call__(self, **kwargs):
@@ -61,7 +63,7 @@ class Device:
                 del self.last_pipeline
 
         logging.debug(
-            f"Deserializing {pipeline_name} to device {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}"
+            f"Deserializing {pipeline_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
         )
         # clear gpu memory
         with torch.no_grad():
@@ -69,18 +71,17 @@ class Device:
 
         # get the cached pipeline and send it to the gpu
         new_pipeline = self.pipelines.load_pipeline(pipeline_name)
-        gpu_pipeline = new_pipeline.to("cuda")
+        gpu_pipeline = new_pipeline.to(f"cuda:{self.device_id}")
         # then delete the one in main memory right away since it is quite large
         del new_pipeline
         # and keep a reference to the one in the gpu
         self.last_pipeline = pipeline_reference(pipeline_name, gpu_pipeline)
         return gpu_pipeline
 
-
-def log_device():
-    logging.debug(
-        f"Using device# {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}"
-    )
+    def log_device(self):
+        logging.debug(
+            f"Using device# {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
+        )
 
 
 def post_process(image_list):

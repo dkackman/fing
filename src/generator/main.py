@@ -118,7 +118,7 @@ def main():
                 pipelines.preload_pipelines(
                     auth_token, ["imginpaint"], not args.dont_conserve_memory
                 )
-                device = Device(pipelines)
+                device = Device(0, pipelines)
                 init_image = get_image(args.image_uri)
                 mask_image = get_image(args.mask_uri)
 
@@ -136,7 +136,7 @@ def main():
                 pipelines.preload_pipelines(
                     auth_token, ["img2img"], not args.dont_conserve_memory
                 )
-                device = Device(pipelines)
+                device = Device(0, pipelines)
                 init_image = get_image(args.image_uri)
 
                 image, pipe_config = device(
@@ -152,7 +152,7 @@ def main():
             pipelines.preload_pipelines(
                 auth_token, ["txt2img"], not args.dont_conserve_memory
             )
-            device = Device(pipelines)
+            device = Device(0, pipelines)
 
             image, pipe_config = device(
                 pipeline_name="txt2img",
