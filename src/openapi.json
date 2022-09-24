@@ -45,8 +45,8 @@
                 "tags": [
                     "Stable Diffusion"
                 ],
-                "summary": "Get Txt2Img",
-                "operationId": "get_txt2img_txt2img_get",
+                "summary": "Get Img",
+                "operationId": "get_img_txt2img_get",
                 "parameters": [
                     {
                         "required": true,
@@ -119,6 +119,16 @@
                         },
                         "name": "width",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Use Ldm",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "use_ldm",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -157,8 +167,8 @@
                 "tags": [
                     "Stable Diffusion"
                 ],
-                "summary": "Get Img2Img",
-                "operationId": "get_img2img_img2img_get",
+                "summary": "Get Img",
+                "operationId": "get_img_img2img_get",
                 "parameters": [
                     {
                         "required": true,
@@ -266,8 +276,8 @@
                 "tags": [
                     "Stable Diffusion"
                 ],
-                "summary": "Get Imginpaint",
-                "operationId": "get_imginpaint_imginpaint_get",
+                "summary": "Get Img",
+                "operationId": "get_img_imginpaint_get",
                 "parameters": [
                     {
                         "required": true,
@@ -356,6 +366,79 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            },
+                            "image/jpeg": {},
+                            "image/png": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/random_face": {
+            "get": {
+                "tags": [
+                    "Stable Diffusion"
+                ],
+                "summary": "Get Img",
+                "operationId": "get_img_random_face_get",
+                "parameters": [
+                    {
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/format_enum"
+                                }
+                            ],
+                            "default": "jpeg"
+                        },
+                        "name": "format",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Inference Steps",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "num_inference_steps",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Images",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "num_images",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PackageMetaDataModel"
+                                }
                             },
                             "image/jpeg": {},
                             "image/png": {}
