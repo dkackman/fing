@@ -14,6 +14,9 @@ from .service.web_app import create_app
 from .diffusion.device import Device
 from .diffusion.pipelines import Pipelines
 from .diffusion.device_pool import add_device
+from .diffusion.ComposableStableDiffusionPipeline import (
+    ComposableStableDiffusionPipeline,
+)
 
 if not torch.cuda.is_available():
     raise Exception("CUDA not present. Quitting.")
@@ -29,6 +32,16 @@ logging.debug(f"Torch version {torch.__version__}")
 @app.on_event("startup")
 async def startup_event():
     pipelines = Pipelines(settings.model_cache_dir)
+    pipelines.preload_pipelines(
+        settings.huggingface_token,
+        "CompVis/stable-diffusion-v1-4",
+        {
+            "compose": ComposableStableDiffusionPipeline,
+        },
+        revision="fp16",
+        torch_dtype=torch.float16,
+        enable_attention_slicing=False,
+    )
     pipelines.preload_pipelines(
         settings.huggingface_token,
         "CompVis/ldm-celebahq-256",

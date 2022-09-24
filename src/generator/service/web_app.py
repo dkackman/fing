@@ -4,6 +4,7 @@ from .txt2img_router import txt2img_router
 from .img2img_router import img2img_router
 from .imginpaint_router import imginpaint_router
 from .random_face_router import random_face_router
+from .compose_router import compose_router
 from .x_api_key import enable_x_api_keys
 
 
@@ -30,5 +31,6 @@ def create_app(version, x_api_key_enabled, x_api_key_list):
     app.include_router(img2img_router)
     app.include_router(imginpaint_router)
     app.include_router(random_face_router)
+    app.include_router(compose_router)
 
     return app

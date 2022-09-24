@@ -10,11 +10,11 @@ from .generator import (
 )
 from .x_api_key import x_api_key_auth
 
-random_face_router = APIRouter()
+compose_router = APIRouter()
 
 
-@random_face_router.get(
-    "/random_face",
+@compose_router.get(
+    "/compose",
     dependencies=[Depends(x_api_key_auth)],
     tags=["Stable Diffusion"],
     responses={
@@ -30,17 +30,25 @@ random_face_router = APIRouter()
     response_model=PackageMetaDataModel,
 )
 def get_img(
+    prompt: str,
     format: format_enum = format_enum.jpeg,
+    guidance_scale: float = 7.5,
     num_inference_steps: int = 50,
     num_images: int = 1,
+    height: int = 512,
+    width: int = 512,
     device: Device = Depends(get_device),
 ):
     buffer, pipeline_config, args = generate_buffer(
         device,
-        model_name="CompVis/ldm-celebahq-256",
-        pipeline_name="faces",
+        model_name="CompVis/stable-diffusion-v1-4",
+        pipeline_name="compose",
+        guidance_scale=guidance_scale,
         num_inference_steps=num_inference_steps,
         num_images=num_images,
+        height=height,
+        width=width,
+        prompt=prompt,
         format=format,
     )
 

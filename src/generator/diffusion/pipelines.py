@@ -67,7 +67,7 @@ class Pipelines:
             open(filepath, "wb"),
         )
 
-    def load_pipeline(self, pipeline_key:str):
+    def load_pipeline(self, pipeline_key: str):
         # resurrect the requested pipeline
         file = self.files[pipeline_key]
         pipeline = pickle.load(file)

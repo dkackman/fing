@@ -48,6 +48,7 @@ class Device:
                             and key != "format"
                         }
                     ).images[0]
+                    # p.nsfw_content_detected
                     image_list.append(image)
 
             return (post_process(image_list), pipeline.config)
