@@ -24,7 +24,7 @@ class Device:
             raise (Exception("busy"))
 
         try:
-            num_images = kwargs["num_images"] if "num_images" in kwargs else 1
+            num_images = kwargs.pop("num_images", 1)
             if num_images > 4:
                 raise Exception("The maximum number of images is 4")
 
@@ -32,22 +32,14 @@ class Device:
                 logging.info(f"Prompt is {kwargs['prompt']}")
             self.log_device()
 
-            pipeline = self.get_pipeline(kwargs["model_name"], kwargs["pipeline_name"])
+            pipeline = self.get_pipeline(
+                kwargs.pop("model_name"), kwargs.pop("pipeline_name")
+            )
             image_list = []
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
             for i in range(num_images):
                 with autocast():
-                    # this comprehension expresssion strips items from kwargs that aren't recognized by the pipeline
-                    image = pipeline(
-                        **{
-                            key: value
-                            for key, value in kwargs.items()
-                            if key != "pipeline_name"
-                            and key != "model_name"
-                            and key != "num_images"
-                            and key != "format"
-                        }
-                    ).images[0]
+                    image = pipeline(**kwargs).images[0]
                     # p.nsfw_content_detected
                     image_list.append(image)
 

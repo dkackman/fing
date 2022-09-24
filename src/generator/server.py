@@ -7,6 +7,9 @@ from diffusers import (
     StableDiffusionImg2ImgPipeline,
     StableDiffusionInpaintPipeline,
 )
+from .diffusion.ComposableStableDiffusionPipeline import (
+    ComposableStableDiffusionPipeline,
+)
 from . import __version__
 from .settings import load_settings, resolve_path
 from .log_setup import setup_logging
@@ -14,9 +17,7 @@ from .service.web_app import create_app
 from .diffusion.device import Device
 from .diffusion.pipelines import Pipelines
 from .diffusion.device_pool import add_device
-from .diffusion.ComposableStableDiffusionPipeline import (
-    ComposableStableDiffusionPipeline,
-)
+
 
 if not torch.cuda.is_available():
     raise Exception("CUDA not present. Quitting.")

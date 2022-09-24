@@ -55,6 +55,8 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
 
 
 def generate_buffer(device, **kwargs):
+    format = kwargs.pop("format", "JPEG").upper()
+
     try:
         logging.info(f"START generating {kwargs['pipeline_name']}")
 
@@ -67,9 +69,6 @@ def generate_buffer(device, **kwargs):
     except:
         raise Exception(423)
 
-    format = (
-        "JPEG" if kwargs["format"] == format_enum.json else kwargs["format"].upper()
-    )
     buffer = io.BytesIO()
     image.save(buffer, format=format)
     buffer.seek(0)
