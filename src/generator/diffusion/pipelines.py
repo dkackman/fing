@@ -3,6 +3,7 @@ from xmlrpc.client import boolean
 import torch
 import logging
 import pickle
+from pathlib import Path
 
 
 class Pipelines:
@@ -30,44 +31,50 @@ class Pipelines:
         # on demand they get deserialized and pushed to the gpu
 
         for pipeline_name, StableDiffusionType in pipeline_type_map.items():
-            pipeline = StableDiffusionType.from_pretrained(
-                model_name,
-                revision=revision,
-                torch_dtype=torch_dtype,
-                use_auth_token=auth_token,
-            )
-            if enable_attention_slicing:
-                pipeline.enable_attention_slicing()
+            # if the model isn't cached go load it
+            filepath = get_pipeline_filepath(model_name, pipeline_name, revision)
+            if not Path(filepath).is_file():
+                pipeline = StableDiffusionType.from_pretrained(
+                    model_name,
+                    revision=revision,
+                    torch_dtype=torch_dtype,
+                    use_auth_token=auth_token,
+                )
+                if enable_attention_slicing:
+                    pipeline.enable_attention_slicing()
 
-            self.serialize_pipeline(
-                pipeline,
-                model_name,
-                pipeline_name,
-                revision,
-            )
+                self.serialize_pipeline(
+                    pipeline,
+                    model_name,
+                    pipeline_name,
+                    revision,
+                )
+
+            pipeline_key = f"{model_name}.{pipeline_name}"
+            # open aand lock the file for later use
+            self.files[pipeline_key] = open(filepath, "rb")
 
         return self
 
-    def serialize_pipeline(self, pipeline, model_name, pipeline_name, revision):
+    def serialize_pipeline(
+        self, pipeline, model_name: str, pipeline_name: str, revision: str
+    ):
         logging.debug(f"Serializing {pipeline_name}")
 
-        model_name_path_part = model_name.replace("/", ".")
+        filepath = get_pipeline_filepath(model_name, pipeline_name, revision)
         pickle.dump(
             pipeline,
-            open(
-                f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline", "wb"
-            ),
+            open(filepath, "wb"),
         )
 
-        pipeline_key = f"{model_name}.{pipeline_name}"
-        # open aand lock the file for later use
-        self.files[pipeline_key] = open(
-            f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline", "rb"
-        )
-
-    def load_pipeline(self, pipeline_key):
+    def load_pipeline(self, pipeline_key:str):
         # resurrect the requested pipeline
         file = self.files[pipeline_key]
         pipeline = pickle.load(file)
         file.seek(0, 0)  # set the file stream back to the beginning
         return pipeline
+
+
+def get_pipeline_filepath(model_name: str, pipeline_name: str, revision: str) -> str:
+    model_name_path_part = model_name.replace("/", ".")
+    return f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline"
