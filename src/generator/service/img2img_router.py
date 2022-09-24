@@ -24,7 +24,7 @@ img2img_router = APIRouter()
         }
     },
 )
-def get_img2img(
+def get_img(
     prompt: str,
     image_uri: str,
     format: format_enum = format_enum.jpeg,
@@ -36,6 +36,7 @@ def get_img2img(
 ):
     buffer, pipeline_config, args = generate_buffer(
         device,
+        model_name="CompVis/stable-diffusion-v1-4",
         pipeline_name="img2img",
         guidance_scale=guidance_scale,
         strength=strength,

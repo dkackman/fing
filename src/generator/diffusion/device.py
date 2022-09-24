@@ -6,7 +6,7 @@ from collections import namedtuple
 from threading import Lock
 
 
-pipeline_reference = namedtuple("pipeline_reference", ("name", "pipeline"))
+pipeline_reference = namedtuple("pipeline_reference", ("key", "pipeline"))
 
 
 class Device:
@@ -31,7 +31,7 @@ class Device:
             logging.info(f"Prompt is {kwargs['prompt']}")
             self.log_device()
 
-            pipeline = self.get_pipeline(kwargs["pipeline_name"])
+            pipeline = self.get_pipeline(kwargs["model_name"], kwargs["pipeline_name"])
             image_list = []
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
             for i in range(num_images):
@@ -42,6 +42,7 @@ class Device:
                             key: value
                             for key, value in kwargs.items()
                             if key != "pipeline_name"
+                            and key != "model_name"
                             and key != "num_images"
                             and key != "format"
                         }
@@ -52,18 +53,19 @@ class Device:
         finally:
             self.mutex.release()
 
-    def get_pipeline(self, pipeline_name):
+    def get_pipeline(self, model_name, pipeline_name):
+        pipeline_key = f"{model_name}.{pipeline_name}"
         # if the last pipeline is the one requested, just return it
         if self.last_pipeline is not None:
-            if self.last_pipeline.name == pipeline_name:
-                logging.debug(f"{pipeline_name} already loaded")
+            if self.last_pipeline.key == pipeline_key:
+                logging.debug(f"{pipeline_key} already loaded")
                 return self.last_pipeline.pipeline
 
             # if there is a loaded pipeline but it's different clean up the memory
             del self.last_pipeline
 
         logging.debug(
-            f"Deserializing {pipeline_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
+            f"Deserializing {pipeline_key} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
         )
         # clear gpu cache
         torch.cuda.set_device(self.device_id)
@@ -71,12 +73,12 @@ class Device:
             torch.cuda.empty_cache()
 
         # get the cached pipeline and send it to the gpu
-        new_pipeline = self.pipelines.load_pipeline(pipeline_name)
+        new_pipeline = self.pipelines.load_pipeline(pipeline_key)
         gpu_pipeline = new_pipeline.to(f"cuda:{self.device_id}")
         # then delete the one in main memory right away since it is quite large
         del new_pipeline
         # and keep a reference to the one in the gpu
-        self.last_pipeline = pipeline_reference(pipeline_name, gpu_pipeline)
+        self.last_pipeline = pipeline_reference(pipeline_key, gpu_pipeline)
         return gpu_pipeline
 
     def log_device(self):

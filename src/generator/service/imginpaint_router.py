@@ -24,7 +24,7 @@ imginpaint_router = APIRouter()
         }
     },
 )
-def get_imginpaint(
+def get_img(
     prompt: str,
     image_uri: str,
     mask_uri: str,
@@ -37,6 +37,7 @@ def get_imginpaint(
 ):
     buffer, pipeline_config, args = generate_buffer(
         device,
+        model_name="CompVis/stable-diffusion-v1-4",
         pipeline_name="imginpaint",
         guidance_scale=guidance_scale,
         strength=strength,

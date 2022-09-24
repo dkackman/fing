@@ -1,28 +1,23 @@
 from typing import Dict, Any
 import torch
 import logging
-from diffusers import (
-    StableDiffusionPipeline,
-    StableDiffusionImg2ImgPipeline,
-    StableDiffusionInpaintPipeline,
-)
+
 import pickle
 
 
 class Pipelines:
 
-    model_name: str = ""
     model_cache_dir: str = ""
     files: Dict[str, Any] = {}
 
-    def __init__(self, model_name, model_cache_dir="/tmp") -> None:
-        self.model_name = model_name
+    def __init__(self, model_cache_dir="/tmp") -> None:
         self.model_cache_dir = model_cache_dir
 
     def preload_pipelines(
         self,
         auth_token,
-        pipeline_names=["txt2img", "img2img", "imginpaint"],
+        model_name,
+        pipeline_type_map,
         conserve_memory=True,
     ):
         if len(self.files) > 0:
@@ -35,18 +30,11 @@ class Pipelines:
         # 1 - pay the startup cost to get the model form hugging face only 1 time per process
         # 2 - keep them out of RAM (main and GPU) until actually needed
         # on demand they get deserialized and pushed to the gpu
-        #
-        pipeline_type_map = {
-            "txt2img": StableDiffusionPipeline,
-            "img2img": StableDiffusionImg2ImgPipeline,
-            "imginpaint": StableDiffusionInpaintPipeline,
-        }
 
-        for pipe_line_name in pipeline_names:
-            StableDiffusionType = pipeline_type_map[pipe_line_name]
+        for pipeline_name, StableDiffusionType in pipeline_type_map.items():
             if conserve_memory:
                 pipeline = StableDiffusionType.from_pretrained(
-                    self.model_name,
+                    model_name,
                     revision="fp16",
                     torch_dtype=torch.float16,
                     use_auth_token=auth_token,
@@ -54,20 +42,23 @@ class Pipelines:
                 pipeline.enable_attention_slicing()
             else:
                 pipeline = StableDiffusionType.from_pretrained(
-                    self.model_name,
+                    model_name,
                     use_auth_token=auth_token,
                 )
 
             self.serialize_pipeline(
-                pipeline, pipe_line_name, "fp16" if conserve_memory else "full"
+                pipeline,
+                model_name,
+                pipeline_name,
+                "fp16" if conserve_memory else "full",
             )
 
         return self
 
-    def serialize_pipeline(self, pipeline, pipeline_name, revision):
+    def serialize_pipeline(self, pipeline, model_name, pipeline_name, revision):
         logging.debug(f"Serializing {pipeline_name}")
 
-        model_name_path_part = self.model_name.replace("/", ".")
+        model_name_path_part = model_name.replace("/", ".")
         pickle.dump(
             pipeline,
             open(
@@ -75,14 +66,15 @@ class Pipelines:
             ),
         )
 
+        pipeline_key = f"{model_name}.{pipeline_name}"
         # open aand lock the file for later use
-        self.files[pipeline_name] = open(
+        self.files[pipeline_key] = open(
             f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline", "rb"
         )
 
-    def load_pipeline(self, pipeline_name):
+    def load_pipeline(self, pipeline_key):
         # resurrect the requested pipeline
-        file = self.files[pipeline_name]
+        file = self.files[pipeline_key]
         pipeline = pickle.load(file)
         file.seek(0, 0)  # set the file stream back to the beginning
         return pipeline

@@ -30,7 +30,7 @@ txt2img_router = APIRouter()
     },
     response_model=PackageMetaDataModel,
 )
-def get_txt2img(
+def get_img(
     prompt: str,
     format: format_enum = format_enum.jpeg,
     guidance_scale: float = 7.5,
@@ -42,6 +42,7 @@ def get_txt2img(
 ):
     buffer, pipeline_config, args = generate_buffer(
         device,
+        model_name="CompVis/stable-diffusion-v1-4",
         pipeline_name="txt2img",
         guidance_scale=guidance_scale,
         num_inference_steps=num_inference_steps,
