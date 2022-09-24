@@ -1,4 +1,4 @@
-from .service.settings import (
+from .settings import (
     Settings,
     settings_exist,
     save_settings,

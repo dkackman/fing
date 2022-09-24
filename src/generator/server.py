@@ -1,13 +1,15 @@
 import logging
 import torch
-from .service.web_app import create_app
-from . import __version__
 import uvicorn
 from diffusers import (
     StableDiffusionPipeline,
     StableDiffusionImg2ImgPipeline,
     StableDiffusionInpaintPipeline,
 )
+from . import __version__
+from .settings import load_settings, resolve_path
+from .log_setup import setup_logging
+from .service.web_app import create_app
 from .diffusion.device import Device
 from .diffusion.pipelines import Pipelines
 from .diffusion.device_pool import add_device
@@ -15,7 +17,12 @@ from .diffusion.device_pool import add_device
 if not torch.cuda.is_available():
     raise Exception("CUDA not present. Quitting.")
 
-app, settings = create_app()
+settings = load_settings()
+setup_logging(resolve_path(settings.log_filename), settings.log_level)
+
+app = create_app(
+    __version__, settings.x_api_key_enabled, settings.x_api_key_list
+)
 
 logging.debug(f"Torch version {torch.__version__}")
 
