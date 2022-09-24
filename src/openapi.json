@@ -129,6 +129,15 @@
                         },
                         "name": "use_ldm",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Seed",
+                            "type": "integer"
+                        },
+                        "name": "seed",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -239,6 +248,15 @@
                             "default": 1
                         },
                         "name": "num_images",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Seed",
+                            "type": "integer"
+                        },
+                        "name": "seed",
                         "in": "query"
                     }
                 ],
@@ -358,6 +376,15 @@
                         },
                         "name": "num_images",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Seed",
+                            "type": "integer"
+                        },
+                        "name": "seed",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -428,6 +455,136 @@
                             "default": 1
                         },
                         "name": "num_images",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Seed",
+                            "type": "integer"
+                        },
+                        "name": "seed",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PackageMetaDataModel"
+                                }
+                            },
+                            "image/jpeg": {},
+                            "image/png": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/compose": {
+            "get": {
+                "tags": [
+                    "Stable Diffusion"
+                ],
+                "summary": "Get Img",
+                "operationId": "get_img_compose_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Prompt",
+                            "type": "string"
+                        },
+                        "name": "prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/format_enum"
+                                }
+                            ],
+                            "default": "jpeg"
+                        },
+                        "name": "format",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Guidance Scale",
+                            "type": "number",
+                            "default": 7.5
+                        },
+                        "name": "guidance_scale",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Inference Steps",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "num_inference_steps",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Images",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "num_images",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Height",
+                            "type": "integer",
+                            "default": 512
+                        },
+                        "name": "height",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Width",
+                            "type": "integer",
+                            "default": 512
+                        },
+                        "name": "width",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Seed",
+                            "type": "integer"
+                        },
+                        "name": "seed",
                         "in": "query"
                     }
                 ],
@@ -524,8 +681,9 @@
                     "tokenizer",
                     "unet",
                     "scheduler",
-                    "safety_checker",
-                    "feature_extractor"
+                    "feature_extractor",
+                    "class_name",
+                    "diffusers_version"
                 ],
                 "type": "object",
                 "properties": {
@@ -577,6 +735,18 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "seed": {
+                        "title": "Seed",
+                        "type": "integer"
+                    },
+                    "class_name": {
+                        "title": "Class Name",
+                        "type": "string"
+                    },
+                    "diffusers_version": {
+                        "title": "Diffusers Version",
+                        "type": "string"
                     }
                 }
             },
