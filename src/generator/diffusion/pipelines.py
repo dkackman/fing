@@ -15,15 +15,11 @@ class Pipelines:
 
     def preload_pipelines(
         self,
-        auth_token,
-        model_name,
+        auth_token: str,
+        model_name: str,
         pipeline_type_map,
         conserve_memory=True,
     ):
-        if len(self.files) > 0:
-            logging.debug("Pipelines already loaded")
-            return self
-
         # this will preload all the pipelines and serialize them to disk.
         # the pre_load function then opens and keeps open a handle to each file to keep them locked
         # get_pipeline will then retrive from disk, accomplishing two things:
