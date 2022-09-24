@@ -33,22 +33,16 @@ random_face_router = APIRouter()
 )
 def get_img(
     format: format_enum = format_enum.jpeg,
-    guidance_scale: float = 7.5,
     num_inference_steps: int = 50,
     num_images: int = 1,
-    height: int = 512,
-    width: int = 512,
     device: Device = Depends(get_device),
 ):
     buffer, pipeline_config, args = generate_buffer(
         device,
         model_name="CompVis/ldm-celebahq-256",
         pipeline_name="faces",
-        guidance_scale=guidance_scale,
         num_inference_steps=num_inference_steps,
         num_images=num_images,
-        height=height,
-        width=width,
         format=format,
     )
 
