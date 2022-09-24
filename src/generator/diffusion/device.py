@@ -58,14 +58,15 @@ class Device:
             if self.last_pipeline.name == pipeline_name:
                 logging.debug(f"{pipeline_name} already loaded")
                 return self.last_pipeline.pipeline
-            else:
-                # if there is a loaded pipeline but it's different clean up the memory
-                del self.last_pipeline
+
+            # if there is a loaded pipeline but it's different clean up the memory
+            del self.last_pipeline
 
         logging.debug(
             f"Deserializing {pipeline_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
         )
-        # clear gpu memory
+        # clear gpu cache
+        torch.cuda.set_device(self.device_id)
         with torch.no_grad():
             torch.cuda.empty_cache()
 

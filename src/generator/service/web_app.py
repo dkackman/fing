@@ -21,7 +21,7 @@ def create_app():
     logging.debug(f"Torch version {torch.__version__}")
 
     pipelines = Pipelines(
-        settings.model_name, settings.model_cache_dir
+        "CompVis/stable-diffusion-v1-4", settings.model_cache_dir
     ).preload_pipelines(settings.huggingface_token)
     add_device(Device(0, pipelines))
 

@@ -42,7 +42,6 @@ def get_settings_full_path():
 
 
 class Settings(BaseSettings):
-    model_name: str = "CompVis/stable-diffusion-v1-4"
     huggingface_token: str = "PLACE YOUR TOKEN HERE"
     host: str = "localhost"
     port: int = 9147
