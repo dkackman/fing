@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
@@ -33,6 +34,7 @@ def get_img(
     format: format_enum = format_enum.jpeg,
     num_inference_steps: int = 50,
     num_images: int = 1,
+    seed: Optional[int] = None,
     device: Device = Depends(get_device),
 ):
     buffer, pipeline_config, args = generate_buffer(
@@ -42,6 +44,7 @@ def get_img(
         num_inference_steps=num_inference_steps,
         num_images=num_images,
         format=format,
+        seed=seed,
     )
 
     if format == format_enum.jpeg:

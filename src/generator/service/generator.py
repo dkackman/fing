@@ -5,7 +5,7 @@ import io
 import base64
 from enum import auto
 from fastapi_restful.enums import StrEnum
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
@@ -17,14 +17,16 @@ class format_enum(StrEnum):
 
 class PipelineConfig(BaseModel):
     vae: List[str]
-    _class_name: str
-    _diffusers_version: str
     text_encoder: List[str]
     tokenizer: List[str]
     unet: List[str]
     scheduler: List[str]
-    safety_checker: List[str]
+    safety_checker: Optional[List[str]]
     feature_extractor: List[str]
+    seed: Optional[int]
+    class_name: str
+    diffusers_version: str
+
 
 
 class PipelineConfigModel(BaseModel):
@@ -56,6 +58,7 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
 
 def generate_buffer(device, **kwargs):
     format = kwargs.pop("format", "JPEG").upper()
+    format = format if format != "JSON" else "JPEG"
 
     try:
         logging.info(f"START generating {kwargs['pipeline_name']}")

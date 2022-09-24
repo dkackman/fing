@@ -1,3 +1,4 @@
+from typing import Optional
 from xmlrpc.client import boolean
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -39,6 +40,7 @@ def get_img(
     height: int = 512,
     width: int = 512,
     use_ldm: boolean = False,
+    seed: Optional[int] = None,
     device: Device = Depends(get_device),
 ):
     model_name = (
@@ -56,6 +58,7 @@ def get_img(
         width=width,
         prompt=prompt,
         format=format,
+        seed=seed,
     )
 
     if format == format_enum.jpeg:

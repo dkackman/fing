@@ -1,3 +1,4 @@
+from typing import Optional
 import torch
 import logging
 from torch.cuda.amp import autocast
@@ -35,14 +36,26 @@ class Device:
             pipeline = self.get_pipeline(
                 kwargs.pop("model_name"), kwargs.pop("pipeline_name")
             )
+
+            # this allows rep0orducability
+            seed: Optional[int] = kwargs.pop("seed", None)
+            if seed is not None:
+                torch.manual_seed(seed)
+            else:
+                seed = torch.seed()
+
             image_list = []
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
+
             for i in range(num_images):
                 with autocast():
                     image = pipeline(**kwargs).images[0]
                     # p.nsfw_content_detected
                     image_list.append(image)
 
+            pipeline.config["seed"] = seed
+            pipeline.config["class_name"] = pipeline.config["_class_name"]
+            pipeline.config["diffusers_version"] = pipeline.config["_diffusers_version"]
             return (post_process(image_list), pipeline.config)
         finally:
             self.mutex.release()
