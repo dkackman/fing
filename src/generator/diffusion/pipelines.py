@@ -1,4 +1,5 @@
 from typing import Dict, Any
+from xmlrpc.client import boolean
 import torch
 import logging
 import pickle
@@ -17,7 +18,9 @@ class Pipelines:
         auth_token: str,
         model_name: str,
         pipeline_type_map,
-        conserve_memory=True,
+        revision: str = "main",
+        torch_dtype=torch.float16,
+        enable_attention_slicing: boolean = True,
     ):
         # this will preload all the pipelines and serialize them to disk.
         # the pre_load function then opens and keeps open a handle to each file to keep them locked
@@ -27,25 +30,20 @@ class Pipelines:
         # on demand they get deserialized and pushed to the gpu
 
         for pipeline_name, StableDiffusionType in pipeline_type_map.items():
-            if conserve_memory:
-                pipeline = StableDiffusionType.from_pretrained(
-                    model_name,
-                    revision="fp16",
-                    torch_dtype=torch.float16,
-                    use_auth_token=auth_token,
-                )
+            pipeline = StableDiffusionType.from_pretrained(
+                model_name,
+                revision=revision,
+                torch_dtype=torch_dtype,
+                use_auth_token=auth_token,
+            )
+            if enable_attention_slicing:
                 pipeline.enable_attention_slicing()
-            else:
-                pipeline = StableDiffusionType.from_pretrained(
-                    model_name,
-                    use_auth_token=auth_token,
-                )
 
             self.serialize_pipeline(
                 pipeline,
                 model_name,
                 pipeline_name,
-                "fp16" if conserve_memory else "full",
+                revision,
             )
 
         return self

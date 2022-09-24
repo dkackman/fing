@@ -12,11 +12,11 @@ from .generator import (
 )
 from .x_api_key import x_api_key_auth
 
-txt2img_router = APIRouter()
+random_face_router = APIRouter()
 
 
-@txt2img_router.get(
-    "/txt2img",
+@random_face_router.get(
+    "/random_face",
     dependencies=[Depends(x_api_key_auth)],
     tags=["Stable Diffusion"],
     responses={
@@ -32,30 +32,23 @@ txt2img_router = APIRouter()
     response_model=PackageMetaDataModel,
 )
 def get_img(
-    prompt: str,
     format: format_enum = format_enum.jpeg,
     guidance_scale: float = 7.5,
     num_inference_steps: int = 50,
     num_images: int = 1,
     height: int = 512,
     width: int = 512,
-    use_ldm: boolean = False,
     device: Device = Depends(get_device),
 ):
-    model_name = (
-        "CompVis/ldm-text2im-large-256" if use_ldm else "CompVis/stable-diffusion-v1-4"
-    )
-
     buffer, pipeline_config, args = generate_buffer(
         device,
-        model_name=model_name,
-        pipeline_name="txt2img",
+        model_name="CompVis/ldm-celebahq-256",
+        pipeline_name="faces",
         guidance_scale=guidance_scale,
         num_inference_steps=num_inference_steps,
         num_images=num_images,
         height=height,
         width=width,
-        prompt=prompt,
         format=format,
     )
 

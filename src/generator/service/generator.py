@@ -58,7 +58,8 @@ def generate_buffer(device, **kwargs):
     try:
         logging.info(f"START generating {kwargs['pipeline_name']}")
 
-        kwargs["prompt"] = clean_prompt(kwargs["prompt"])
+        if "prompt" in kwargs:
+            kwargs["prompt"] = clean_prompt(kwargs["prompt"])
 
         image, pipe_config = device(**kwargs)
 

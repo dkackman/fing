@@ -2,6 +2,7 @@ import logging
 import torch
 import uvicorn
 from diffusers import (
+    DiffusionPipeline,
     StableDiffusionPipeline,
     StableDiffusionImg2ImgPipeline,
     StableDiffusionInpaintPipeline,
@@ -20,16 +21,24 @@ if not torch.cuda.is_available():
 settings = load_settings()
 setup_logging(resolve_path(settings.log_filename), settings.log_level)
 
-app = create_app(
-    __version__, settings.x_api_key_enabled, settings.x_api_key_list
-)
+app = create_app(__version__, settings.x_api_key_enabled, settings.x_api_key_list)
 
 logging.debug(f"Torch version {torch.__version__}")
 
 
 @app.on_event("startup")
 async def startup_event():
-    pipelines = Pipelines(settings.model_cache_dir).preload_pipelines(
+    pipelines = Pipelines(settings.model_cache_dir)
+    pipelines.preload_pipelines(
+        settings.huggingface_token,
+        "CompVis/ldm-celebahq-256",
+        {
+            "faces": DiffusionPipeline,
+        },
+        torch_dtype=torch.float16,
+        enable_attention_slicing=False,
+    )
+    pipelines.preload_pipelines(
         settings.huggingface_token,
         "CompVis/stable-diffusion-v1-4",
         {
@@ -37,7 +46,19 @@ async def startup_event():
             "img2img": StableDiffusionImg2ImgPipeline,
             "imginpaint": StableDiffusionInpaintPipeline,
         },
+        revision="fp16",
+        torch_dtype=torch.float16,
     )
+    pipelines.preload_pipelines(
+        settings.huggingface_token,
+        "CompVis/ldm-text2im-large-256",
+        {
+            "txt2img": DiffusionPipeline,
+        },
+        torch_dtype=torch.float16,
+        enable_attention_slicing=False,
+    )
+
     add_device(Device(0, pipelines))
 
 

@@ -28,7 +28,8 @@ class Device:
             if num_images > 4:
                 raise Exception("The maximum number of images is 4")
 
-            logging.info(f"Prompt is {kwargs['prompt']}")
+            if "prompt" in kwargs:
+                logging.info(f"Prompt is {kwargs['prompt']}")
             self.log_device()
 
             pipeline = self.get_pipeline(kwargs["model_name"], kwargs["pipeline_name"])
