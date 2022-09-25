@@ -112,6 +112,7 @@ dependencies:
   - pip:
     - aniso8601==9.0.1
     - concurrent-log-handler==0.9.20
+    - fastapi-restful==0.4.3
     - flake8==5.0.4
     - gunicorn==20.1.0
     - itsdangerous==2.1.2
@@ -120,6 +121,7 @@ dependencies:
     - mccabe==0.7.0
     - mypy==0.971
     - portalocker==2.5.1
+    - psutil==5.9.2
     - pycodestyle==2.9.1
     - pyflakes==2.5.0
     - pytz==2022.2.1
