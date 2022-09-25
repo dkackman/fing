@@ -60,6 +60,6 @@ def get_img(
 
     if format == format_enum.json:
         # don't serialize these two in the metadata
-        args.pop("init_image")
-        args.pop("mask_image")
+        args["image_uri"] = image_uri
+        args["mask_uri"] = image_uri
         return package_metadata(buffer, pipeline_config, args)

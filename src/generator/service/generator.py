@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from fastapi_restful.enums import StrEnum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
+from PIL import Image
 
 
 class format_enum(StrEnum):
@@ -51,8 +52,19 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
     # metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
     # metadata["parameters"] = args
 
+    # in case we ever want to return the input images
+    # for k, v in args.items():
+    #    if isinstance(v, Image.Image):
+    #        args[k] = base64.b64encode(image_to_buffer(v, "JPEG").getvalue()).decode("UTF-8")
+
+    # filter out any images from the metadata
+    serlized_args = {k: v for (k, v) in args.items() if not isinstance(v, Image.Image)}
+
     return PackageMetaDataModel(
-        pipeline_config=pipeline_config, software=software, image=image, parameters=args
+        pipeline_config=pipeline_config,
+        software=software,
+        image=image,
+        parameters=serlized_args,
     )
 
 
@@ -75,12 +87,18 @@ def generate_buffer(device, **kwargs):
 
         raise HTTPException(500)
 
+    buffer = image_to_buffer(image, format)
+
+    # we return kwargs so that it can be used as metadata if needed
+    return buffer, pipe_config, kwargs
+
+
+def image_to_buffer(image, format):
     buffer = io.BytesIO()
     image.save(buffer, format=format)
     buffer.seek(0)
 
-    # we return kwargs so that it can be used as metadata if needed
-    return buffer, pipe_config, kwargs
+    return buffer
 
 
 def clean_prompt(str):
