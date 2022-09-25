@@ -16,13 +16,13 @@ class format_enum(StrEnum):
 
 
 class PipelineConfig(BaseModel):
-    vae: List[str]
-    text_encoder: List[str]
-    tokenizer: List[str]
+    vae: Optional[List[str]]
+    text_encoder: Optional[List[str]]
+    tokenizer: Optional[List[str]]
     unet: List[str]
     scheduler: List[str]
     safety_checker: Optional[List[str]]
-    feature_extractor: List[str]
+    feature_extractor: Optional[List[str]]
     seed: Optional[int]
     class_name: str
     diffusers_version: str
