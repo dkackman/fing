@@ -3,7 +3,7 @@ from .info_router import info_router
 from .txt2img_router import txt2img_router
 from .img2img_router import img2img_router
 from .imginpaint_router import imginpaint_router
-from .random_face_router import random_face_router
+from .random_face import random_face_router
 from .compose_router import compose_router
 from .x_api_key import enable_x_api_keys
 

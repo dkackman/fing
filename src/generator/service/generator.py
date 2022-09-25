@@ -28,7 +28,6 @@ class PipelineConfig(BaseModel):
     diffusers_version: str
 
 
-
 class PipelineConfigModel(BaseModel):
     pipeline_config: PipelineConfig
 

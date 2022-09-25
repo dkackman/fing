@@ -59,4 +59,7 @@ def get_img(
         return StreamingResponse(buffer, media_type="image/png")
 
     if format == format_enum.json:
+        # don't serialize these two in the metadata
+        args.pop("init_image")
+        args.pop("mask_image")
         return package_metadata(buffer, pipeline_config, args)
