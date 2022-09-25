@@ -58,5 +58,5 @@ def get_img(
 
     if format == format_enum.json:
         # don't serialize this in the metadata
-        args.pop("init_image")      
+        args.pop("init_image")
         return package_metadata(buffer, pipeline_config, args)

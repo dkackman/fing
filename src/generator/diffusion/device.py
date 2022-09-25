@@ -22,7 +22,7 @@ class Device:
 
     def __call__(self, **kwargs):
         if not self.mutex.acquire(False):
-            raise (Exception("busy"))
+            raise Exception("busy")
 
         try:
             num_images = kwargs.pop("num_images", 1)

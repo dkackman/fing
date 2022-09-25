@@ -4,6 +4,7 @@ import logging
 import io
 import base64
 from enum import auto
+from fastapi import HTTPException
 from fastapi_restful.enums import StrEnum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
@@ -68,8 +69,11 @@ def generate_buffer(device, **kwargs):
         image, pipe_config = device(**kwargs)
 
         logging.info(f"END generating {kwargs['pipeline_name']}")
-    except:
-        raise Exception(423)
+    except Exception as e:
+        if len(e.args) > 0 and e.args[0] == "busy":
+            raise HTTPException(423)
+
+        raise HTTPException(500)
 
     buffer = io.BytesIO()
     image.save(buffer, format=format)
