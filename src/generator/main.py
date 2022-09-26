@@ -5,7 +5,7 @@ import argparse
 import torch
 from pathlib import Path
 from .external_resource import get_image
-from .diffusion.pipelines import Pipelines
+from .diffusion.pipeline_cache import PipelineCache
 from .diffusion.device import Device
 from .init_app import init
 
@@ -110,7 +110,7 @@ def main():
         logging.info(f"START generating {id}")
 
         auth_token = True
-        pipelines = Pipelines("CompVis/stable-diffusion-v1-4", "/tmp")
+        pipelines = PipelineCache("CompVis/stable-diffusion-v1-4", "/tmp")
 
         prompt = args.prompt.replace('"', "").replace("'", "")
         if args.image_uri is not None:

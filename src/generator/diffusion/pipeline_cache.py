@@ -5,7 +5,7 @@ import pickle
 from pathlib import Path
 import io
 
-class Pipelines:
+class PipelineCache:
 
     pipeline_cache_dir: str = ""
     files: Dict[str, io.BufferedReader] = {}
@@ -66,7 +66,9 @@ class Pipelines:
             open(filepath, "wb"),
         )
 
-    def load_pipeline(self, pipeline_key: str):
+    def load_pipeline(self, model_name: str, pipeline_name: str):
+        pipeline_key = f"{model_name}.{pipeline_name}"
+
         # resurrect the requested pipeline
         file = self.files[pipeline_key]
         pipeline = pickle.load(file)
@@ -76,4 +78,5 @@ class Pipelines:
 
     def get_pipeline_filepath(self, model_name: str, pipeline_name: str, revision: str) -> Path:
         model_name_path_part = model_name.replace("/", ".")
-        return Path(self.pipeline_cache_dir).joinpath(f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline")
+        pipeline_path_part = f"{model_name_path_part}.{revision}.{pipeline_name}.pipeline"
+        return Path(self.pipeline_cache_dir).joinpath(pipeline_path_part)

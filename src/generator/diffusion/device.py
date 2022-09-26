@@ -12,13 +12,13 @@ pipeline_reference = namedtuple("pipeline_reference", ("key", "pipeline"))
 
 class Device:
     device_id = None
-    pipelines = None
+    pipeline_cache = None
     last_pipeline = None
     mutex = Lock()
 
-    def __init__(self, device_id, pipelines) -> None:
+    def __init__(self, device_id, pipeline_cache) -> None:
         self.device_id = device_id
-        self.pipelines = pipelines
+        self.pipeline_cache = pipeline_cache
 
     def __call__(self, **kwargs):
         if not self.mutex.acquire(False):
@@ -37,7 +37,7 @@ class Device:
                 kwargs.pop("model_name"), kwargs.pop("pipeline_name")
             )
 
-            # this allows rep0orducability
+            # this allows reproducability
             seed: Optional[int] = kwargs.pop("seed", None)
             if seed is not None:
                 torch.manual_seed(seed)
@@ -80,7 +80,7 @@ class Device:
             torch.cuda.empty_cache()
 
         # get the cached pipeline and send it to the gpu
-        new_pipeline = self.pipelines.load_pipeline(pipeline_key)
+        new_pipeline = self.pipeline_cache.load_pipeline(model_name, pipeline_name)
         gpu_pipeline = new_pipeline.to(f"cuda:{self.device_id}")
         # then delete the one in main memory right away since it is quite large
         del new_pipeline

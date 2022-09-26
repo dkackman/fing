@@ -15,7 +15,7 @@ from .settings import load_settings, resolve_path
 from .log_setup import setup_logging
 from .service.web_app import create_app
 from .diffusion.device import Device
-from .diffusion.pipelines import Pipelines
+from .diffusion.pipeline_cache import PipelineCache
 from .diffusion.device_pool import add_device
 
 
@@ -32,7 +32,7 @@ logging.debug(f"Torch version {torch.__version__}")
 
 @app.on_event("startup")
 async def startup_event():
-    pipelines = Pipelines(settings.model_cache_dir)
+    pipelines = PipelineCache(settings.model_cache_dir)
     pipelines.preload_pipelines(
         settings.huggingface_token,
         "CompVis/stable-diffusion-v1-4",
