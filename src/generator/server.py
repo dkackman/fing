@@ -11,7 +11,13 @@ from .diffusion.ComposableStableDiffusionPipeline import (
     ComposableStableDiffusionPipeline,
 )
 from . import __version__
-from .settings import load_settings, resolve_path
+from .settings import (
+    Settings,
+    load_settings,
+    resolve_path,
+    settings_exist,
+    save_settings,
+)
 from .log_setup import setup_logging
 from .service.web_app import create_app
 from .diffusion.device import Device
@@ -21,6 +27,10 @@ from .diffusion.device_pool import add_device
 
 if not torch.cuda.is_available():
     raise Exception("CUDA not present. Quitting.")
+
+if not settings_exist():
+    print("Initializing settings with defaults")
+    save_settings(Settings())
 
 settings = load_settings()
 setup_logging(resolve_path(settings.log_filename), settings.log_level)

@@ -4,7 +4,7 @@ from .settings import (
     save_settings,
     get_settings_full_path,
 )
-from .diffusion.pipeline_cache import PipelineCache
+from .server import startup_event
 
 
 def init():
@@ -50,5 +50,8 @@ def init():
         return
 
     print("Preloading pipelines. This may take awhile...")
-    pipelines = PipelineCache(settings.model_name, settings.model_cache_dir)
-    pipelines.preload(settings.huggingface_token, settings.conserve_memory)
+    startup_event()
+    print("done")
+
+
+init()

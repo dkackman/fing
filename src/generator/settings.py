@@ -1,5 +1,5 @@
 from operator import truediv
-from typing import List
+from typing import List, Union
 from pydantic import BaseSettings
 import json
 import os
@@ -14,7 +14,7 @@ def load_settings():
 
 def save_settings(settings):
     dir = Path(get_settings_dir())
-    dir.parent.mkdir(0o770, parents=True, exist_ok=True)
+    dir.mkdir(0o770, parents=True, exist_ok=True)
 
     with open(get_settings_full_path(), "w") as file:
         file.write(settings.json(indent=2))
@@ -45,7 +45,8 @@ def get_settings_full_path():
 
 
 class Settings(BaseSettings):
-    huggingface_token: str = "PLACE YOUR TOKEN HERE"
+    # when true huggingface will look for auth from the environment - otherwise the api key itself
+    huggingface_token: Union[bool, str] = True
     host: str = "localhost"
     port: int = 9147
     log_level: str = "DEBUG"
