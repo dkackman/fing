@@ -1,5 +1,4 @@
 from typing import Optional
-from xmlrpc.client import boolean
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
@@ -39,7 +38,7 @@ def get_img(
     num_images: int = 1,
     height: int = 512,
     width: int = 512,
-    use_ldm: boolean = False,
+    use_ldm: bool = False,
     seed: Optional[int] = None,
     device: Device = Depends(get_device),
 ):
