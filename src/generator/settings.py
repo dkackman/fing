@@ -13,6 +13,9 @@ def load_settings():
 
 
 def save_settings(settings):
+    dir = Path(get_settings_dir())
+    dir.parent.mkdir(0o770, parents=True, exist_ok=True)
+
     with open(get_settings_full_path(), "w") as file:
         file.write(settings.json(indent=2))
 
