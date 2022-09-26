@@ -1,18 +1,17 @@
 from typing import Dict, Any
-from xmlrpc.client import boolean
 import torch
 import logging
 import pickle
 from pathlib import Path
-
+import io
 
 class Pipelines:
 
-    model_cache_dir: str = ""
-    files: Dict[str, Any] = {}
+    pipeline_cache_dir: str = ""
+    files: Dict[str, io.BufferedReader] = {}
 
-    def __init__(self, model_cache_dir="/tmp") -> None:
-        self.model_cache_dir = model_cache_dir
+    def __init__(self, pipeline_cache_dir="/tmp") -> None:
+        self.pipeline_cache_dir = pipeline_cache_dir
 
     def preload_pipelines(
         self,
@@ -21,7 +20,7 @@ class Pipelines:
         pipeline_type_map,
         revision: str = "main",
         torch_dtype=torch.float16,
-        enable_attention_slicing: boolean = True,
+        enable_attention_slicing: bool = True,
     ):
         # this will preload all the pipelines and serialize them to disk.
         # the pre_load function then opens and keeps open a handle to each file to keep them locked
@@ -32,7 +31,7 @@ class Pipelines:
 
         for pipeline_name, StableDiffusionType in pipeline_type_map.items():
             # if the model isn't cached go load it
-            filepath = get_pipeline_filepath(model_name, pipeline_name, revision)
+            filepath = self.get_pipeline_filepath(model_name, pipeline_name, revision)
             if not Path(filepath).is_file():
                 pipeline = StableDiffusionType.from_pretrained(
                     model_name,
@@ -61,7 +60,7 @@ class Pipelines:
     ):
         logging.debug(f"Serializing {pipeline_name}")
 
-        filepath = get_pipeline_filepath(model_name, pipeline_name, revision)
+        filepath = self.get_pipeline_filepath(model_name, pipeline_name, revision)
         pickle.dump(
             pipeline,
             open(filepath, "wb"),
@@ -75,6 +74,6 @@ class Pipelines:
         return pipeline
 
 
-def get_pipeline_filepath(model_name: str, pipeline_name: str, revision: str) -> str:
-    model_name_path_part = model_name.replace("/", ".")
-    return f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline"
+    def get_pipeline_filepath(self, model_name: str, pipeline_name: str, revision: str) -> Path:
+        model_name_path_part = model_name.replace("/", ".")
+        return Path(self.pipeline_cache_dir).joinpath(f"/tmp/{model_name_path_part}.{revision}.{pipeline_name}.pipeline")
