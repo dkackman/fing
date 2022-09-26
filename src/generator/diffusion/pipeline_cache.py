@@ -1,23 +1,24 @@
-from typing import Dict, Any
+from typing import Dict, Type
 import torch
 import logging
 import pickle
 from pathlib import Path
 import io
 
+
 class PipelineCache:
 
     pipeline_cache_dir: str = ""
-    files: Dict[str, io.BufferedReader] = {}
+    files: Dict[str, io.BufferedReader] = dict[str, io.BufferedReader]()
 
     def __init__(self, pipeline_cache_dir="/tmp") -> None:
         self.pipeline_cache_dir = pipeline_cache_dir
 
-    def preload_pipelines(
+    def preload(
         self,
         auth_token: str,
         model_name: str,
-        pipeline_type_map,
+        pipeline_type_map: Dict[str, Type],
         revision: str = "main",
         torch_dtype=torch.float16,
         enable_attention_slicing: bool = True,
@@ -73,10 +74,15 @@ class PipelineCache:
         file = self.files[pipeline_key]
         pipeline = pickle.load(file)
         file.seek(0, 0)  # set the file stream back to the beginning
+
+        # this will be on the cpu device - up to caller to move it
         return pipeline
 
-
-    def get_pipeline_filepath(self, model_name: str, pipeline_name: str, revision: str) -> Path:
+    def get_pipeline_filepath(
+        self, model_name: str, pipeline_name: str, revision: str
+    ) -> Path:
         model_name_path_part = model_name.replace("/", ".")
-        pipeline_path_part = f"{model_name_path_part}.{revision}.{pipeline_name}.pipeline"
+        pipeline_path_part = (
+            f"{model_name_path_part}.{revision}.{pipeline_name}.pipeline"
+        )
         return Path(self.pipeline_cache_dir).joinpath(pipeline_path_part)

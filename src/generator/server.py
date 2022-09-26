@@ -32,8 +32,8 @@ logging.debug(f"Torch version {torch.__version__}")
 
 @app.on_event("startup")
 async def startup_event():
-    pipelines = PipelineCache(settings.model_cache_dir)
-    pipelines.preload_pipelines(
+    pipeline_cache = PipelineCache(settings.model_cache_dir)
+    pipeline_cache.preload(
         settings.huggingface_token,
         "CompVis/stable-diffusion-v1-4",
         {
@@ -43,7 +43,7 @@ async def startup_event():
         torch_dtype=torch.float16,
         enable_attention_slicing=False,
     )
-    pipelines.preload_pipelines(
+    pipeline_cache.preload(
         settings.huggingface_token,
         "CompVis/ldm-celebahq-256",
         {
@@ -52,7 +52,7 @@ async def startup_event():
         torch_dtype=torch.float16,
         enable_attention_slicing=False,
     )
-    pipelines.preload_pipelines(
+    pipeline_cache.preload(
         settings.huggingface_token,
         "CompVis/stable-diffusion-v1-4",
         {
@@ -63,7 +63,7 @@ async def startup_event():
         revision="fp16",
         torch_dtype=torch.float16,
     )
-    pipelines.preload_pipelines(
+    pipeline_cache.preload(
         settings.huggingface_token,
         "CompVis/ldm-text2im-large-256",
         {
@@ -73,7 +73,7 @@ async def startup_event():
         enable_attention_slicing=False,
     )
 
-    add_device(Device(0, pipelines))
+    add_device(Device(0, pipeline_cache))
 
 
 if __name__ == "__main__":

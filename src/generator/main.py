@@ -115,7 +115,7 @@ def main():
         prompt = args.prompt.replace('"', "").replace("'", "")
         if args.image_uri is not None:
             if args.mask_uri is not None:
-                pipelines.preload_pipelines(
+                pipelines.preload(
                     auth_token, ["imginpaint"], not args.dont_conserve_memory
                 )
                 device = Device(0, pipelines)
@@ -133,7 +133,7 @@ def main():
                     mask_image=mask_image,
                 )
             else:
-                pipelines.preload_pipelines(
+                pipelines.preload(
                     auth_token, ["img2img"], not args.dont_conserve_memory
                 )
                 device = Device(0, pipelines)
@@ -149,7 +149,7 @@ def main():
                     init_image=init_image,
                 )
         else:
-            pipelines.preload_pipelines(
+            pipelines.preload(
                 auth_token, ["txt2img"], not args.dont_conserve_memory
             )
             device = Device(0, pipelines)

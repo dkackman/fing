@@ -51,4 +51,4 @@ def init():
 
     print("Preloading pipelines. This may take awhile...")
     pipelines = PipelineCache(settings.model_name, settings.model_cache_dir)
-    pipelines.preload_pipelines(settings.huggingface_token, settings.conserve_memory)
+    pipelines.preload(settings.huggingface_token, settings.conserve_memory)
