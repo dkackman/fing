@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Callable, Dict, Type, Union
 import torch
 import logging
 import pickle
@@ -16,11 +16,11 @@ class PipelineCache:
 
     def preload(
         self,
-        auth_token: str,
+        auth_token: Union[bool, str],
         model_name: str,
         pipeline_type_map: Dict[str, Type],
         revision: str = "main",
-        torch_dtype=torch.float16,
+        torch_dtype: torch.dtype = torch.float16,
         enable_attention_slicing: bool = True,
     ):
         # this will preload all the pipelines and serialize them to disk.

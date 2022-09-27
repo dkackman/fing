@@ -5,18 +5,19 @@ from torch import autocast
 from PIL import Image
 from collections import namedtuple
 from threading import Lock
+from pipeline_cache import PipelineCache
 
 
 pipeline_reference = namedtuple("pipeline_reference", ("key", "pipeline"))
 
 
 class Device:
-    device_id = None
-    pipeline_cache = None
-    last_pipeline = None
-    mutex = Lock()
+    device_id: int
+    pipeline_cache: PipelineCache
+    last_pipeline:pipeline_reference
+    mutex: Lock = Lock()
 
-    def __init__(self, device_id, pipeline_cache) -> None:
+    def __init__(self, device_id: int, pipeline_cache: PipelineCache) -> None:
         self.device_id = device_id
         self.pipeline_cache = pipeline_cache
 
@@ -60,7 +61,7 @@ class Device:
         finally:
             self.mutex.release()
 
-    def get_pipeline(self, model_name, pipeline_name):
+    def get_pipeline(self, model_name: str, pipeline_name: str):
         pipeline_key = f"{model_name}.{pipeline_name}"
         # if the last pipeline is the one requested, just return it
         if self.last_pipeline is not None:
