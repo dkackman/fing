@@ -5,7 +5,7 @@ from torch import autocast
 from PIL import Image
 from collections import namedtuple
 from threading import Lock
-from pipeline_cache import PipelineCache
+from .pipeline_cache import PipelineCache
 
 
 pipeline_reference = namedtuple("pipeline_reference", ("key", "pipeline"))
@@ -14,7 +14,7 @@ pipeline_reference = namedtuple("pipeline_reference", ("key", "pipeline"))
 class Device:
     device_id: int
     pipeline_cache: PipelineCache
-    last_pipeline:pipeline_reference
+    last_pipeline = None
     mutex: Lock = Lock()
 
     def __init__(self, device_id: int, pipeline_cache: PipelineCache) -> None:

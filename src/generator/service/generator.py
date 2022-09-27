@@ -84,7 +84,7 @@ def generate_buffer(device, **kwargs):
     except Exception as e:
         if len(e.args) > 0 and e.args[0] == "busy":
             raise HTTPException(423)
-
+        print(e)
         raise HTTPException(500)
 
     buffer = image_to_buffer(image, format)
