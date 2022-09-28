@@ -12,12 +12,6 @@ from PIL import Image
 import requests
 
 
-def get_image(uri):
-    response = requests.get(uri)
-    image = Image.open(io.BytesIO(response.content))
-    return image.resize((768, 512))
-
-
 class format_enum(StrEnum):
     jpeg = auto()
     json = auto()
@@ -98,6 +92,12 @@ def generate_buffer(device, **kwargs):
 
     # we return kwargs so that it can be used as metadata if needed
     return buffer, pipe_config, kwargs
+
+
+def get_image(uri):
+    response = requests.get(uri)
+    image = Image.open(io.BytesIO(response.content))
+    return image.resize((768, 512))
 
 
 def image_to_buffer(image, format):
