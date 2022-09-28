@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
 from ..diffusion.device_pool import get_device
-from .generator import generate_buffer, package_metadata, format_enum
-from ..external_resource import get_image
+from .generator import generate_buffer, package_metadata, format_enum, get_image
 from .x_api_key import x_api_key_auth
 
 img2img_router = APIRouter()

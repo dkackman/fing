@@ -23,7 +23,7 @@ experimental_router = APIRouter()
     responses={
         200: {
             "content": {
-                "image/jpeg": {}, 
+                "image/jpeg": {},
                 "image/png": {},
                 "application/json": {},
             },
@@ -39,7 +39,7 @@ def get_img(
     num_inference_steps: int = 50,
     height: int = 512,
     width: int = 512,
-    strength: float = .55,
+    strength: float = 0.55,
     seed: Optional[int] = None,
     device: Device = Depends(get_device),
 ):
@@ -73,7 +73,7 @@ def get_img(
             prompt=next_prompt,
             format=format,
             init_image=next_image,
-            strength=strength
+            strength=strength,
         )
         next_image = Image.open(next_buffer)
         image_list.append(next_image)

@@ -9,6 +9,13 @@ from fastapi_restful.enums import StrEnum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 from PIL import Image
+import requests
+
+
+def get_image(uri):
+    response = requests.get(uri)
+    image = Image.open(io.BytesIO(response.content))
+    return image.resize((768, 512))
 
 
 class format_enum(StrEnum):
