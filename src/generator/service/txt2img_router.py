@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
-from ..diffusion.device_pool import remove_device_from_pool
+from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
 
 from .generator import (
     generate_buffer,
@@ -44,22 +44,27 @@ def get_img(
     seed: Optional[int] = None,
     device: Device = Depends(remove_device_from_pool),
 ):
-    model_name = (
-        "CompVis/ldm-text2im-large-256" if use_ldm else "CompVis/stable-diffusion-v1-4"
-    )
-    buffer, pipeline_config, args = generate_buffer(
-        device,
-        model_name=model_name,
-        pipeline_name="txt2img",
-        guidance_scale=guidance_scale,
-        num_inference_steps=num_inference_steps,
-        num_images=num_images,
-        height=height,
-        width=width,
-        prompt=prompt,
-        format=format,
-        seed=seed,
-    )
+    try:
+        model_name = (
+            "CompVis/ldm-text2im-large-256"
+            if use_ldm
+            else "CompVis/stable-diffusion-v1-4"
+        )
+        buffer, pipeline_config, args = generate_buffer(
+            device,
+            model_name=model_name,
+            pipeline_name="txt2img",
+            guidance_scale=guidance_scale,
+            num_inference_steps=num_inference_steps,
+            num_images=num_images,
+            height=height,
+            width=width,
+            prompt=prompt,
+            format=format,
+            seed=seed,
+        )
+    finally:
+        add_device_to_pool(device)
 
     if format == format_enum.jpeg:
         return StreamingResponse(buffer, media_type="image/jpeg")

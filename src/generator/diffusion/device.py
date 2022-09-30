@@ -26,6 +26,7 @@ class Device:
         if not self.mutex.acquire(False):
             raise Exception("busy")
 
+        print(f"Work is on device {self.device_id}")
         try:
             num_images = kwargs.pop("num_images", 1)
             if num_images > 4:

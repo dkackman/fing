@@ -1,5 +1,4 @@
 from ..diffusion.device import Device
-from ..diffusion.device_pool import add_device_to_pool
 from .. import info, Software
 from urllib.parse import unquote
 import logging
@@ -93,8 +92,6 @@ def generate_buffer(device: Device, **kwargs):
             raise HTTPException(423)
         print(e)
         raise HTTPException(500)
-    finally:
-        add_device_to_pool(device)
 
     buffer = image_to_buffer(image, format)
 

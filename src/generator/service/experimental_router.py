@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
-from ..diffusion.device_pool import remove_device_from_pool
+from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
 from .generator import (
     generate_buffer,
     package_metadata,
@@ -43,21 +43,25 @@ def get_img(
     seed: Optional[int] = None,
     device: Device = Depends(remove_device_from_pool),
 ):
-    steps = prompt.split("|")
-    steps.reverse()
-    starting_prompt = steps.pop()
-    init_image, pipeline_config, args = generate_buffer(
-        device,
-        model_name="CompVis/stable-diffusion-v1-4",
-        pipeline_name="txt2img",
-        guidance_scale=guidance_scale,
-        num_inference_steps=num_inference_steps,
-        height=height,
-        width=width,
-        prompt=starting_prompt,
-        format=format,
-        seed=seed,
-    )
+    try:
+        steps = prompt.split("|")
+        steps.reverse()
+        starting_prompt = steps.pop()
+        init_image, pipeline_config, args = generate_buffer(
+            device,
+            model_name="CompVis/stable-diffusion-v1-4",
+            pipeline_name="txt2img",
+            guidance_scale=guidance_scale,
+            num_inference_steps=num_inference_steps,
+            height=height,
+            width=width,
+            prompt=starting_prompt,
+            format=format,
+            seed=seed,
+        )
+    finally:
+        add_device_to_pool(device)
+
     image_list = []
 
     next_buffer = init_image

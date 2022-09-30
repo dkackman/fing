@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
-from ..diffusion.device_pool import remove_device_from_pool
+from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
 from .generator import (
     generate_buffer,
     package_metadata,
@@ -37,15 +37,18 @@ def get_img(
     seed: Optional[int] = None,
     device: Device = Depends(remove_device_from_pool),
 ):
-    buffer, pipeline_config, args = generate_buffer(
-        device,
-        model_name="CompVis/ldm-celebahq-256",
-        pipeline_name="faces",
-        num_inference_steps=num_inference_steps,
-        num_images=num_images,
-        format=format,
-        seed=seed,
-    )
+    try:
+        buffer, pipeline_config, args = generate_buffer(
+            device,
+            model_name="CompVis/ldm-celebahq-256",
+            pipeline_name="faces",
+            num_inference_steps=num_inference_steps,
+            num_images=num_images,
+            format=format,
+            seed=seed,
+        )
+    finally:
+        add_device_to_pool(device)
 
     if format == format_enum.jpeg:
         return StreamingResponse(buffer, media_type="image/jpeg")

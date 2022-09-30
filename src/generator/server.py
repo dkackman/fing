@@ -84,9 +84,7 @@ async def startup_event():
     )
 
     for i in range(0, torch.cuda.device_count()):
-        logging.info(
-            f"Adding cuda device {torch.cuda.get_device_name(i)}:{torch.cuda.get_device_name(i)}"
-        )
+        logging.info(f"Adding cuda device {i} - {torch.cuda.get_device_name(i)}")
         add_device_to_pool(Device(i, pipeline_cache))
 
 
