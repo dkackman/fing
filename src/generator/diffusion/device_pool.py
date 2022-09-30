@@ -5,10 +5,11 @@ from threading import Lock
 mutex: Lock = Lock()
 
 available: List[Device] = []
-busy: List[Device] = []
+
+# TODO - avoid loading if possible by finding a device with the desired pipeline already on it
 
 
-def add_device(device: Device):
+def add_device_to_pool(device: Device):
     mutex.acquire(True, 2)
     try:
         available.append(device)
@@ -16,23 +17,12 @@ def add_device(device: Device):
         mutex.release()
 
 
-def get_device() -> Device:
+def remove_device_from_pool() -> Device:
     mutex.acquire(True, 2)
     try:
         if len(available) > 0:
-            device = available.pop()
-            busy.append(device)
-            return device
+            return available.pop()
 
         raise (Exception("busy"))
-    finally:
-        mutex.release()
-
-
-def release_device(device):
-    mutex.acquire(True, 2)
-    try:
-        busy.remove(device)
-        available.append(device)
     finally:
         mutex.release()

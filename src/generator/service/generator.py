@@ -1,5 +1,5 @@
 from ..diffusion.device import Device
-from ..diffusion.device_pool import release_device
+from ..diffusion.device_pool import add_device_to_pool
 from .. import info, Software
 from urllib.parse import unquote
 import logging
@@ -8,7 +8,7 @@ import base64
 from enum import auto
 from fastapi import HTTPException
 from fastapi_restful.enums import StrEnum
-from typing import Any, Dict, List, Optional, final
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 from PIL import Image
 import requests
@@ -94,7 +94,7 @@ def generate_buffer(device: Device, **kwargs):
         print(e)
         raise HTTPException(500)
     finally:
-        release_device(device)
+        add_device_to_pool(device)
 
     buffer = image_to_buffer(image, format)
 

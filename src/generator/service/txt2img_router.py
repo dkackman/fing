@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
-from ..diffusion.device_pool import get_device
+from ..diffusion.device_pool import remove_device_from_pool
 
 from .generator import (
     generate_buffer,
@@ -42,7 +42,7 @@ def get_img(
     width: int = 512,
     use_ldm: bool = False,
     seed: Optional[int] = None,
-    device: Device = Depends(get_device),
+    device: Device = Depends(remove_device_from_pool),
 ):
     model_name = (
         "CompVis/ldm-text2im-large-256" if use_ldm else "CompVis/stable-diffusion-v1-4"

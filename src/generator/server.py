@@ -22,7 +22,7 @@ from .log_setup import setup_logging
 from .service.web_app import create_app
 from .diffusion.device import Device
 from .diffusion.pipeline_cache import PipelineCache
-from .diffusion.device_pool import add_device
+from .diffusion.device_pool import add_device_to_pool
 
 
 if not torch.cuda.is_available():
@@ -87,7 +87,7 @@ async def startup_event():
         logging.info(
             f"Adding cuda device {torch.cuda.get_device_name(i)}:{torch.cuda.get_device_name(i)}"
         )
-        add_device(Device(i, pipeline_cache))
+        add_device_to_pool(Device(i, pipeline_cache))
 
 
 if __name__ == "__main__":

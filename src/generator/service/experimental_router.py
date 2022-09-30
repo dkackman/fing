@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
-from ..diffusion.device_pool import get_device
+from ..diffusion.device_pool import remove_device_from_pool
 from .generator import (
     generate_buffer,
     package_metadata,
@@ -41,7 +41,7 @@ def get_img(
     width: int = 512,
     strength: float = 0.55,
     seed: Optional[int] = None,
-    device: Device = Depends(get_device),
+    device: Device = Depends(remove_device_from_pool),
 ):
     steps = prompt.split("|")
     steps.reverse()
