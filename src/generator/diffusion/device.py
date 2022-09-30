@@ -15,11 +15,12 @@ class Device:
     device_id: int
     pipeline_cache: PipelineCache
     last_pipeline = None
-    mutex: Lock = Lock()
+    mutex = None
 
     def __init__(self, device_id: int, pipeline_cache: PipelineCache) -> None:
         self.device_id = device_id
         self.pipeline_cache = pipeline_cache
+        self.mutex = Lock()
 
     def __call__(self, **kwargs):
         if not self.mutex.acquire(False):

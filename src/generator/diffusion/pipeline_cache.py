@@ -9,10 +9,11 @@ import io
 class PipelineCache:
 
     pipeline_cache_dir: str = ""
-    files: Dict[str, io.BufferedReader] = dict[str, io.BufferedReader]()
+    files: Dict[str, io.BufferedReader]
 
     def __init__(self, pipeline_cache_dir: str = "/tmp") -> None:
         self.pipeline_cache_dir = pipeline_cache_dir
+        self.files = dict[str, io.BufferedReader]()
 
     def preload(
         self,

@@ -83,7 +83,11 @@ async def startup_event():
         enable_attention_slicing=False,
     )
 
-    add_device(Device(0, pipeline_cache))
+    for i in range(0, torch.cuda.device_count()):
+        logging.info(
+            f"Adding cuda device {torch.cuda.get_device_name(i)}:{torch.cuda.get_device_name(i)}"
+        )
+        add_device(Device(i, pipeline_cache))
 
 
 if __name__ == "__main__":

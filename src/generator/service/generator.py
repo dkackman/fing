@@ -1,3 +1,5 @@
+from ..diffusion.device import Device
+from ..diffusion.device_pool import release_device
 from .. import info, Software
 from urllib.parse import unquote
 import logging
@@ -6,7 +8,7 @@ import base64
 from enum import auto
 from fastapi import HTTPException
 from fastapi_restful.enums import StrEnum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, final
 from pydantic import BaseModel
 from PIL import Image
 import requests
@@ -69,24 +71,30 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
     )
 
 
-def generate_buffer(device, **kwargs):
+def generate_buffer(device: Device, **kwargs):
     format = kwargs.pop("format", "JPEG").upper()
     format = format if format != "JSON" else "JPEG"
 
     try:
-        logging.info(f"START generating {kwargs['pipeline_name']}")
+        logging.info(
+            f"START generating {kwargs['pipeline_name']} on device {device.device_id}"
+        )
 
         if "prompt" in kwargs:
             kwargs["prompt"] = clean_prompt(kwargs["prompt"])
 
         image, pipe_config = device(**kwargs)
 
-        logging.info(f"END generating {kwargs['pipeline_name']}")
+        logging.info(
+            f"END generating {kwargs['pipeline_name']} on device {device.device_id}"
+        )
     except Exception as e:
         if len(e.args) > 0 and e.args[0] == "busy":
             raise HTTPException(423)
         print(e)
         raise HTTPException(500)
+    finally:
+        release_device(device)
 
     buffer = image_to_buffer(image, format)
 
