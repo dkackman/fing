@@ -20,6 +20,7 @@ What you will need:
 ```bash
 cd src
 conda env create -f environment.yaml
+conda activate fing
 python -m generator.init_app
 ```
 
