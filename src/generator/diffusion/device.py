@@ -24,9 +24,10 @@ class Device:
 
     def __call__(self, **kwargs):
         if not self.mutex.acquire(False):
+            logging.error(f"Device {self.device_id} is busy but got invoked.")
             raise Exception("busy")
 
-        print(f"Work is on device {self.device_id}")
+        logging.debug(f"Work is on device {self.device_id}")
         try:
             num_images = kwargs.pop("num_images", 1)
             if num_images > 4:
@@ -42,10 +43,10 @@ class Device:
 
             # this allows reproducability
             seed: Optional[int] = kwargs.pop("seed", None)
-            if seed is not None:
-                torch.manual_seed(seed)
-            else:
-                seed = torch.seed()
+            #if seed is not None:
+            #    torch.manual_seed(seed)
+            #else:
+            #    seed = torch.seed()
 
             image_list = []
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
@@ -56,7 +57,7 @@ class Device:
                     # p.nsfw_content_detected
                     image_list.append(image)
 
-            pipeline.config["seed"] = seed
+            #pipeline.config["seed"] = seed
             pipeline.config["class_name"] = pipeline.config["_class_name"]
             pipeline.config["diffusers_version"] = pipeline.config["_diffusers_version"]
             return (post_process(image_list), pipeline.config)
