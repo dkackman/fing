@@ -43,9 +43,9 @@ class Device:
 
             # this allows reproducability
             seed: Optional[int] = kwargs.pop("seed", None)
-            #if seed is not None:
+            # if seed is not None:
             #    torch.manual_seed(seed)
-            #else:
+            # else:
             #    seed = torch.seed()
 
             image_list = []
@@ -57,7 +57,7 @@ class Device:
                     # p.nsfw_content_detected
                     image_list.append(image)
 
-            #pipeline.config["seed"] = seed
+            # pipeline.config["seed"] = seed
             pipeline.config["class_name"] = pipeline.config["_class_name"]
             pipeline.config["diffusers_version"] = pipeline.config["_diffusers_version"]
             return (post_process(image_list), pipeline.config)

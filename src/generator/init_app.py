@@ -29,7 +29,9 @@ async def init():
         port = 9147 if len(port) == 0 else int(port)
 
         conserve = input("Conserve GPU memory by default? (Y/n): ").strip().lower()
-        conserve_memory = True if len(conserve) == 0 or conserve.startswith("y") else False
+        conserve_memory = (
+            True if len(conserve) == 0 or conserve.startswith("y") else False
+        )
 
         settings.huggingface_token = token
         settings.model_cache_dir = model_cache_dir
@@ -51,5 +53,6 @@ async def init():
     print("Preloading pipelines. This may take awhile...")
     await startup_event()
     print("done")
+
 
 asyncio.run(init())
