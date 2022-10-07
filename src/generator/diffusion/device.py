@@ -14,7 +14,7 @@ class Device:
     device_id: int
     pipeline_cache: PipelineCache
     last_pipeline = None
-    mutex = None
+    mutex: Lock
 
     def __init__(self, device_id: int, pipeline_cache: PipelineCache) -> None:
         self.device_id = device_id
@@ -96,7 +96,7 @@ class Device:
         )
 
 
-def post_process(image_list):
+def post_process(image_list) -> Image.Image:
     num_images = len(image_list)
     if num_images == 1:
         image = image_list[0]
@@ -108,11 +108,13 @@ def post_process(image_list):
         image = image_grid(image_list, 2, 3)
     elif num_images <= 9:
         image = image_grid(image_list, 3, 3)
-
+    else:
+        raise(Exception("too many images"))
+        
     return image
 
 
-def image_grid(image_list, rows, cols):
+def image_grid(image_list, rows, cols) -> Image.Image:
     w, h = image_list[0].size
     grid = Image.new("RGB", size=(cols * w, rows * h))
 

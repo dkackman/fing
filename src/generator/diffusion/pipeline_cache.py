@@ -23,7 +23,7 @@ class PipelineCache:
     ):
         # this will preload all the pipelines and serialize them to disk.
         # the pre_load function then opens and keeps open a handle to each file to keep them locked
-        # get_pipeline will then retrive from disk, accomplishing two things:
+        # get_pipeline will then retrieve thm from disk, accomplishing two things:
         # 1 - pay the startup cost to get the model from hugging face only 1 time per process
         # 2 - keep them out of RAM (main and GPU) until actually needed
         # on demand they get deserialized and pushed to the gpu
@@ -46,7 +46,7 @@ class PipelineCache:
                 )
 
             pipeline_key = f"{model_name}.{pipeline_name}"
-            # open aand lock the file for later use
+            # open and lock the file for later use
             self.files[pipeline_key] = open(filepath, "rb")
 
         return self
