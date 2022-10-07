@@ -49,8 +49,6 @@ async def startup_event():
         {
             "compose": ComposableStableDiffusionPipeline,
         },
-        revision="fp16",
-        torch_dtype=torch.float16,
         enable_attention_slicing=False,
     )
     pipeline_cache.preload(
@@ -59,7 +57,6 @@ async def startup_event():
         {
             "faces": DiffusionPipeline,
         },
-        torch_dtype=torch.float16,
         enable_attention_slicing=False,
     )
     pipeline_cache.preload(
@@ -70,8 +67,6 @@ async def startup_event():
             "img2img": StableDiffusionImg2ImgPipeline,
             "imginpaint": StableDiffusionInpaintPipeline,
         },
-        revision="fp16",
-        torch_dtype=torch.float16,
     )
     pipeline_cache.preload(
         settings.huggingface_token,
@@ -79,7 +74,6 @@ async def startup_event():
         {
             "txt2img": DiffusionPipeline,
         },
-        torch_dtype=torch.float16,
         enable_attention_slicing=False,
     )
 

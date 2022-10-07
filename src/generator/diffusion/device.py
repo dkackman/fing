@@ -1,7 +1,6 @@
 from typing import Optional
 import torch
 import logging
-from torch import autocast
 from PIL import Image
 from collections import namedtuple
 from threading import Lock
@@ -52,10 +51,9 @@ class Device:
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
 
             for i in range(num_images):
-                with autocast("cuda"):
-                    image = pipeline(**kwargs).images[0]
-                    # p.nsfw_content_detected
-                    image_list.append(image)
+                image = pipeline(**kwargs).images[0]
+                # p.nsfw_content_detected
+                image_list.append(image)
 
             # pipeline.config["seed"] = seed
             pipeline.config["class_name"] = pipeline.config["_class_name"]
