@@ -28,16 +28,10 @@ async def init():
         port = input("Service port (9147): ").strip()
         port = 9147 if len(port) == 0 else int(port)
 
-        conserve = input("Conserve GPU memory by default? (Y/n): ").strip().lower()
-        conserve_memory = (
-            True if len(conserve) == 0 or conserve.startswith("y") else False
-        )
-
         settings.huggingface_token = token
         settings.model_cache_dir = model_cache_dir
         settings.host = host
         settings.port = port
-        settings.conserve_memory = conserve_memory
 
         print("\n")
         print(settings.json(indent=2))
