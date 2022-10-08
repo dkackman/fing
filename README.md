@@ -8,11 +8,20 @@ This is a REST interface to [stable-diffusion](https://github.com/CompVis/stable
 
 What you will need:
 
-- A machine with a decent [CUDA](https://developer.nvidia.com/cuda-downloads) capable graphics card. (NVIDIA RTX 3060 or so - 8GB or more)
+- A machine with a decent [CUDA](https://developer.nvidia.com/cuda-downloads) capable graphics card. (NVIDIA GTX 1080, RTX 3060 or so - 8GB or more)
 - [Anaconda](https://www.anaconda.com/) version 2022.05 (might work on older versions) on that machine
 - I've done this all on ubuntu 22.04. Should work on other linuxes.
 - A [Huggingface account](https://huggingface.co/welcome) and [access token](https://huggingface.co/settings/tokens)
   - You will also need to accept [the model license agreement](https://huggingface.co/CompVis/stable-diffusion-v1-4)
+  
+## Features
+
+- Support txt2img, img2img, imginpaint, and face generation
+- Pipeline cache so any of the above can be swapped into the GPU as needed
+- GPU pooling to support multiple concurrent requests (1 per GPU)
+- Optional `x-api-key support for simple auth
+- [Open API swagger spec](https://dkackman.github.io/fing/)
+  - once the server is running the latest spec can always be viewed at `<server_address and port>/docs`
 
 ### Setup
 
@@ -23,28 +32,7 @@ conda activate fing
 python -m generator.init_app
 ```
 
-This will create config file in `~/.fing` as well as download all of the diffuser model caches. This can take some time.
-
-### Arguments
-
-#### These arguments can be passed to do text to image
-
-- `prompt` - Required. The textual prompt to base the image on.
-- `negative_prompt` - The textual prompt to avoid.
-- `num_images` - Defaults to 1. The number of images to create.
-- `guidance_scale` - Defaults to 7.5. The model guidance scale.
-- `num_inference_steps` - defaults to 50. The number of model inference steps.
-- `height` - defaults to 512. The image height.
-- `width` - defaults to 512. The image width.
-
-#### To do image to image guided transformation, use the above (except height and width) and
-
-- `image_uri` - the URI of the init image
-- `strength` - The relative amount of noise to add to the init image.
-
-#### To do in painting, use the above (except height and width) and
-
-- `mask_uri` - The URI of the mask image
+This will create `settings.json` file in `~/.fing` as well as download all of the diffuser model caches. This last part can take some time.
 
 ### Running the Service
 
