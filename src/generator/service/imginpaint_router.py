@@ -34,6 +34,7 @@ def get_img(
     num_inference_steps: int = 50,
     num_images: int = 1,
     seed: Optional[int] = None,
+    negative_prompt: Optional[str] = None,
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
@@ -50,6 +51,7 @@ def get_img(
             mask_image=get_image(mask_uri),
             format=format,
             seed=seed,
+            negative_prompt=negative_prompt,
         )
     finally:
         add_device_to_pool(device)
