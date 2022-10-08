@@ -26,7 +26,6 @@ class Device:
             logging.error(f"Device {self.device_id} is busy but got invoked.")
             raise Exception("busy")
 
-        logging.debug(f"Work is on device {self.device_id}")
         try:
             num_images = kwargs.pop("num_images", 1)
             if num_images > 4:
@@ -50,10 +49,17 @@ class Device:
             image_list = []
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
 
+            nsfw_count = 0
             for i in range(num_images):
-                image = pipeline(**kwargs).images[0]
-                # p.nsfw_content_detected
+                p = pipeline(**kwargs)
+                image = p.images[0]
+                if p.nsfw_content_detected == True:
+                    nsfw_count = nsfw_count + 1
                 image_list.append(image)
+
+            # if all the images are nsfw raise error as they will all be blank
+            if len(image_list) == nsfw_count:
+                raise Exception("NSFW")
 
             # pipeline.config["seed"] = seed
             pipeline.config["class_name"] = pipeline.config["_class_name"]
