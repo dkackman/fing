@@ -4,13 +4,12 @@ A REST API for stable diffusion
 
 ## Introduction
 
-This is a command line and REST interface to [stable-diffusion](https://github.com/CompVis/stable-diffusion). Used in part to generate art(?) and eventually make [Chia NFTs](https://www.chia.net/2022/06/29/1.4.0-introducing-the-chia-nft1-standard.en.html). ([rough example from with chia-repl](https://github.com/dkackman/chia-repl/blob/main/examples/scripts/txt2nft.js))
+This is a REST interface to [stable-diffusion](https://github.com/CompVis/stable-diffusion).
 
 What you will need:
 
 - A machine with a decent [CUDA](https://developer.nvidia.com/cuda-downloads) capable graphics card. (NVIDIA RTX 3060 or so - 8GB or more)
 - [Anaconda](https://www.anaconda.com/) version 2022.05 (might work on older versions) on that machine
-- [Node](https://nodejs.org/en/) on that machine
 - I've done this all on ubuntu 22.04. Should work on other linuxes.
 - A [Huggingface account](https://huggingface.co/welcome) and [access token](https://huggingface.co/settings/tokens)
   - You will also need to accept [the model license agreement](https://huggingface.co/CompVis/stable-diffusion-v1-4)
@@ -28,11 +27,10 @@ This will create config file in `~/.fing` as well as download all of the diffuse
 
 ### Arguments
 
-The REST service has argument names.
-
 #### These arguments can be passed to do text to image
 
 - `prompt` - Required. The textual prompt to base the image on.
+- `negative_prompt` - The textual prompt to avoid.
 - `num_images` - Defaults to 1. The number of images to create.
 - `guidance_scale` - Defaults to 7.5. The model guidance scale.
 - `num_inference_steps` - defaults to 50. The number of model inference steps.
