@@ -138,6 +138,15 @@
                         },
                         "name": "seed",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Negative Prompt",
+                            "type": "string"
+                        },
+                        "name": "negative_prompt",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -257,6 +266,15 @@
                             "type": "integer"
                         },
                         "name": "seed",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Negative Prompt",
+                            "type": "string"
+                        },
+                        "name": "negative_prompt",
                         "in": "query"
                     }
                 ],
@@ -384,6 +402,15 @@
                             "type": "integer"
                         },
                         "name": "seed",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Negative Prompt",
+                            "type": "string"
+                        },
+                        "name": "negative_prompt",
                         "in": "query"
                     }
                 ],
@@ -618,6 +645,127 @@
                     }
                 ]
             }
+        },
+        "/experiment": {
+            "get": {
+                "tags": [
+                    "Stable Diffusion"
+                ],
+                "summary": "Get Img",
+                "operationId": "get_img_experiment_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Prompt",
+                            "type": "string"
+                        },
+                        "name": "prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/format_enum"
+                                }
+                            ],
+                            "default": "jpeg"
+                        },
+                        "name": "format",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Guidance Scale",
+                            "type": "number",
+                            "default": 7.5
+                        },
+                        "name": "guidance_scale",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Num Inference Steps",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "num_inference_steps",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Height",
+                            "type": "integer",
+                            "default": 512
+                        },
+                        "name": "height",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Width",
+                            "type": "integer",
+                            "default": 512
+                        },
+                        "name": "width",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Strength",
+                            "type": "number",
+                            "default": 0.55
+                        },
+                        "name": "strength",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Seed",
+                            "type": "integer"
+                        },
+                        "name": "seed",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PackageMetaDataModel"
+                                }
+                            },
+                            "image/jpeg": {},
+                            "image/png": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -676,12 +824,8 @@
             "PipelineConfig": {
                 "title": "PipelineConfig",
                 "required": [
-                    "vae",
-                    "text_encoder",
-                    "tokenizer",
                     "unet",
                     "scheduler",
-                    "feature_extractor",
                     "class_name",
                     "diffusers_version"
                 ],
