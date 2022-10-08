@@ -49,7 +49,7 @@ def get_img(
             init_image=get_image(image_uri),
             format=format,
             seed=seed,
-            negative_prompt=negative_prompt,            
+            negative_prompt=negative_prompt,
         )
     finally:
         add_device_to_pool(device)

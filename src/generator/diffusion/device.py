@@ -109,8 +109,8 @@ def post_process(image_list) -> Image.Image:
     elif num_images <= 9:
         image = image_grid(image_list, 3, 3)
     else:
-        raise(Exception("too many images"))
-        
+        raise (Exception("too many images"))
+
     return image
 
 
