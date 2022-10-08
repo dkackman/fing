@@ -6,7 +6,7 @@ from fastapi import Depends
 x_api_config = namedtuple("x_api_config", ("enabled", "key_list"))
 x_config = x_api_config(False, [])
 
-X_API_KEY = APIKeyHeader(name="X-API-Key")
+X_API_KEY = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 def enable_x_api_keys(key_list):
