@@ -16,10 +16,10 @@ What you will need:
   
 ## Features
 
-- Support txt2img, img2img, imginpaint, and face generation
+- Includes txt2img, img2img, imginpaint, and face generation
 - Pipeline cache so any of the above can be swapped into the GPU as needed
 - GPU pooling to support multiple concurrent requests (1 per GPU)
-- Optional `x-api-key support for simple auth
+- Optional `x-api-key` for simple auth
 - [Open API swagger spec](https://dkackman.github.io/fing/)
   - once the server is running the latest spec can always be viewed at `<server_address:port>/docs`
 
