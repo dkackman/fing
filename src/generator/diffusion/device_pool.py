@@ -23,6 +23,6 @@ def remove_device_from_pool() -> Device:
         if len(available) > 0:
             return available.pop(0)
 
-        raise (Exception("busy"))
+        raise Exception("busy")
     finally:
         mutex.release()
