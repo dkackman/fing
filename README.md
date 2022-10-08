@@ -21,7 +21,7 @@ What you will need:
 - GPU pooling to support multiple concurrent requests (1 per GPU)
 - Optional `x-api-key support for simple auth
 - [Open API swagger spec](https://dkackman.github.io/fing/)
-  - once the server is running the latest spec can always be viewed at `<server_address and port>/docs`
+  - once the server is running the latest spec can always be viewed at `<server_address:port>/docs`
 
 ### Setup
 
