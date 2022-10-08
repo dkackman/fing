@@ -33,15 +33,16 @@ if not settings_exist():
     save_settings(Settings())
 
 settings = load_settings()
-setup_logging(resolve_path(settings.log_filename), settings.log_level)
+
 
 app = create_app(__version__, settings.x_api_key_enabled, settings.x_api_key_list)
-
-logging.debug(f"Torch version {torch.__version__}")
 
 
 @app.on_event("startup")
 async def startup_event():
+    setup_logging(resolve_path(settings.log_filename), settings.log_level)
+    logging.debug(f"Torch version {torch.__version__}")
+
     pipeline_cache = PipelineCache(settings.model_cache_dir)
     pipeline_cache.preload(
         settings.huggingface_token,
