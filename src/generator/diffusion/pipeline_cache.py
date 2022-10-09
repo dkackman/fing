@@ -32,6 +32,7 @@ class PipelineCache:
             # if the model isn't cached go load it
             filepath = self.get_pipeline_filepath(model_name, pipeline_name)
             if not Path(filepath).is_file():
+                print(f"Loading {model_name}.{pipeline_name}")
                 pipeline = StableDiffusionType.from_pretrained(
                     model_name,
                     use_auth_token=auth_token,
@@ -39,6 +40,7 @@ class PipelineCache:
                 if enable_attention_slicing:
                     pipeline.enable_attention_slicing()
 
+                print(f"Serializing to {filepath}")
                 self.serialize_pipeline(
                     pipeline,
                     model_name,
