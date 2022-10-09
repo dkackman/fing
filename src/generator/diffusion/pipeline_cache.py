@@ -2,7 +2,6 @@ from typing import Dict, Type, Union
 import logging
 import pickle
 from pathlib import Path
-import io
 
 
 class PipelineCache:
@@ -22,8 +21,7 @@ class PipelineCache:
         enable_attention_slicing: bool = True,
     ):
         # this will preload all the pipelines and serialize them to disk.
-        # the pre_load function then opens and keeps open a handle to each file to keep them locked
-        # get_pipeline will then retrieve thm from disk, accomplishing two things:
+        # get_pipeline will then retrieve them from disk, accomplishing two things:
         # 1 - pay the startup cost to get the model from hugging face only 1 time per process
         # 2 - keep them out of RAM (main and GPU) until actually needed
         # on demand they get deserialized and pushed to the gpu
@@ -48,12 +46,11 @@ class PipelineCache:
                 )
 
             pipeline_key = f"{model_name}.{pipeline_name}"
-            # open and lock the file for later use
-            self.files[pipeline_key] = filepath #open(filepath, "rb")
+            self.files[pipeline_key] = filepath
 
         return self
 
-    def serialize_pipeline(self, pipeline, model_name: str, pipeline_name: str):
+    def serialize_pipeline(self, pipeline, model_name: str, pipeline_name: str) -> None:
         logging.debug(f"Serializing {pipeline_name}")
 
         filepath = self.get_pipeline_filepath(model_name, pipeline_name)

@@ -92,7 +92,7 @@ def generate_buffer(device: Device, **kwargs):
             if e.args[0] == "busy":
                 raise HTTPException(423)
             if e.args[0] == "NSFW":
-                raise HTTPException(406) # Not Acceptable
+                raise HTTPException(406)  # Not Acceptable
 
         print(e)
         raise HTTPException(500)
