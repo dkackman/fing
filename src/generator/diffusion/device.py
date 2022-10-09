@@ -54,7 +54,9 @@ class Device:
                 p = pipeline(**kwargs)
                 image = p.images[0]
                 if p.nsfw_content_detected == True:
+                    logging.info(f"NSFW found in image {i}")
                     nsfw_count = nsfw_count + 1
+
                 image_list.append(image)
 
             # if all the images are nsfw raise error as they will all be blank
