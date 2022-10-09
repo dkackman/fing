@@ -8,11 +8,11 @@ import io
 class PipelineCache:
 
     pipeline_cache_dir: str = ""
-    files: Dict[str, io.BufferedReader]
+    files: Dict[str, Path]
 
     def __init__(self, pipeline_cache_dir: str = "/tmp") -> None:
         self.pipeline_cache_dir = pipeline_cache_dir
-        self.files = dict[str, io.BufferedReader]()
+        self.files = dict[str, Path]()
 
     def preload(
         self,
@@ -49,7 +49,7 @@ class PipelineCache:
 
             pipeline_key = f"{model_name}.{pipeline_name}"
             # open and lock the file for later use
-            self.files[pipeline_key] = open(filepath, "rb")
+            self.files[pipeline_key] = filepath #open(filepath, "rb")
 
         return self
 
@@ -66,9 +66,8 @@ class PipelineCache:
         pipeline_key = f"{model_name}.{pipeline_name}"
 
         # resurrect the requested pipeline
-        file = self.files[pipeline_key]
-        pipeline = pickle.load(file)
-        file.seek(0, 0)  # set the file stream back to the beginning
+        with open(self.files[pipeline_key], "rb") as file:
+            pipeline = pickle.load(file)
 
         # this will be on the cpu device - up to caller to move it
         return pipeline
