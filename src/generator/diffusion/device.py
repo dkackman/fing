@@ -47,23 +47,22 @@ class Device:
             #    seed = torch.seed()
 
             image_list = []
-            # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
-
             nsfw_count = 0
+            seed = torch.cuda.initial_seed()
+            # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
             for i in range(num_images):
                 p = pipeline(**kwargs)
-                image = p.images[0]
                 if p.nsfw_content_detected[0] == True:
                     logging.info(f"NSFW found in image {i}")
                     nsfw_count = nsfw_count + 1
 
-                image_list.append(image)
+                image_list.append(p.images[0])
 
             # if all the images are nsfw raise error as they will all be blank
             if len(image_list) == nsfw_count:
                 raise Exception("NSFW")
 
-            # pipeline.config["seed"] = seed
+            pipeline.config["seed"] = seed
             pipeline.config["class_name"] = pipeline.config["_class_name"]
             pipeline.config["diffusers_version"] = pipeline.config["_diffusers_version"]
             return (post_process(image_list), pipeline.config)
