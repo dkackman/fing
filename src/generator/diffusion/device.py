@@ -41,14 +41,12 @@ class Device:
 
             # this allows reproducability
             seed: Optional[int] = kwargs.pop("seed", None)
-            # if seed is not None:
-            #    torch.manual_seed(seed)
-            # else:
-            #    seed = torch.seed()
-
+            if seed is None:
+                seed = torch.seed()
+            torch.manual_seed(seed)
+            
             image_list = []
             nsfw_count = 0
-            seed = torch.cuda.initial_seed()
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
             for i in range(num_images):
                 p = pipeline(**kwargs)
