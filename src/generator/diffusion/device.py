@@ -44,13 +44,16 @@ class Device:
             if seed is None:
                 seed = torch.seed()
             torch.manual_seed(seed)
-            
+
             image_list = []
             nsfw_count = 0
             # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
             for i in range(num_images):
                 p = pipeline(**kwargs)
-                if p.nsfw_content_detected[0] == True:
+                if (
+                    hasattr(p, "nsfw_content_detected")
+                    and p.nsfw_content_detected[0] == True
+                ):
                     logging.info(f"NSFW found in image {i}")
                     nsfw_count = nsfw_count + 1
 

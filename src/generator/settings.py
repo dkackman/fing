@@ -12,17 +12,17 @@ def load_settings():
 
     # override settings file with environment vairables (mainly for docker)
     if not os.environ.get("FING_HOST", None) is None:
-        settings.host = os.environ.get("FING_HOST", '')
+        settings.host = os.environ.get("FING_HOST", "")
 
     if not os.environ.get("HUGGINGFACE_TOKEN", None) is None:
-        settings.huggingface_token = os.environ.get("HUGGINGFACE_TOKEN", '')
+        settings.huggingface_token = os.environ.get("HUGGINGFACE_TOKEN", "")
 
     if not os.environ.get("MODEL_CACHE_DIR", None) is None:
-        settings.model_cache_dir = os.environ.get("MODEL_CACHE_DIR", '')
+        settings.model_cache_dir = os.environ.get("MODEL_CACHE_DIR", "")
 
     if not os.environ.get("FING_X_API_KEY", None) is None:
         settings.x_api_key_enabled = True
-        settings.x_api_key_list.append(os.environ.get("FING_X_API_KEY", ''))
+        settings.x_api_key_list.append(os.environ.get("FING_X_API_KEY", ""))
 
     return settings
 

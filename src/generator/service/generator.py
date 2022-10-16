@@ -121,7 +121,7 @@ def clean_prompt(str):
     encoded = unquote(str).encode("utf8", "ignore")
     decoded = encoded.decode("utf8", "ignore")
     cleaned = decoded.replace('"', "").replace("'", "").strip()
-#    if len(cleaned) > 280:  # max length of a tweet
-#        raise Exception("prompt must be less than 281 characters")
+    #    if len(cleaned) > 280:  # max length of a tweet
+    #        raise Exception("prompt must be less than 281 characters")
 
     return cleaned

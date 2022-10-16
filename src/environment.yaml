@@ -19,7 +19,7 @@ dependencies:
   - colorama=0.4.5=pyhd8ed1ab_0
   - cryptography=37.0.2=py310h597c629_0
   - cudatoolkit=11.6.0=hecad31d_10
-  - diffusers=0.4.1=pyhd8ed1ab_0
+  - diffusers=0.5.1=pyhd8ed1ab_0
   - fastapi=0.85.0=pyhd8ed1ab_0
   - ffmpeg=4.3=hf484d3e_0
   - filelock=3.8.0=pyhd8ed1ab_0
