@@ -16,11 +16,17 @@ RUN /anaconda3/bin/conda init bash
 RUN /anaconda3/bin/conda update conda
 RUN /anaconda3/bin/conda update -n base -c defaults conda
 
-
 COPY ./src/environment.yaml /fing/
 RUN /anaconda3/bin/conda env create -f /fing/environment.yaml
+
+RUN find /anaconda3/ -follow -type f -name '*.a' -delete && \
+    find /anaconda3/ -follow -type f -name '*.js.map' -delete
+RUN /anaconda3/bin/conda clean -afy
+
 COPY ./src /fing/
+RUN mkdir /fing/models
 CMD ["/anaconda3/bin/conda", "run", "-n", "fing", "python", "-m", "generator.server"]
 EXPOSE 9147
 
-#docker run --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> fing
+#docker run -it --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> dkackman/fing /bin/bash
+#docker run --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> dkackman/fing
