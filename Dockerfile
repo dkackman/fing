@@ -28,5 +28,5 @@ RUN mkdir /fing/models
 CMD ["/anaconda3/bin/conda", "run", "-n", "fing", "python", "-m", "generator.server"]
 EXPOSE 9147
 
-#docker run -it --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> dkackman/fing /anaconda3/bin/conda run -n fing python -m generator.init_app
+#docker run --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> dkackman/fing /anaconda3/bin/conda run --live-stream -n fing python -m generator.init_app
 #docker run --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> dkackman/fing
