@@ -22,9 +22,6 @@ from .diffusion.pipeline_cache import PipelineCache
 from .diffusion.device_pool import add_device_to_pool
 
 
-if not torch.cuda.is_available():
-    raise Exception("CUDA not present. Quitting.")
-
 if not settings_exist():
     print("Initializing settings with defaults")
     save_settings(Settings())
@@ -35,8 +32,7 @@ settings = load_settings()
 app = create_app(__version__, settings.x_api_key_enabled, settings.x_api_key_list)
 
 
-@app.on_event("startup")
-async def startup_event():
+async def do_setup():
     setup_logging(resolve_path(settings.log_filename), settings.log_level)
     logging.debug(f"Torch version {torch.__version__}")
 
@@ -77,6 +73,16 @@ async def startup_event():
         "main",
         enable_attention_slicing=False,
     )
+
+    return pipeline_cache
+
+
+@app.on_event("startup")
+async def startup_event():
+    if not torch.cuda.is_available():
+        raise Exception("CUDA not present. Quitting.")
+
+    pipeline_cache = await do_setup()
 
     for i in range(0, torch.cuda.device_count()):
         logging.info(f"Adding cuda device {i} - {torch.cuda.get_device_name(i)}")

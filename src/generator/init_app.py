@@ -4,7 +4,7 @@ from .settings import (
     save_settings,
     get_settings_full_path,
 )
-from .server import startup_event
+from .server import do_setup
 import asyncio
 
 
@@ -45,7 +45,7 @@ async def init():
             return
 
     print("Preloading pipelines. This may take awhile...")
-    await startup_event()
+    await do_setup()
     print("done")
 
 
