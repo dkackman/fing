@@ -106,7 +106,7 @@ def generate_buffer(device: Device, **kwargs):
 def get_image(uri):
     response = requests.get(uri)
     image = Image.open(io.BytesIO(response.content))
-    return image.resize((768, 512))
+    return image
 
 
 def image_to_buffer(image, format):

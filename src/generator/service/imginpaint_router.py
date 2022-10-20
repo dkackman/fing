@@ -47,7 +47,7 @@ def get_img(
             num_inference_steps=num_inference_steps,
             num_images=num_images,
             prompt=prompt,
-            init_image=get_image(image_uri),
+            image=get_image(image_uri),
             mask_image=get_image(mask_uri),
             format=format,
             seed=seed,
