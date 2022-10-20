@@ -33,5 +33,5 @@ RUN /miniconda/bin/conda run -n fing --live-stream python -m generator.init_app
 CMD ["conda", "run", "-n", "fing", "python", "-m", "generator.server"]
 EXPOSE 9147
 
-# docker build -t dkackman/fing --build-arg HUGGINGFACE_TOKEN=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 .
+# docker build -t dkackman/fing --build-arg HUGGINGFACE_TOKEN=<YOUR_TOKEN> .
 # docker run --gpus all --env HUGGINGFACE_TOKEN=<YOUR TOKEN> dkackman/fing
