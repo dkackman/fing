@@ -18,6 +18,7 @@ class PipelineCache:
         auth_token: Union[bool, str],
         model_name: str,
         pipeline_type_map: Dict[str, Type],
+        revision,
         enable_attention_slicing: bool = True,
     ):
         # this will preload all the pipelines and serialize them to disk.
@@ -33,6 +34,7 @@ class PipelineCache:
                 print(f"Loading {model_name}.{pipeline_name}")
                 pipeline = StableDiffusionType.from_pretrained(
                     model_name,
+                    revision=revision,
                     use_auth_token=auth_token,
                 )
                 if enable_attention_slicing:

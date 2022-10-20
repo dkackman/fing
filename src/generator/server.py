@@ -7,9 +7,6 @@ from diffusers import (
     StableDiffusionImg2ImgPipeline,
     StableDiffusionInpaintPipeline,
 )
-from .diffusion.ComposableStableDiffusionPipeline import (
-    ComposableStableDiffusionPipeline,
-)
 from . import __version__
 from .settings import (
     Settings,
@@ -44,20 +41,14 @@ async def startup_event():
     logging.debug(f"Torch version {torch.__version__}")
 
     pipeline_cache = PipelineCache(settings.model_cache_dir)
-    pipeline_cache.preload(
-        settings.huggingface_token,
-        "CompVis/stable-diffusion-v1-4",
-        {
-            "compose": ComposableStableDiffusionPipeline,
-        },
-        enable_attention_slicing=False,
-    )
+
     pipeline_cache.preload(
         settings.huggingface_token,
         "CompVis/ldm-celebahq-256",
         {
             "faces": DiffusionPipeline,
         },
+        "main",
         enable_attention_slicing=False,
     )
     pipeline_cache.preload(
@@ -66,8 +57,16 @@ async def startup_event():
         {
             "txt2img": StableDiffusionPipeline,
             "img2img": StableDiffusionImg2ImgPipeline,
+        },
+        "fp16",
+    )
+    pipeline_cache.preload(
+        settings.huggingface_token,
+        "runwayml/stable-diffusion-inpainting",
+        {
             "imginpaint": StableDiffusionInpaintPipeline,
         },
+        "fp16",
     )
     pipeline_cache.preload(
         settings.huggingface_token,
@@ -75,6 +74,7 @@ async def startup_event():
         {
             "txt2img": DiffusionPipeline,
         },
+        "main",
         enable_attention_slicing=False,
     )
 
