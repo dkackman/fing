@@ -6,9 +6,11 @@ from .settings import (
 )
 from .server import do_setup
 import asyncio
+import logging
 
 
 async def init():
+    logging.info("init_app")
     if not settings_exist():
         # this path is legacy since dafe defaults get created at startup - might remove later
         settings = Settings()
