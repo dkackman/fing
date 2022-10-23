@@ -5,6 +5,7 @@ from .img2img_router import img2img_router
 from .imginpaint_router import imginpaint_router
 from .random_face import random_face_router
 from .experimental_router import experimental_router
+from .status_router import status_router
 from .x_api_key import enable_x_api_keys
 
 
@@ -32,5 +33,6 @@ def create_app(version, x_api_key_enabled, x_api_key_list):
     app.include_router(imginpaint_router)
     app.include_router(random_face_router)
     app.include_router(experimental_router)
+    app.include_router(status_router)
 
     return app

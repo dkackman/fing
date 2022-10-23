@@ -9,6 +9,14 @@ available: List[Device] = []
 # TODO - avoid loading if possible by finding a device with the desired pipeline already on it
 
 
+def get_available_gpu_count():
+    mutex.acquire(True, 1)
+    try:
+        return len(available)
+    finally:
+        mutex.release()
+
+
 def add_device_to_pool(device: Device):
     mutex.acquire(True, 2)
     try:
