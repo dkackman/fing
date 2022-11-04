@@ -32,6 +32,7 @@ class Device:
             pipeline = self.get_pipeline(
                 kwargs.pop("model_name"),
                 kwargs.pop("revision"),
+                kwargs.pop("custom_pipeline", None),
             )
 
             # this allows reproducability
@@ -65,7 +66,7 @@ class Device:
         finally:
             self.mutex.release()
 
-    def get_pipeline(self, model_name: str, revision: str):
+    def get_pipeline(self, model_name: str, revision: str, custom_pipeline):
         logging.debug(
             f"Loading {model_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
         )
@@ -80,6 +81,7 @@ class Device:
             use_auth_token=self.auth_token,
             device_map="auto",
             revision=revision,
+            custom_pipeline=custom_pipeline,
         )
         return pipeline.to(f"cuda:{self.device_id}")
 

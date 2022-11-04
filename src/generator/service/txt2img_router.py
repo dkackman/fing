@@ -41,17 +41,23 @@ def get_img(
     height: int = 512,
     width: int = 512,
     use_ldm: bool = False,
+    use_lpw: bool = False,
     seed: Optional[int] = None,
     negative_prompt: Optional[str] = None,
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
-        model_name = (
-            "CompVis/ldm-text2im-large-256"
-            if use_ldm
-            else "CompVis/stable-diffusion-v1-4"
-        )
-        revision = "main" if use_ldm else "fp16"
+        model_name = "CompVis/stable-diffusion-v1-4"
+        custom_pipeline = None
+        revision = "fp16"
+
+        if use_lpw:
+            model_name = "hakurei/waifu-diffusion"
+            custom_pipeline = "lpw_stable_diffusion"
+        elif use_ldm:
+            model_name = "CompVis/ldm-text2im-large-256"
+            revision = "main"
+
         buffer, pipeline_config, args = generate_buffer(
             device,
             model_name=model_name,
@@ -66,6 +72,7 @@ def get_img(
             seed=seed,
             negative_prompt=negative_prompt,
             revision=revision,
+            custom_pipeline=custom_pipeline
         )
     finally:
         add_device_to_pool(device)
