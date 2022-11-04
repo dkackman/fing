@@ -65,7 +65,7 @@ class Device:
         finally:
             self.mutex.release()
 
-    def get_pipeline(self, model_name: str, revision: str = "main"):
+    def get_pipeline(self, model_name: str, revision: str):
         logging.debug(
             f"Loading {model_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
         )
@@ -74,14 +74,14 @@ class Device:
         with torch.no_grad():
             torch.cuda.empty_cache()
 
-        # get the cached pipeline and send it to the gpu
-        new_pipeline = DiffusionPipeline.from_pretrained(
+        # load the pipeline and send it to the gpu
+        pipeline = DiffusionPipeline.from_pretrained(
             model_name,
             use_auth_token=self.auth_token,
             device_map="auto",
             revision=revision,
         )
-        return new_pipeline.to(f"cuda:{self.device_id}")
+        return pipeline.to(f"cuda:{self.device_id}")
 
     def log_device(self):
         logging.debug(
