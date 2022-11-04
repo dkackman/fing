@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
 from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
-from .generator import generate_buffer, package_metadata, format_enum, get_image
+from .generator import generate_buffer, package_metadata, image_format_enum, get_image
 from .x_api_key import x_api_key_auth
 
 imginpaint_router = APIRouter()
@@ -28,7 +28,7 @@ def get_img(
     prompt: str,
     image_uri: str,
     mask_uri: str,
-    format: format_enum = format_enum.jpeg,
+    format: image_format_enum = image_format_enum.jpeg,
     guidance_scale: float = 7.5,
     strength: float = 0.75,
     num_inference_steps: int = 50,
@@ -56,13 +56,13 @@ def get_img(
     finally:
         add_device_to_pool(device)
 
-    if format == format_enum.jpeg:
+    if format == image_format_enum.jpeg:
         return StreamingResponse(buffer, media_type="image/jpeg")
 
-    if format == format_enum.png:
+    if format == image_format_enum.png:
         return StreamingResponse(buffer, media_type="image/png")
 
-    if format == format_enum.json:
+    if format == image_format_enum.json:
         # don't serialize these two in the metadata
         args["image_uri"] = image_uri
         args["mask_uri"] = image_uri

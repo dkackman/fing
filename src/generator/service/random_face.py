@@ -6,7 +6,7 @@ from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
 from .generator import (
     generate_buffer,
     package_metadata,
-    format_enum,
+    image_format_enum,
     PackageMetaDataModel,
 )
 from .x_api_key import x_api_key_auth
@@ -31,7 +31,7 @@ random_face_router = APIRouter()
     response_model=PackageMetaDataModel,
 )
 def get_img(
-    format: format_enum = format_enum.jpeg,
+    format: image_format_enum = image_format_enum.jpeg,
     num_inference_steps: int = 50,
     num_images: int = 1,
     seed: Optional[int] = None,
@@ -50,11 +50,11 @@ def get_img(
     finally:
         add_device_to_pool(device)
 
-    if format == format_enum.jpeg:
+    if format == image_format_enum.jpeg:
         return StreamingResponse(buffer, media_type="image/jpeg")
 
-    if format == format_enum.png:
+    if format == image_format_enum.png:
         return StreamingResponse(buffer, media_type="image/png")
 
-    if format == format_enum.json:
+    if format == image_format_enum.json:
         return package_metadata(buffer, pipeline_config, args)

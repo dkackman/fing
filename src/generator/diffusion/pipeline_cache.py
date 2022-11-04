@@ -36,8 +36,10 @@ class PipelineCache:
                     model_name,
                     revision=revision,
                     use_auth_token=auth_token,
+                    #device_map="auto"
                 )
                 if enable_attention_slicing:
+                    #pipeline.enable_xformers_memory_efficient_attention()
                     pipeline.enable_attention_slicing()
 
                 print(f"Serializing to {filepath}")

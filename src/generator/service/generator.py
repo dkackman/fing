@@ -13,10 +13,14 @@ from PIL import Image
 import requests
 
 
-class format_enum(StrEnum):
+class image_format_enum(StrEnum):
     jpeg = auto()
     json = auto()
     png = auto()
+
+class audio_format_enum(StrEnum):
+    wav = auto()
+    json = auto()
 
 
 class PipelineConfig(BaseModel):
