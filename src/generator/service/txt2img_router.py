@@ -78,7 +78,7 @@ def get_img(
             negative_prompt=negative_prompt,
             revision=revision,
             custom_pipeline=custom_pipeline,
-            weights=weights
+            weights=weights,
         )
     finally:
         add_device_to_pool(device)
