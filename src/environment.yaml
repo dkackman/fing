@@ -32,8 +32,8 @@ dependencies:
   - brotlipy=0.7.0=py310h5764c6d_1004
   - bzip2=1.0.8=h7b6447c_0
   - c-ares=1.18.1=h7f98852_0
-  - ca-certificates=2022.10.11=h06a4308_0
-  - certifi=2022.9.24=py310h06a4308_0
+  - ca-certificates=2022.9.24=ha878542_0
+  - certifi=2022.9.24=pyhd8ed1ab_0
   - cffi=1.15.1=py310h74dc2b5_0
   - charset-normalizer=2.1.1=pyhd8ed1ab_0
   - click=8.1.3=py310hff52083_0
@@ -103,9 +103,11 @@ dependencies:
   - lcms2=2.12=hddcbb42_0
   - ld_impl_linux-64=2.38=h1181459_1
   - lerc=2.2.1=h9c3ff4c_0
+  - libblas=3.9.0=12_linux64_mkl
   - libbrotlicommon=1.0.9=h166bdaf_7
   - libbrotlidec=1.0.9=h166bdaf_7
   - libbrotlienc=1.0.9=h166bdaf_7
+  - libcblas=3.9.0=12_linux64_mkl
   - libcublas=11.11.3.6=0
   - libcublas-dev=11.11.3.6=0
   - libcufft=10.9.0.58=0
@@ -125,7 +127,10 @@ dependencies:
   - libevent=2.1.10=h9b69904_4
   - libffi=3.3=he6710b0_2
   - libgcc-ng=12.1.0=h8d9b700_16
+  - libgfortran-ng=12.2.0=h69a702a_19
+  - libgfortran5=12.2.0=h337968e_19
   - libiconv=1.17=h166bdaf_0
+  - liblapack=3.9.0=12_linux64_mkl
   - libnghttp2=1.47.0=h727a467_0
   - libnpp=11.8.0.86=0
   - libnpp-dev=11.8.0.86=0
@@ -157,7 +162,7 @@ dependencies:
   - numpy=1.23.1=py310h1794996_0
   - numpy-base=1.23.1=py310hcba007f_0
   - openh264=2.1.1=h780b84a_0
-  - openssl=1.1.1q=h7f8727e_0
+  - openssl=1.1.1s=h166bdaf_0
   - orc=1.7.1=h1be678f_1
   - packaging=21.3=pyhd8ed1ab_0
   - pandas=1.4.2=py310h769672d_1
@@ -187,6 +192,7 @@ dependencies:
   - responses=0.18.0=pyhd8ed1ab_0
   - s2n=1.3.0=h9b69904_0
   - sacremoses=0.0.53=pyhd8ed1ab_0
+  - scipy=1.8.1=py310h7612f91_0
   - setuptools=63.4.1=py310h06a4308_0
   - six=1.16.0=pyh6c4a22f_0
   - snappy=1.1.9=hbd366e4_1
