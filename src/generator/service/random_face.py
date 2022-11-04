@@ -46,6 +46,7 @@ def get_img(
             num_images=num_images,
             format=format,
             seed=seed,
+            revision="main",
         )
     finally:
         add_device_to_pool(device)

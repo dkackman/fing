@@ -51,6 +51,7 @@ def get_img(
             if use_ldm
             else "CompVis/stable-diffusion-v1-4"
         )
+        revision = "main" if use_ldm else "fp16"
         buffer, pipeline_config, args = generate_buffer(
             device,
             model_name=model_name,
@@ -64,6 +65,7 @@ def get_img(
             format=format,
             seed=seed,
             negative_prompt=negative_prompt,
+            revision=revision,
         )
     finally:
         add_device_to_pool(device)

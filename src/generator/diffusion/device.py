@@ -4,21 +4,16 @@ import logging
 from PIL import Image
 from collections import namedtuple
 from threading import Lock
-from .pipeline_cache import PipelineCache
-
-
-pipeline_reference = namedtuple("pipeline_reference", ("key", "pipeline"))
+from diffusers import DiffusionPipeline
 
 
 class Device:
     device_id: int
-    pipeline_cache: PipelineCache
-    last_pipeline = None
     mutex: Lock
 
-    def __init__(self, device_id: int, pipeline_cache: PipelineCache) -> None:
+    def __init__(self, device_id: int, auth_token) -> None:
         self.device_id = device_id
-        self.pipeline_cache = pipeline_cache
+        self.auth_token = auth_token
         self.mutex = Lock()
 
     def __call__(self, **kwargs):
@@ -36,7 +31,8 @@ class Device:
             self.log_device()
 
             pipeline = self.get_pipeline(
-                kwargs.pop("model_name"), kwargs.pop("pipeline_name")
+                kwargs.pop("model_name"),
+                kwargs.pop("revision"),
             )
 
             # this allows reproducability
@@ -70,19 +66,9 @@ class Device:
         finally:
             self.mutex.release()
 
-    def get_pipeline(self, model_name: str, pipeline_name: str):
-        pipeline_key = f"{model_name}.{pipeline_name}"
-        # if the last pipeline is the one requested, just return it
-        if self.last_pipeline is not None:
-            if self.last_pipeline.key == pipeline_key:
-                logging.debug(f"{pipeline_key} already loaded")
-                return self.last_pipeline.pipeline
-
-            # if there is a loaded pipeline but it's different clean up the memory
-            del self.last_pipeline
-
+    def get_pipeline(self, model_name: str, revision: str = "main"):
         logging.debug(
-            f"Deserializing {pipeline_key} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
+            f"Loading {model_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
         )
         # clear gpu cache
         torch.cuda.set_device(self.device_id)
@@ -90,13 +76,13 @@ class Device:
             torch.cuda.empty_cache()
 
         # get the cached pipeline and send it to the gpu
-        new_pipeline = self.pipeline_cache.load_pipeline(model_name, pipeline_name)
-        gpu_pipeline = new_pipeline.to(f"cuda:{self.device_id}")
-        # then delete the one in main memory right away since it is quite large
-        del new_pipeline
-        # and keep a reference to the one in the gpu
-        self.last_pipeline = pipeline_reference(pipeline_key, gpu_pipeline)
-        return gpu_pipeline
+        new_pipeline = DiffusionPipeline.from_pretrained(
+            model_name,
+            use_auth_token=self.auth_token,
+            device_map="auto",
+            revision=revision,
+        )
+        return new_pipeline.to(f"cuda:{self.device_id}")
 
     def log_device(self):
         logging.debug(

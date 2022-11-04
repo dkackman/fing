@@ -50,6 +50,7 @@ def get_img(
             format=format,
             seed=seed,
             negative_prompt=negative_prompt,
+            revision="fp16",
         )
     finally:
         add_device_to_pool(device)
