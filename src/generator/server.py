@@ -43,7 +43,7 @@ async def do_setup():
             use_auth_token=settings.huggingface_token,
             device_map="auto",
             revision=model[1],
-            )
+        )
 
 
 @app.on_event("startup")
