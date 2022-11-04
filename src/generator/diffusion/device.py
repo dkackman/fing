@@ -2,7 +2,6 @@ from typing import Optional
 import torch
 import logging
 from PIL import Image
-from collections import namedtuple
 from threading import Lock
 from diffusers import DiffusionPipeline
 
