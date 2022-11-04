@@ -93,13 +93,14 @@ def generate_buffer(device: Device, **kwargs):
             f"END generating {kwargs['pipeline_name']} on device {device.device_id}"
         )
     except Exception as e:
+        print(e)
+
         if len(e.args) > 0:
             if e.args[0] == "busy":
                 raise HTTPException(423)
             if e.args[0] == "NSFW":
                 raise HTTPException(406)  # Not Acceptable
 
-        print(e)
         raise HTTPException(500)
 
     buffer = image_to_buffer(image, format)

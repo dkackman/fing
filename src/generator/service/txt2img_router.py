@@ -42,8 +42,10 @@ def get_img(
     width: int = 512,
     use_ldm: bool = False,
     use_lpw: bool = False,
+    use_composable: bool = False,
     seed: Optional[int] = None,
     negative_prompt: Optional[str] = None,
+    weights: Optional[str] = None,
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
@@ -51,7 +53,10 @@ def get_img(
         custom_pipeline = None
         revision = "fp16"
 
-        if use_lpw:
+        if use_composable:
+            custom_pipeline = "composable_stable_diffusion"
+            revision = "main"
+        elif use_lpw:
             model_name = "hakurei/waifu-diffusion"
             custom_pipeline = "lpw_stable_diffusion"
         elif use_ldm:
@@ -72,7 +77,8 @@ def get_img(
             seed=seed,
             negative_prompt=negative_prompt,
             revision=revision,
-            custom_pipeline=custom_pipeline
+            custom_pipeline=custom_pipeline,
+            weights=weights
         )
     finally:
         add_device_to_pool(device)
