@@ -10,6 +10,8 @@ from .generator import (
     PackageMetaDataModel,
 )
 from .x_api_key import x_api_key_auth
+import torch
+
 
 random_face_router = APIRouter()
 
@@ -47,6 +49,7 @@ def get_img(
             format=format,
             seed=seed,
             revision="main",
+            torch_dtype=torch.float32
         )
     finally:
         add_device_to_pool(device)

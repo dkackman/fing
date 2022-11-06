@@ -9,7 +9,7 @@ from .server import do_setup
 import asyncio
 import logging
 from diffusers import DiffusionPipeline
-
+import torch
 
 async def init():
     logging.info("init_app")
@@ -53,12 +53,12 @@ async def init():
     print("Preloading pipelines. This may take awhile...")
     await do_setup()
     models = [
-        ("CompVis/stable-diffusion-v1-4", "fp16", None),
+        ("runwayml/stable-diffusion-v1-5", "fp16", None),
         ("CompVis/ldm-celebahq-256", "main", None),
         ("runwayml/stable-diffusion-inpainting", "fp16", None),
         ("CompVis/ldm-text2im-large-256", "main", None),
         ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
-        ("CompVis/stable-diffusion-v1-4", "main", "composable_stable_diffusion"),
+        ("runwayml/stable-diffusion-v1-5", "main", "composable_stable_diffusion"),
     ]
 
     # this makes sure that all of the diffusers are downloaded and cached
@@ -68,6 +68,7 @@ async def init():
             use_auth_token=settings.huggingface_token,
             device_map="auto",
             revision=model[1],
+            torch_dtype=torch.float16,
             custom_pipeline=model[2],
         )
     print("done")

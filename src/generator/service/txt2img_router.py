@@ -11,7 +11,7 @@ from .generator import (
     PackageMetaDataModel,
 )
 from .x_api_key import x_api_key_auth
-
+import torch
 
 txt2img_router = APIRouter()
 
@@ -49,9 +49,10 @@ def get_img(
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
-        model_name = "CompVis/stable-diffusion-v1-4"
+        model_name = "runwayml/stable-diffusion-v1-5"
         custom_pipeline = None
         revision = "fp16"
+        torch_dtype=torch.float16
 
         if use_composable:
             custom_pipeline = "composable_stable_diffusion"
@@ -62,6 +63,7 @@ def get_img(
         elif use_ldm:
             model_name = "CompVis/ldm-text2im-large-256"
             revision = "main"
+            torch_dtype=torch.float32
 
         buffer, pipeline_config, args = generate_buffer(
             device,
@@ -79,6 +81,7 @@ def get_img(
             revision=revision,
             custom_pipeline=custom_pipeline,
             weights=weights,
+            torch_dtype=torch_dtype,
         )
     finally:
         add_device_to_pool(device)
