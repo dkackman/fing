@@ -5,9 +5,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-*.pipeline
 
+# stable diffusion stuff
+*.pipeline
 *.lock
+lpw_stable_diffusion/
+composable_stable_diffusion/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
