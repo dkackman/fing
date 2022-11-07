@@ -82,7 +82,7 @@ class Device:
         pipeline = DiffusionPipeline.from_pretrained(
             model_name,
             use_auth_token=self.auth_token,
-            device_map="auto",
+            #device_map="auto",
             revision=revision,
             torch_dtype=torch_dtype,
             custom_pipeline=custom_pipeline,
