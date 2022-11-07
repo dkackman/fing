@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..diffusion.device import Device
 from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
-
 from .generator import (
     generate_buffer,
     package_metadata,
@@ -52,7 +51,7 @@ def get_img(
         model_name = "runwayml/stable-diffusion-v1-5"
         custom_pipeline = None
         revision = "fp16"
-        torch_dtype=torch.float16
+        torch_dtype = torch.float16
 
         if use_composable:
             custom_pipeline = "composable_stable_diffusion"
@@ -63,7 +62,7 @@ def get_img(
         elif use_ldm:
             model_name = "CompVis/ldm-text2im-large-256"
             revision = "main"
-            torch_dtype=torch.float32
+            torch_dtype = torch.float32
 
         buffer, pipeline_config, args = generate_buffer(
             device,

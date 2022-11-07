@@ -53,19 +53,9 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
     pipeline_config = PipelineConfig.parse_obj(pipeline_config)
     image = base64.b64encode(buffer.getvalue()).decode("UTF-8")
 
-    # dyanmically typed version in case this is too brittle
-    # metaddata = info().dict
-    # metadata["pipeline_config"] = pipeline_config
-    # metadata["image"] = base64.b64encode(buffer.getvalue()).decode("UTF-8")
-    # metadata["parameters"] = args
-
-    # in case we ever want to return the input images
-    # for k, v in args.items():
-    #    if isinstance(v, Image.Image):
-    #        args[k] = base64.b64encode(image_to_buffer(v, "JPEG").getvalue()).decode("UTF-8")
-
+    # torch_dtype is not iterable and won't serialize
     # filter out any images from the metadata
-    serlized_args = {k: v for (k, v) in args.items() if not isinstance(v, Image.Image)}
+    serlized_args = {k: v for (k, v) in args.items() if not isinstance(v, Image.Image) and not k == "torch_dtype"}
 
     return PackageMetaDataModel(
         pipeline_config=pipeline_config,

@@ -11,6 +11,7 @@ import logging
 from diffusers import DiffusionPipeline
 import torch
 
+
 async def init():
     logging.info("init_app")
     if not settings_exist():

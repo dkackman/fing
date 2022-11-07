@@ -49,7 +49,7 @@ def get_img(
             format=format,
             seed=seed,
             revision="main",
-            torch_dtype=torch.float32
+            torch_dtype=torch.float32,
         )
     finally:
         add_device_to_pool(device)
