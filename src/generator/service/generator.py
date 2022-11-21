@@ -55,7 +55,11 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
 
     # torch_dtype is not iterable and won't serialize
     # filter out any images from the metadata
-    serlized_args = {k: v for (k, v) in args.items() if not isinstance(v, Image.Image) and not k == "torch_dtype"}
+    serlized_args = {
+        k: v
+        for (k, v) in args.items()
+        if not isinstance(v, Image.Image) and not k == "torch_dtype"
+    }
 
     return PackageMetaDataModel(
         pipeline_config=pipeline_config,

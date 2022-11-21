@@ -21,9 +21,8 @@ class Device:
             raise Exception("busy")
 
         try:
-            num_images = kwargs.pop("num_images", 1)
-            if num_images > 4:
-                raise Exception("The maximum number of images is 4")
+            # convert the name of this api parameter to the diffuser equivalent (name changed)
+            kwargs["num_images_per_prompt"] = kwargs.pop("num_images", 1)
 
             if "prompt" in kwargs:
                 logging.info(f"Prompt is {kwargs['prompt']}")
@@ -42,28 +41,21 @@ class Device:
                 seed = torch.seed()
             torch.manual_seed(seed)
 
-            image_list = []
-            nsfw_count = 0
-            # this can be done in a single pass to the pipeline but consumes a lot of memory and isn't much faster
-            for i in range(num_images):
-                p = pipeline(**kwargs)
-                if (
-                    hasattr(p, "nsfw_content_detected")
-                    and p.nsfw_content_detected[0] == True
-                ):
-                    logging.info(f"NSFW found in image {i}")
-                    nsfw_count = nsfw_count + 1
+            p = pipeline(**kwargs)
 
-                image_list.append(p.images[0])
-
-            # if all the images are nsfw raise error as they will all be blank
-            if len(image_list) == nsfw_count:
-                raise Exception("NSFW")
+            # if only one image (the usual case) and nsfw raise exception
+            if (
+                hasattr(p, "nsfw_content_detected")
+                and len(p.nsfw_content_detected) == 1
+            ):
+                for _ in filter(lambda nsfw: nsfw, p.nsfw_content_detected):
+                    raise Exception("NSFW")
 
             pipeline.config["seed"] = seed
             pipeline.config["class_name"] = pipeline.config["_class_name"]
             pipeline.config["diffusers_version"] = pipeline.config["_diffusers_version"]
-            return (post_process(image_list), pipeline.config)
+
+            return (post_process(p.images), pipeline.config)
         finally:
             self.mutex.release()
 
@@ -82,7 +74,7 @@ class Device:
         pipeline = DiffusionPipeline.from_pretrained(
             model_name,
             use_auth_token=self.auth_token,
-            #device_map="auto",
+            # device_map="auto",
             revision=revision,
             torch_dtype=torch_dtype,
             custom_pipeline=custom_pipeline,
