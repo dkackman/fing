@@ -30,7 +30,7 @@ def get_img(
     format: image_format_enum = image_format_enum.jpeg,
     guidance_scale: float = 7.5,
     strength: float = 0.75,
-    num_inference_steps: int = 50,
+    num_inference_steps: int = 25,
     num_images: int = 1,
     seed: Optional[int] = None,
     negative_prompt: Optional[str] = None,

@@ -9,6 +9,7 @@ from .generator import (
     image_format_enum,
     PackageMetaDataModel,
 )
+from diffusers import DDIMScheduler
 from .x_api_key import x_api_key_auth
 import torch
 
@@ -50,6 +51,7 @@ def get_img(
             seed=seed,
             revision="main",
             torch_dtype=torch.float32,
+            scheduler=DDIMScheduler.from_config("CompVis/ldm-celebahq-256", subfolder="scheduler")
         )
     finally:
         add_device_to_pool(device)

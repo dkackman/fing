@@ -28,11 +28,21 @@ class Device:
                 logging.info(f"Prompt is {kwargs['prompt']}")
             self.log_device()
 
+            # if no scheduler is provided default to DPMSolverMultistepScheduler
+            scheduler = kwargs.pop("scheduler", None)
+            if scheduler is None:
+                scheduler = DPMSolverMultistepScheduler.from_pretrained(
+                    "runwayml/stable-diffusion-v1-5",
+                    use_auth_token=self.auth_token,
+                    subfolder="scheduler",
+                )
+                
             pipeline = self.get_pipeline(
                 kwargs.pop("model_name"),
                 kwargs.pop("revision"),
                 kwargs.pop("custom_pipeline", None),
                 kwargs.pop("torch_dtype", torch.float16),
+                scheduler,
             )
 
             # this allows reproducability
@@ -60,7 +70,7 @@ class Device:
             self.mutex.release()
 
     def get_pipeline(
-        self, model_name: str, revision: str, custom_pipeline, torch_dtype
+        self, model_name: str, revision: str, custom_pipeline, torch_dtype, scheduler
     ):
         logging.debug(
             f"Loading {model_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
@@ -70,11 +80,6 @@ class Device:
         with torch.no_grad():
             torch.cuda.empty_cache()
 
-        scheduler = DPMSolverMultistepScheduler.from_pretrained(
-            "runwayml/stable-diffusion-v1-5", 
-            use_auth_token=self.auth_token,
-            subfolder="scheduler"
-            )
         # load the pipeline and send it to the gpu
         pipeline = DiffusionPipeline.from_pretrained(
             model_name,
