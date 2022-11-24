@@ -112,6 +112,7 @@ def get_image(uri):
 
     return image
 
+
 def image_to_buffer(image, format):
     buffer = io.BytesIO()
     image.save(buffer, format=format)
