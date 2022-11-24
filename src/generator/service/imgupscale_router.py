@@ -5,7 +5,6 @@ from ..diffusion.device import Device
 from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
 from .generator import generate_buffer, package_metadata, image_format_enum, get_image
 from .x_api_key import x_api_key_auth
-from diffusers import DDIMScheduler
 import torch
 
 imgupscale_router = APIRouter()

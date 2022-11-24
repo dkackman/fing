@@ -9,7 +9,6 @@ from .generator import (
     image_format_enum,
     PackageMetaDataModel,
 )
-from diffusers import DDIMScheduler
 from .x_api_key import x_api_key_auth
 import torch
 
@@ -64,7 +63,6 @@ def get_img(
             model_name = "CompVis/ldm-text2im-large-256"
             revision = "main"
             torch_dtype = torch.float32
-
 
         buffer, pipeline_config, args = generate_buffer(
             device,
