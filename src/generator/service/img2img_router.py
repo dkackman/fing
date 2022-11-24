@@ -5,6 +5,7 @@ from ..diffusion.device import Device
 from ..diffusion.device_pool import add_device_to_pool, remove_device_from_pool
 from .generator import generate_buffer, package_metadata, image_format_enum, get_image
 from .x_api_key import x_api_key_auth
+from diffusers import StableDiffusionImg2ImgPipeline
 
 img2img_router = APIRouter()
 
@@ -30,7 +31,7 @@ def get_img(
     format: image_format_enum = image_format_enum.jpeg,
     guidance_scale: float = 7.5,
     strength: float = 0.75,
-    num_inference_steps: int = 25,
+    num_inference_steps: int = 50,
     num_images: int = 1,
     seed: Optional[int] = None,
     negative_prompt: Optional[str] = None,
@@ -51,6 +52,7 @@ def get_img(
             seed=seed,
             negative_prompt=negative_prompt,
             revision="fp16",
+            pipeline_type=StableDiffusionImg2ImgPipeline,
         )
     finally:
         add_device_to_pool(device)

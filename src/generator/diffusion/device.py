@@ -44,6 +44,7 @@ class Device:
                 kwargs.pop("custom_pipeline", None),
                 kwargs.pop("torch_dtype", torch.float16),
                 scheduler,
+                kwargs.pop("pipeline_type", DiffusionPipeline)
             )
 
             # this allows reproducability
@@ -71,7 +72,7 @@ class Device:
             self.mutex.release()
 
     def get_pipeline(
-        self, model_name: str, revision: str, custom_pipeline, torch_dtype, scheduler
+        self, model_name: str, revision: str, custom_pipeline, torch_dtype, scheduler, pipeline_type
     ):
         logging.debug(
             f"Loading {model_name} to device {self.device_id} - {torch.cuda.get_device_name(self.device_id)}"
@@ -82,10 +83,9 @@ class Device:
             torch.cuda.empty_cache()
 
         # load the pipeline and send it to the gpu
-        pipeline = DiffusionPipeline.from_pretrained(
+        pipeline = pipeline_type.from_pretrained(
             model_name,
             use_auth_token=self.auth_token,
-            # device_map="auto",
             revision=revision,
             torch_dtype=torch_dtype,
             custom_pipeline=custom_pipeline,

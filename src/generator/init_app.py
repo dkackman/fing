@@ -55,11 +55,12 @@ async def init():
     await do_setup()
     models = [
         ("runwayml/stable-diffusion-v1-5", "fp16", None),
-        ("CompVis/ldm-celebahq-256", "main", None),
-        ("runwayml/stable-diffusion-inpainting", "fp16", None),
-        ("CompVis/ldm-text2im-large-256", "main", None),
-        ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
         ("runwayml/stable-diffusion-v1-5", "main", "composable_stable_diffusion"),
+        ("runwayml/stable-diffusion-inpainting", "fp16", None),
+        ("CompVis/ldm-celebahq-256", "main", None),
+        ("CompVis/ldm-text2im-large-256", "main", None),
+        ("CompVis/stable-diffusion-v1-4", "fp16", None),
+        ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
         ("duongna/ldm-super-resolution", "main", None),
     ]
 
