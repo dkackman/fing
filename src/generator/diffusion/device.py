@@ -85,7 +85,7 @@ class Device:
             custom_pipeline=custom_pipeline,
             scheduler=scheduler,
         )
-        return pipeline.to(f"cuda:{self.device_id}")
+        return pipeline.to(f"cuda:{self.device_id}")  # type: ignore
 
     def log_device(self):
         logging.debug(
