@@ -44,9 +44,6 @@ def get_img(
             seed=seed,
             torch_dtype=torch.float32,
             revision="main",
-            scheduler=DDIMScheduler.from_config(
-                "duongna/ldm-super-resolution", subfolder="scheduler"
-            ),
             eta=1,
         )
     finally:
@@ -59,6 +56,6 @@ def get_img(
         return StreamingResponse(buffer, media_type="image/png")
 
     if format == image_format_enum.json:
-        # don't serialize these two in the metadata
+        # don't serialize this in the metadata
         args["image_uri"] = image_uri
         return package_metadata(buffer, pipeline_config, args)

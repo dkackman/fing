@@ -30,15 +30,16 @@ class Device:
 
             # if no scheduler is provided default to DPMSolverMultistepScheduler
             scheduler = kwargs.pop("scheduler", None)
+            model_name = kwargs.pop("model_name")
             if scheduler is None:
                 scheduler = DPMSolverMultistepScheduler.from_pretrained(
-                    "runwayml/stable-diffusion-v1-5",
+                    model_name,
                     use_auth_token=self.auth_token,
                     subfolder="scheduler",
                 )
 
             pipeline = self.get_pipeline(
-                kwargs.pop("model_name"),
+                model_name,
                 kwargs.pop("revision"),
                 kwargs.pop("custom_pipeline", None),
                 kwargs.pop("torch_dtype", torch.float16),
