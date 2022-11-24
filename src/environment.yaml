@@ -1,5 +1,6 @@
 name: fing
 channels:
+  - xformers/label/dev
   - pytorch
   - nvidia
   - conda-forge
@@ -32,8 +33,8 @@ dependencies:
   - brotlipy=0.7.0=py310h5764c6d_1004
   - bzip2=1.0.8=h7b6447c_0
   - c-ares=1.18.1=h7f98852_0
-  - ca-certificates=2022.9.24=ha878542_0
-  - certifi=2022.9.24=pyhd8ed1ab_0
+  - ca-certificates=2022.10.11=h06a4308_0
+  - certifi=2022.9.24=py310h06a4308_0
   - cffi=1.15.1=py310h74dc2b5_0
   - charset-normalizer=2.1.1=pyhd8ed1ab_0
   - click=8.1.3=py310hff52083_0
@@ -162,7 +163,7 @@ dependencies:
   - numpy=1.23.1=py310h1794996_0
   - numpy-base=1.23.1=py310hcba007f_0
   - openh264=2.1.1=h780b84a_0
-  - openssl=1.1.1s=h166bdaf_0
+  - openssl=1.1.1s=h7f8727e_0
   - orc=1.7.1=h1be678f_1
   - packaging=21.3=pyhd8ed1ab_0
   - pandas=1.4.2=py310h769672d_1
@@ -213,6 +214,7 @@ dependencies:
   - uvicorn=0.18.3=py310hff52083_0
   - wcwidth=0.2.5=pyhd3eb1b0_0
   - wheel=0.37.1=pyhd3eb1b0_0
+  - xformers=0.0.15.dev340+git.103e863=py310_cu11.6_pyt1.13
   - xxhash=0.8.0=h7f98852_3
   - xz=5.2.5=h7f8727e_1
   - yaml=0.2.5=h7f98852_2
