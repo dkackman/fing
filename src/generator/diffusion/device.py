@@ -3,7 +3,7 @@ import torch
 import logging
 from PIL import Image
 from threading import Lock
-from diffusers import DiffusionPipeline
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 
 
 class Device:
@@ -70,6 +70,11 @@ class Device:
         with torch.no_grad():
             torch.cuda.empty_cache()
 
+        scheduler = DPMSolverMultistepScheduler.from_pretrained(
+            "runwayml/stable-diffusion-v1-5", 
+            use_auth_token=self.auth_token,
+            subfolder="scheduler"
+            )
         # load the pipeline and send it to the gpu
         pipeline = DiffusionPipeline.from_pretrained(
             model_name,
@@ -78,6 +83,7 @@ class Device:
             revision=revision,
             torch_dtype=torch_dtype,
             custom_pipeline=custom_pipeline,
+            scheduler=scheduler,
         )
         return pipeline.to(f"cuda:{self.device_id}")
 
