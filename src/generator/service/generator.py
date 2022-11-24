@@ -106,8 +106,11 @@ def generate_buffer(device: Device, **kwargs):
 def get_image(uri):
     response = requests.get(uri)
     image = Image.open(io.BytesIO(response.content))
-    return image
+    maxzise = 1024
+    if image.height > maxzise or image.width > maxzise:
+        image.thumbnail((maxzise, maxzise), Image.Resampling.LANCZOS)
 
+    return image
 
 def image_to_buffer(image, format):
     buffer = io.BytesIO()
