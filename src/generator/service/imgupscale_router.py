@@ -39,7 +39,7 @@ def get_img(
             model_name="duongna/ldm-super-resolution",
             pipeline_name="imgupscale",
             num_inference_steps=num_inference_steps,
-            image=get_image(image_uri),
+            init_image=get_image(image_uri),
             format=format,
             seed=seed,
             torch_dtype=torch.float32,
@@ -47,6 +47,7 @@ def get_img(
             scheduler=DDIMScheduler.from_config(
                 "duongna/ldm-super-resolution", subfolder="scheduler"
             ),
+            eta=1,
         )
     finally:
         add_device_to_pool(device)
