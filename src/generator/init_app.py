@@ -60,6 +60,7 @@ async def init():
         ("CompVis/ldm-text2im-large-256", "main", None),
         ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
         ("runwayml/stable-diffusion-v1-5", "main", "composable_stable_diffusion"),
+        ("duongna/ldm-super-resolution", "main", None),
     ]
 
     # this makes sure that all of the diffusers are downloaded and cached

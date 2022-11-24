@@ -36,7 +36,7 @@ class Device:
                     use_auth_token=self.auth_token,
                     subfolder="scheduler",
                 )
-                
+
             pipeline = self.get_pipeline(
                 kwargs.pop("model_name"),
                 kwargs.pop("revision"),

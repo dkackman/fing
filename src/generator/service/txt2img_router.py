@@ -53,7 +53,7 @@ def get_img(
         custom_pipeline = None
         revision = "fp16"
         torch_dtype = torch.float16
-        scheduler=None
+        scheduler = None
         if use_composable:
             custom_pipeline = "composable_stable_diffusion"
             revision = "main"
@@ -64,7 +64,9 @@ def get_img(
             model_name = "CompVis/ldm-text2im-large-256"
             revision = "main"
             torch_dtype = torch.float32
-            scheduler=DDIMScheduler.from_config("CompVis/ldm-text2im-large-256", subfolder="scheduler")
+            scheduler = DDIMScheduler.from_config(
+                "CompVis/ldm-text2im-large-256", subfolder="scheduler"
+            )
 
         buffer, pipeline_config, args = generate_buffer(
             device,
