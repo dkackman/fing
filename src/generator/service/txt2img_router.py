@@ -46,6 +46,7 @@ def get_img(
     negative_prompt: Optional[str] = None,
     weights: Optional[str] = None,
     use_sd1: bool = False,
+    use_sd2base: bool = False,
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
@@ -53,14 +54,11 @@ def get_img(
         custom_pipeline = None
         revision = "fp16"
         torch_dtype = torch.float16
-        sd2 = not (use_sd1 or use_composable or use_lpw or use_ldm)
 
-        if sd2 and (height == 512 or width == 512):
+        if use_sd2base:
             model_name = "stabilityai/stable-diffusion-2-base"
-
-        if use_sd1:
+        elif use_sd1:
             model_name = "runwayml/stable-diffusion-v1-5"
-
         elif use_composable:
             custom_pipeline = "composable_stable_diffusion"
             revision = "main"
