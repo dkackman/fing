@@ -37,23 +37,31 @@ def get_img(
     guidance_scale: float = 7.5,
     num_inference_steps: int = 25,
     num_images: int = 1,
-    height: int = 512,
-    width: int = 512,
+    height: int = 768,
+    width: int = 768,
     use_ldm: bool = False,
     use_lpw: bool = False,
     use_composable: bool = False,
     seed: Optional[int] = None,
     negative_prompt: Optional[str] = None,
     weights: Optional[str] = None,
+    use_sd1: bool = False,
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
-        model_name = "runwayml/stable-diffusion-v1-5"
+        model_name = "stabilityai/stable-diffusion-2"
         custom_pipeline = None
         revision = "fp16"
         torch_dtype = torch.float16
+        sd2 = not (use_sd1 or use_composable or use_lpw or use_ldm)
 
-        if use_composable:
+        if sd2 and (height == 512 or width == 512):
+            model_name = "stabilityai/stable-diffusion-2-base"
+
+        if use_sd1:
+            model_name = "runwayml/stable-diffusion-v1-5"
+
+        elif use_composable:
             custom_pipeline = "composable_stable_diffusion"
             revision = "main"
         elif use_lpw:

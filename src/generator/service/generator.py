@@ -33,8 +33,6 @@ class PipelineConfig(BaseModel):
     safety_checker: Optional[List[str]]
     feature_extractor: Optional[List[str]]
     seed: Optional[int]
-    class_name: str
-    diffusers_version: str
 
 
 class PipelineConfigModel(BaseModel):
@@ -72,10 +70,10 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
 def generate_buffer(device: Device, **kwargs):
     format = kwargs.pop("format", "JPEG").upper()
     format = format if format != "JSON" else "JPEG"
-
+    pipeline_name = kwargs.pop("pipeline_name", "unknown pipeline")
     try:
         logging.info(
-            f"START generating {kwargs['pipeline_name']} on device {device.device_id}"
+            f"START generating {pipeline_name} on device {device.device_id}"
         )
 
         if "prompt" in kwargs:
@@ -84,7 +82,7 @@ def generate_buffer(device: Device, **kwargs):
         image, pipe_config = device(**kwargs)  # type: ignore
 
         logging.info(
-            f"END generating {kwargs['pipeline_name']} on device {device.device_id}"
+            f"END generating {pipeline_name} on device {device.device_id}"
         )
     except Exception as e:
         print(e)

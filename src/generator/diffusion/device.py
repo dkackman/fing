@@ -47,25 +47,18 @@ class Device:
                 kwargs.pop("pipeline_type", DiffusionPipeline),
             )
 
-            # this allows reproducability
-            seed: Optional[int] = kwargs.pop("seed", None)
-            if seed is None:
-                seed = torch.seed()
-            torch.manual_seed(seed)
-
             p = pipeline(**kwargs)
 
             # if only one image (the usual case) and nsfw raise exception
             if (
                 hasattr(p, "nsfw_content_detected")
+                and p.nsfw_content_detected is not None
                 and len(p.nsfw_content_detected) == 1
             ):
                 for _ in filter(lambda nsfw: nsfw, p.nsfw_content_detected):
                     raise Exception("NSFW")
 
-            pipeline.config["seed"] = seed
-            pipeline.config["class_name"] = pipeline.config["_class_name"]
-            pipeline.config["diffusers_version"] = pipeline.config["_diffusers_version"]
+            pipeline.config["seed"] = 2
 
             return (post_process(p.images), pipeline.config)
         finally:

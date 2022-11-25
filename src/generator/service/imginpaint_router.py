@@ -35,12 +35,17 @@ def get_img(
     num_images: int = 1,
     seed: Optional[int] = None,
     negative_prompt: Optional[str] = None,
+    use_sd1: bool = False,
     device: Device = Depends(remove_device_from_pool),
 ):
+    model_name = "stabilityai/stable-diffusion-2-inpainting"
+    if use_sd1:
+        model_name="runwayml/stable-diffusion-inpainting"
+
     try:
         buffer, pipeline_config, args = generate_buffer(
             device,
-            model_name="runwayml/stable-diffusion-inpainting",
+            model_name=model_name,
             pipeline_name="imginpaint",
             guidance_scale=guidance_scale,
             strength=strength,

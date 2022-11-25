@@ -27,23 +27,21 @@ imgupscale_router = APIRouter()
 )
 def get_img(
     image_uri: str,
+    prompt: str = "",
     format: image_format_enum = image_format_enum.jpeg,
-    num_inference_steps: int = 100,
-    seed: Optional[int] = None,
+    num_inference_steps: int = 25,
     device: Device = Depends(remove_device_from_pool),
 ):
     try:
         buffer, pipeline_config, args = generate_buffer(
             device,
-            model_name="duongna/ldm-super-resolution",
+            model_name="stabilityai/stable-diffusion-x4-upscaler",
+            prompt=prompt,
             pipeline_name="imgupscale",
             num_inference_steps=num_inference_steps,
-            init_image=get_image(image_uri),
+            image=get_image(image_uri),
             format=format,
-            seed=seed,
-            torch_dtype=torch.float32,
-            revision="main",
-            eta=1,
+            revision="fp16",
         )
     finally:
         add_device_to_pool(device)
