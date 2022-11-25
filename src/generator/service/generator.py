@@ -40,7 +40,7 @@ class PipelineConfigModel(BaseModel):
 
 
 class PackageMetaDataModel(BaseModel):
-    pipeline_config: PipelineConfig
+    pipeline_config: Dict[str, Any]
     software: Software
     image: str
     parameters: Dict[str, Any]
@@ -48,7 +48,7 @@ class PackageMetaDataModel(BaseModel):
 
 def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
     software = info().software
-    pipeline_config = PipelineConfig.parse_obj(pipeline_config)
+    #pipeline_config = PipelineConfig.parse_obj(pipeline_config)
     image = base64.b64encode(buffer.getvalue()).decode("UTF-8")
 
     # torch_dtype is not iterable and won't serialize

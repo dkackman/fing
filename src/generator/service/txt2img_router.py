@@ -34,7 +34,7 @@ txt2img_router = APIRouter()
 def get_img(
     prompt: str,
     format: image_format_enum = image_format_enum.jpeg,
-    guidance_scale: float = 7.5,
+    guidance_scale: float = 9,
     num_inference_steps: int = 25,
     num_images: int = 1,
     height: int = 768,
