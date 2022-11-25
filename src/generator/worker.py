@@ -19,14 +19,14 @@ from .settings import (
 from .log_setup import setup_logging
 import json
 
-connect_str = "DefaultEndpointsProtocol=https;AccountName=sdaasdev;AccountKey=mxyfLArLl60gAJyxhWVE9D4oyW/MULozcA88BirRW/NDy36rJdFVb/YUqpWcrEvrvyW6DEsEQHV9+AStIPC/Jw==;EndpointSuffix=core.windows.net"
+
 
 if not settings_exist():
     print("Initializing settings with defaults")
     save_settings(Settings())
 
 settings = load_settings()
-
+connect_str = settings.azure_storage_connection_string
 
 async def run_worker():
     await do_setup()
