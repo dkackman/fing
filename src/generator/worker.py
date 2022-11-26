@@ -34,7 +34,7 @@ async def run_worker():
 
     while True:
         try:
-            uri = "http://192.168.1.196:9511/api"
+            uri = f"{settings.sdaas_uri}/api"
             response = requests.get(
                 f"{uri}/work",
                 headers={

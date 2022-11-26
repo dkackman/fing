@@ -17,6 +17,7 @@ def load_settings():
     settings.x_api_key_enabled = dict.get("x_api_key_enabled", False)
     settings.x_api_key_list = dict.get("x_api_key_list", [])
     settings.sdaas_token = dict.get("sdaas_token", "")
+    settings.sdaas_uri = dict.get("sdaas_uri", "http://localhost:9511")
 
     # override settings file with environment vairables
     if not os.environ.get("FING_HOST", None) is None:
@@ -30,7 +31,10 @@ def load_settings():
         settings.x_api_key_list.append(os.environ.get("FING_X_API_KEY", ""))
 
     if not os.environ.get("SDAAS_TOKEN", None) is None:
-        settings.huggingface_token = os.environ.get("SDAAS_TOKEN", "")
+        settings.sdaas_token = os.environ.get("SDAAS_TOKEN", "")
+
+    if not os.environ.get("SDAAS_URI", None) is None:
+        settings.sdaas_uri = os.environ.get("SDAAS_URI", "")
 
     return settings
 
@@ -77,3 +81,4 @@ class Settings:
     x_api_key_enabled: bool = False
     x_api_key_list: List[str] = []
     sdaas_token: str = ""
+    sdaas_uri: str = ""
