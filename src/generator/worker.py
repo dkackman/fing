@@ -80,8 +80,8 @@ async def run_worker():
                 finally:
                     add_device_to_pool(device)
         except Exception as e:
-            print(e)
-            await asyncio.sleep(30)
+            print(e) # this is if the work queue endpoint is unavailable
+            await asyncio.sleep(60)
 
         await asyncio.sleep(10)
 
