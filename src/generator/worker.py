@@ -33,44 +33,55 @@ async def run_worker():
     logging.info("worker")
 
     while True:
-        uri = "http://192.168.1.196:9511/api"
-        response = requests.get(f"{uri}/work")
-        response_dict = response.json()
+        try:
+            uri = "http://192.168.1.196:9511/api"
+            response = requests.get(f"{uri}/work")
+            response_dict = response.json()
 
-        for job in response_dict["jobs"]:
-            model_name = "runwayml/stable-diffusion-v1-5"
-            revision = "fp16"
-            torch_dtype = torch.float16
-            device = remove_device_from_pool()
-            try:
-                buffer, pipeline_config, args = generate_buffer(
-                    device,
-                    prompt=job["prompt"],
-                    model_name=model_name,
-                    pipeline_name="txt2img",
-                    format=image_format_enum.jpeg,
-                    revision=revision,
-                    torch_dtype=torch_dtype,
-                    num_inference_steps=25,
-                )
+            for job in response_dict["jobs"]:
+                revision = "fp16"
+                if (
+                    job["model_name"] == "nitrosocke/Future-Diffusion"
+                    or job["model_name"] == "prompthero/openjourney"
+                ):
+                    revision = "main"
 
-                result = {
-                    "id": job['id'],
-                    "pipeline": job['pipeline'],
-                    "prompt": job['prompt'],
-                    "contentType": "image/jpeg",
-                    "blob": base64.b64encode(buffer.getvalue()).decode("UTF-8"),
-                }
-                requests.post(
-                    f"{uri}/results",
-                    data=json.dumps(result),
-                    headers={"Content-type": "application/json"},
-                )
+                torch_dtype = torch.float16
+                device = remove_device_from_pool()
+                try:
+                    buffer, pipeline_config, args = generate_buffer(
+                        device,
+                        prompt=job["prompt"],
+                        negative_prompt=job["negative_prompt"],
+                        model_name=job["model_name"],
+                        pipeline_name="txt2img",
+                        format=image_format_enum.jpeg,
+                        revision=revision,
+                        torch_dtype=torch_dtype,
+                        num_inference_steps=25,
+                    )
 
-            except Exception as e:
-                print(e)
-            finally:
-                add_device_to_pool(device)
+                    result = {
+                        "id": job["id"],
+                        "model_name": job["model_name"],
+                        "prompt": job["prompt"],
+                        "negative_prompt": job["negative_prompt"],
+                        "contentType": "image/jpeg",
+                        "blob": base64.b64encode(buffer.getvalue()).decode("UTF-8"),
+                    }
+                    requests.post(
+                        f"{uri}/results",
+                        data=json.dumps(result),
+                        headers={"Content-type": "application/json"},
+                    )
+
+                except Exception as e:
+                    print(e)
+                finally:
+                    add_device_to_pool(device)
+        except Exception as e:
+            print(e)
+            await asyncio.sleep(30)
 
         await asyncio.sleep(10)
 

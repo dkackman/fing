@@ -58,6 +58,8 @@ async def init():
         ("stabilityai/stable-diffusion-2-base", "fp16", None),
         ("stabilityai/stable-diffusion-2-inpainting", "fp16", None),
         ("stabilityai/stable-diffusion-x4-upscaler", "fp16", None),
+        ("nitrosocke/Future-Diffusion", "main", None),
+        ("prompthero/openjourney", "main", None),
         ("runwayml/stable-diffusion-v1-5", "fp16", None),
         ("runwayml/stable-diffusion-v1-5", "main", "composable_stable_diffusion"),
         ("runwayml/stable-diffusion-inpainting", "fp16", None),
