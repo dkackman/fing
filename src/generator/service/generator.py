@@ -48,7 +48,7 @@ class PackageMetaDataModel(BaseModel):
 
 def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
     software = info().software
-    #pipeline_config = PipelineConfig.parse_obj(pipeline_config)
+    # pipeline_config = PipelineConfig.parse_obj(pipeline_config)
     image = base64.b64encode(buffer.getvalue()).decode("UTF-8")
 
     # torch_dtype is not iterable and won't serialize
@@ -72,18 +72,14 @@ def generate_buffer(device: Device, **kwargs):
     format = format if format != "JSON" else "JPEG"
     pipeline_name = kwargs.pop("pipeline_name", "unknown pipeline")
     try:
-        logging.info(
-            f"START generating {pipeline_name} on device {device.device_id}"
-        )
+        logging.info(f"START generating {pipeline_name} on device {device.device_id}")
 
         if "prompt" in kwargs:
             kwargs["prompt"] = clean_prompt(kwargs["prompt"])
 
         image, pipe_config = device(**kwargs)  # type: ignore
 
-        logging.info(
-            f"END generating {pipeline_name} on device {device.device_id}"
-        )
+        logging.info(f"END generating {pipeline_name} on device {device.device_id}")
     except Exception as e:
         print(e)
 

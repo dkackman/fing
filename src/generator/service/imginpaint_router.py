@@ -40,7 +40,7 @@ def get_img(
 ):
     model_name = "stabilityai/stable-diffusion-2-inpainting"
     if use_sd1:
-        model_name="runwayml/stable-diffusion-inpainting"
+        model_name = "runwayml/stable-diffusion-inpainting"
 
     try:
         buffer, pipeline_config, args = generate_buffer(

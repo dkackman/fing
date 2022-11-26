@@ -7,8 +7,6 @@ from .service.generator import (
 import torch
 import asyncio
 import logging
-from azure.storage.queue import QueueClient
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from .settings import (
     Settings,
     load_settings,
@@ -17,34 +15,29 @@ from .settings import (
     save_settings,
 )
 from .log_setup import setup_logging
+import base64
 import json
-
-
+import requests
 
 if not settings_exist():
     print("Initializing settings with defaults")
     save_settings(Settings())
 
 settings = load_settings()
-connect_str = settings.azure_storage_connection_string
+
 
 async def run_worker():
     await do_setup()
     await startup_event()
 
     logging.info("worker")
-    queue = QueueClient.from_connection_string(
-        conn_str=connect_str,
-        queue_name="work",
-    )
-
-    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
 
     while True:
-        messages = queue.receive_messages()
+        uri = "http://192.168.1.196:9511/api"
+        response = requests.get(f"{uri}/work")
+        response_dict = response.json()
 
-        for message in messages:
-            job = json.loads(message.content)  # type: ignore
+        for job in response_dict["jobs"]:
             model_name = "runwayml/stable-diffusion-v1-5"
             revision = "fp16"
             torch_dtype = torch.float16
@@ -60,9 +53,19 @@ async def run_worker():
                     torch_dtype=torch_dtype,
                     num_inference_steps=25,
                 )
-                blob_client = blob_service_client.get_blob_client(container="results", blob=job["id"])
-                blob_client.upload_blob(buffer)
-                queue.delete_message(message.id, message.pop_receipt)
+
+                result = {
+                    "id": job['id'],
+                    "pipeline": job['pipeline'],
+                    "prompt": job['prompt'],
+                    "contentType": "image/jpeg",
+                    "blob": base64.b64encode(buffer.getvalue()).decode("UTF-8"),
+                }
+                requests.post(
+                    f"{uri}/results",
+                    data=json.dumps(result),
+                    headers={"Content-type": "application/json"},
+                )
 
             except Exception as e:
                 print(e)

@@ -226,9 +226,6 @@ dependencies:
   - pip:
     - accelerate==0.13.2
     - aniso8601==9.0.1
-    - azure-core==1.26.1
-    - azure-storage-blob==12.14.1
-    - azure-storage-queue==12.5.0
     - concurrent-log-handler==0.9.20
     - diffusers==0.9.0
     - fastapi-restful==0.4.3

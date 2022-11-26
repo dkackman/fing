@@ -63,7 +63,7 @@ async def init():
         ("runwayml/stable-diffusion-inpainting", "fp16", None),
         ("CompVis/ldm-celebahq-256", "main", None),
         ("CompVis/ldm-text2im-large-256", "main", None),
-        ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion")
+        ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
     ]
 
     # this makes sure that all of the diffusers are downloaded and cached
