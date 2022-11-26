@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "0.4.0"
+        "version": "0.7.0"
     },
     "paths": {
         "/info": {
@@ -62,7 +62,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/format_enum"
+                                    "$ref": "#/components/schemas/image_format_enum"
                                 }
                             ],
                             "default": "jpeg"
@@ -75,7 +75,7 @@
                         "schema": {
                             "title": "Guidance Scale",
                             "type": "number",
-                            "default": 7.5
+                            "default": 9
                         },
                         "name": "guidance_scale",
                         "in": "query"
@@ -85,7 +85,7 @@
                         "schema": {
                             "title": "Num Inference Steps",
                             "type": "integer",
-                            "default": 50
+                            "default": 25
                         },
                         "name": "num_inference_steps",
                         "in": "query"
@@ -105,7 +105,7 @@
                         "schema": {
                             "title": "Height",
                             "type": "integer",
-                            "default": 512
+                            "default": 768
                         },
                         "name": "height",
                         "in": "query"
@@ -115,7 +115,7 @@
                         "schema": {
                             "title": "Width",
                             "type": "integer",
-                            "default": 512
+                            "default": 768
                         },
                         "name": "width",
                         "in": "query"
@@ -128,6 +128,26 @@
                             "default": false
                         },
                         "name": "use_ldm",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Use Lpw",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "use_lpw",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Use Composable",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "use_composable",
                         "in": "query"
                     },
                     {
@@ -146,6 +166,35 @@
                             "type": "string"
                         },
                         "name": "negative_prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Weights",
+                            "type": "string"
+                        },
+                        "name": "weights",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Use Sd1",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "use_sd1",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Use Sd2Base",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "use_sd2base",
                         "in": "query"
                     }
                 ],
@@ -211,7 +260,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/format_enum"
+                                    "$ref": "#/components/schemas/image_format_enum"
                                 }
                             ],
                             "default": "jpeg"
@@ -347,7 +396,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/format_enum"
+                                    "$ref": "#/components/schemas/image_format_enum"
                                 }
                             ],
                             "default": "jpeg"
@@ -380,7 +429,7 @@
                         "schema": {
                             "title": "Num Inference Steps",
                             "type": "integer",
-                            "default": 50
+                            "default": 25
                         },
                         "name": "num_inference_steps",
                         "in": "query"
@@ -411,6 +460,16 @@
                             "type": "string"
                         },
                         "name": "negative_prompt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Use Sd1",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "use_sd1",
                         "in": "query"
                     }
                 ],
@@ -456,7 +515,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/format_enum"
+                                    "$ref": "#/components/schemas/image_format_enum"
                                 }
                             ],
                             "default": "jpeg"
@@ -525,19 +584,29 @@
                 ]
             }
         },
-        "/compose": {
+        "/imgupscale": {
             "get": {
                 "tags": [
                     "Stable Diffusion"
                 ],
                 "summary": "Get Img",
-                "operationId": "get_img_compose_get",
+                "operationId": "get_img_imgupscale_get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Prompt",
+                            "title": "Image Uri",
                             "type": "string"
+                        },
+                        "name": "image_uri",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Prompt",
+                            "type": "string",
+                            "default": ""
                         },
                         "name": "prompt",
                         "in": "query"
@@ -547,7 +616,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/format_enum"
+                                    "$ref": "#/components/schemas/image_format_enum"
                                 }
                             ],
                             "default": "jpeg"
@@ -558,60 +627,11 @@
                     {
                         "required": false,
                         "schema": {
-                            "title": "Guidance Scale",
-                            "type": "number",
-                            "default": 7.5
-                        },
-                        "name": "guidance_scale",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
                             "title": "Num Inference Steps",
                             "type": "integer",
-                            "default": 50
+                            "default": 25
                         },
                         "name": "num_inference_steps",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Num Images",
-                            "type": "integer",
-                            "default": 1
-                        },
-                        "name": "num_images",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Height",
-                            "type": "integer",
-                            "default": 512
-                        },
-                        "name": "height",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Width",
-                            "type": "integer",
-                            "default": 512
-                        },
-                        "name": "width",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Seed",
-                            "type": "integer"
-                        },
-                        "name": "seed",
                         "in": "query"
                     }
                 ],
@@ -620,9 +640,7 @@
                         "description": "The generated image.",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PackageMetaDataModel"
-                                }
+                                "schema": {}
                             },
                             "image/jpeg": {},
                             "image/png": {}
@@ -646,116 +664,19 @@
                 ]
             }
         },
-        "/experiment": {
+        "/status": {
             "get": {
                 "tags": [
-                    "Stable Diffusion"
+                    "Service Information"
                 ],
-                "summary": "Get Img",
-                "operationId": "get_img_experiment_get",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Prompt",
-                            "type": "string"
-                        },
-                        "name": "prompt",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/components/schemas/format_enum"
-                                }
-                            ],
-                            "default": "jpeg"
-                        },
-                        "name": "format",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Guidance Scale",
-                            "type": "number",
-                            "default": 7.5
-                        },
-                        "name": "guidance_scale",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Num Inference Steps",
-                            "type": "integer",
-                            "default": 50
-                        },
-                        "name": "num_inference_steps",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Height",
-                            "type": "integer",
-                            "default": 512
-                        },
-                        "name": "height",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Width",
-                            "type": "integer",
-                            "default": 512
-                        },
-                        "name": "width",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Strength",
-                            "type": "number",
-                            "default": 0.55
-                        },
-                        "name": "strength",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Seed",
-                            "type": "integer"
-                        },
-                        "name": "seed",
-                        "in": "query"
-                    }
-                ],
+                "summary": "Get Stats",
+                "operationId": "get_stats_status_get",
                 "responses": {
                     "200": {
-                        "description": "The generated image.",
+                        "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PackageMetaDataModel"
-                                }
-                            },
-                            "image/jpeg": {},
-                            "image/png": {}
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
+                                "schema": {}
                             }
                         }
                     }
@@ -806,7 +727,8 @@
                 "type": "object",
                 "properties": {
                     "pipeline_config": {
-                        "$ref": "#/components/schemas/PipelineConfig"
+                        "title": "Pipeline Config",
+                        "type": "object"
                     },
                     "software": {
                         "$ref": "#/components/schemas/Software"
@@ -818,79 +740,6 @@
                     "parameters": {
                         "title": "Parameters",
                         "type": "object"
-                    }
-                }
-            },
-            "PipelineConfig": {
-                "title": "PipelineConfig",
-                "required": [
-                    "unet",
-                    "scheduler",
-                    "class_name",
-                    "diffusers_version"
-                ],
-                "type": "object",
-                "properties": {
-                    "vae": {
-                        "title": "Vae",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "text_encoder": {
-                        "title": "Text Encoder",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "tokenizer": {
-                        "title": "Tokenizer",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "unet": {
-                        "title": "Unet",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "scheduler": {
-                        "title": "Scheduler",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "safety_checker": {
-                        "title": "Safety Checker",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "feature_extractor": {
-                        "title": "Feature Extractor",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "seed": {
-                        "title": "Seed",
-                        "type": "integer"
-                    },
-                    "class_name": {
-                        "title": "Class Name",
-                        "type": "string"
-                    },
-                    "diffusers_version": {
-                        "title": "Diffusers Version",
-                        "type": "string"
                     }
                 }
             },
@@ -950,8 +799,8 @@
                     }
                 }
             },
-            "format_enum": {
-                "title": "format_enum",
+            "image_format_enum": {
+                "title": "image_format_enum",
                 "enum": [
                     "jpeg",
                     "json",
