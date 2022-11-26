@@ -24,9 +24,6 @@ async def init():
             print("A Huggingface API token is required.")
             return
 
-        model_cache_dir = input("Model cache directory (/tmp): ").strip()
-        model_cache_dir = "/tmp" if len(model_cache_dir) == 0 else model_cache_dir
-
         host = input("Service host (localhost): ").strip()
         host = "localhost" if len(host) == 0 else host
 
@@ -34,12 +31,10 @@ async def init():
         port = 9147 if len(port) == 0 else int(port)
 
         settings.huggingface_token = token
-        settings.model_cache_dir = model_cache_dir
         settings.host = host
         settings.port = port
 
         print("\n")
-        print(settings.json(indent=2))
 
         confirm = input("Is this corrent? (Y/n): ").strip().lower()
         if len(confirm) == 0 or confirm.startswith("y"):

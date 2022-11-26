@@ -35,7 +35,13 @@ async def run_worker():
     while True:
         try:
             uri = "http://192.168.1.196:9511/api"
-            response = requests.get(f"{uri}/work")
+            response = requests.get(
+                f"{uri}/work",
+                headers={
+                    "Content-type": "application/json",
+                    "Authorization": f"Bearer {settings.sdaas_token}",
+                },
+            )
             response_dict = response.json()
 
             for job in response_dict["jobs"]:
@@ -72,7 +78,10 @@ async def run_worker():
                     requests.post(
                         f"{uri}/results",
                         data=json.dumps(result),
-                        headers={"Content-type": "application/json"},
+                        headers={
+                            "Content-type": "application/json",
+                            "Authorization": f"Bearer {settings.sdaas_token}",
+                        },
                     )
 
                 except Exception as e:
@@ -80,7 +89,7 @@ async def run_worker():
                 finally:
                     add_device_to_pool(device)
         except Exception as e:
-            print(e) # this is if the work queue endpoint is unavailable
+            print(e)  # this is if the work queue endpoint is unavailable
             await asyncio.sleep(60)
 
         await asyncio.sleep(10)
