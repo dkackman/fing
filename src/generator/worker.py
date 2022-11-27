@@ -54,6 +54,9 @@ async def run_worker():
 
                 torch_dtype = torch.float16
                 device = remove_device_from_pool()
+                content_type = job.get("contentType", "image/jpeg")
+                format = image_format_enum.png if content_type == "image/png" else image_format_enum.jpeg
+
                 try:
                     buffer, pipeline_config, args = generate_buffer(
                         device,
@@ -61,13 +64,11 @@ async def run_worker():
                         negative_prompt=job["negative_prompt"],
                         model_name=job["model_name"],
                         pipeline_name="txt2img",
-                        format=image_format_enum.jpeg,
+                        format=format,
                         guidance_scale=job.get("guidance_scale", 7.5),
                         revision=revision,
                         torch_dtype=torch_dtype,
                         num_inference_steps=job.get("num_inference_steps", 25),
-                        #height=job.get("height", 768),
-                        #width=job.get("width", 768),
                     )
 
                     result = {
@@ -75,7 +76,7 @@ async def run_worker():
                         "model_name": job["model_name"],
                         "prompt": job["prompt"],
                         "negative_prompt": job["negative_prompt"],
-                        "contentType": "image/jpeg",
+                        "contentType": content_type,
                         "blob": base64.b64encode(buffer.getvalue()).decode("UTF-8"),
                     }
                     requests.post(
