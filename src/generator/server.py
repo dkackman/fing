@@ -3,11 +3,9 @@ import torch
 import uvicorn
 from . import __version__
 from .settings import (
-    Settings,
     load_settings,
     resolve_path,
     settings_exist,
-    save_settings,
 )
 from .log_setup import setup_logging
 from .service.web_app import create_app
@@ -16,8 +14,7 @@ from .diffusion.device_pool import add_device_to_pool
 
 
 if not settings_exist():
-    print("Initializing settings with defaults")
-    save_settings(Settings())
+    raise Exception("no settings run 'python -m generator.init_app'")
 
 settings = load_settings()
 
@@ -25,17 +22,13 @@ settings = load_settings()
 app = create_app(__version__, settings.x_api_key_enabled, settings.x_api_key_list)
 
 
-async def do_setup():
-    setup_logging(resolve_path(settings.log_filename), settings.log_level)
-    logging.debug(f"Torch version {torch.__version__}")
-
-
 @app.on_event("startup")
 async def startup_event():
     if not torch.cuda.is_available():
         raise Exception("CUDA not present. Quitting.")
 
-    await do_setup()
+    setup_logging(resolve_path(settings.log_filename), settings.log_level)
+    logging.debug(f"Torch version {torch.__version__}")
 
     for i in range(0, torch.cuda.device_count()):
         logging.info(f"Adding cuda device {i} - {torch.cuda.get_device_name(i)}")
