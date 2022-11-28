@@ -54,10 +54,9 @@ python -m generator.init_app # only needed once - will take a long time
 python -m generator.worker
 ```
 
-Uf you see an error with `torch` not being found leave and reenter the environment and try again.
+If you see an error about `torch` not being available, leave and re-enter the environment and try again.
 
 ```bash
 conda deactivate
 conda activate fing
 ```
-
