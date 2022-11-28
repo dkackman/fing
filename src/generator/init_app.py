@@ -6,7 +6,7 @@ from .settings import (
     load_settings,
     load_settings,
     resolve_path,
-    settings_exist,    
+    settings_exist,
 )
 
 import asyncio
@@ -22,7 +22,9 @@ async def init():
     overwrite = False
     if settings_exist():
         print("A settings file already exists.")
-        overwrite = input("Do you want to overwrite these settings? (y/N): ").strip().lower()
+        overwrite = (
+            input("Do you want to overwrite these settings? (y/N): ").strip().lower()
+        )
         if len(overwrite) > 0 or overwrite.startswith("y"):
             overwrite = True
 
@@ -55,7 +57,7 @@ async def init():
 
         save_settings(settings)
         print(f"Configuration saved to {get_settings_full_path()}")
-    
+
     settings = load_settings()
     setup_logging(resolve_path(settings.log_filename), settings.log_level)
     logging.debug(f"Torch version {torch.__version__}")

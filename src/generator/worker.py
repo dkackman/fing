@@ -8,20 +8,15 @@ import torch
 import asyncio
 import logging
 from .settings import (
-    Settings,
     load_settings,
     resolve_path,
-    settings_exist,
-    save_settings,
 )
 from .log_setup import setup_logging
 import base64
 import json
 import requests
+from datetime import datetime
 
-if not settings_exist():
-    print("Initializing settings with defaults")
-    save_settings(Settings())
 
 settings = load_settings()
 
@@ -35,6 +30,8 @@ async def run_worker():
     while True:
         try:
             uri = f"{settings.sdaas_uri}/api"
+            print(f"{datetime.now()}: Asking for work from {settings.sdaas_uri}...")
+
             response = requests.get(
                 f"{uri}/work",
                 headers={
@@ -55,7 +52,11 @@ async def run_worker():
                 torch_dtype = torch.float16
                 device = remove_device_from_pool()
                 content_type = job.get("contentType", "image/jpeg")
-                format = image_format_enum.png if content_type == "image/png" else image_format_enum.jpeg
+                format = (
+                    image_format_enum.png
+                    if content_type == "image/png"
+                    else image_format_enum.jpeg
+                )
 
                 try:
                     buffer, pipeline_config, args = generate_buffer(
@@ -69,6 +70,7 @@ async def run_worker():
                         revision=revision,
                         torch_dtype=torch_dtype,
                         num_inference_steps=job.get("num_inference_steps", 25),
+                        error_on_nsfw=False,
                     )
 
                     result = {
@@ -78,6 +80,7 @@ async def run_worker():
                         "negative_prompt": job["negative_prompt"],
                         "contentType": content_type,
                         "blob": base64.b64encode(buffer.getvalue()).decode("UTF-8"),
+                        "nsfw": pipeline_config.get("nsfw", False),
                     }
                     requests.post(
                         f"{uri}/results",
@@ -94,6 +97,7 @@ async def run_worker():
                     add_device_to_pool(device)
         except Exception as e:
             print(e)  # this is if the work queue endpoint is unavailable
+            print("sleeping for 60 seconds")
             await asyncio.sleep(60)
 
         await asyncio.sleep(10)

@@ -52,6 +52,7 @@ class Device:
                 seed = torch.seed()
             torch.manual_seed(seed)
 
+            error_on_nsfw = kwargs.pop("error_on_nsfw", True)
             p = pipeline(**kwargs)
 
             # if only one image (the usual case) and nsfw raise exception
@@ -61,7 +62,10 @@ class Device:
                 and len(p.nsfw_content_detected) == 1
             ):
                 for _ in filter(lambda nsfw: nsfw, p.nsfw_content_detected):
-                    raise Exception("NSFW")
+                    if error_on_nsfw:
+                        raise Exception("NSFW")
+
+                    pipeline.config["nsfw"] = True
 
             pipeline.config["seed"] = seed
 
