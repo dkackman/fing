@@ -6,6 +6,7 @@
 
 - [Install nvidia drivers ubuntu](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-22-04)
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+- [NVIDIA Docker Overview](https://hub.docker.com/r/nvidia/cuda)
 
 ### Prepare the Environment
 
@@ -59,4 +60,20 @@ If you see an error about `torch` not being available, leave and re-enter the en
 ```bash
 conda deactivate
 conda activate fing
+```
+
+## Docker
+
+First install the [NVidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) on the docker host.
+
+The docker image needs a bind mount for the huggingface model cache. Make sure the host machine has the cached models (typically in `~/.cahce/huggingface`).
+
+```bash
+docker build -t dkackman/fing . -f worker.Dockerfile
+docker run -it -v "/home/YOUR_USERNAME/.cache/huggingface:/root/.cache/huggingface/" \
+    --gpus all \
+    --env HUGGINGFACE_TOKEN=YOUR TOKEN \
+    --env SDAAS_TOKEN=YOUR TOKEN \
+    --env SDAAS_URI=http://fing.kackman.net:9511 \
+    dkackman/fing
 ```
