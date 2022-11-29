@@ -1,0 +1,11 @@
+{
+    "huggingface_token": "",
+    "host": "0.0.0.0",
+    "port": 9147,
+    "log_level": "ERROR",
+    "log_filename": "log/generator.log",
+    "x_api_key_enabled": false,
+    "x_api_key_list": [],
+    "sdaas_token": "",
+    "sdaas_uri": "http://localhost:9511"
+  }
