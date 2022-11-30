@@ -4,24 +4,22 @@ from urllib.parse import unquote
 import logging
 import io
 import base64
-from enum import auto
 from fastapi import HTTPException
-from fastapi_restful.enums import StrEnum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 from PIL import Image
 import requests
+from enum import Enum
+
+class image_format_enum(str, Enum):
+    jpeg = "jpeg"
+    json = "json"
+    png = "png"
 
 
-class image_format_enum(StrEnum):
-    jpeg = auto()
-    json = auto()
-    png = auto()
-
-
-class audio_format_enum(StrEnum):
-    wav = auto()
-    json = auto()
+class audio_format_enum(str, Enum):
+    wav = "wav"
+    json = "json"
 
 
 class PipelineConfig(BaseModel):

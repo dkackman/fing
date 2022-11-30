@@ -22,14 +22,13 @@ async def init():
     overwrite = False
     if settings_exist():
         print("A settings file already exists.")
-        overwrite = (
+        overwrite_answer = (
             input("Do you want to overwrite these settings? (y/N): ").strip().lower()
         )
-        if len(overwrite) > 0 or overwrite.startswith("y"):
+        if len(overwrite_answer) > 0 and overwrite_answer.startswith("y"):
             overwrite = True
 
     if not settings_exist() or overwrite:
-        # this path is legacy since dafe defaults get created at startup - might remove later
         settings = Settings()
 
         print("Provide the following details for the intial configuration:\n")
@@ -65,17 +64,7 @@ async def init():
 
     models = [
         ("stabilityai/stable-diffusion-2", "fp16", None),
-        ("stabilityai/stable-diffusion-2-base", "fp16", None),
-        ("stabilityai/stable-diffusion-2-inpainting", "fp16", None),
-        ("stabilityai/stable-diffusion-x4-upscaler", "fp16", None),
-        ("nitrosocke/Future-Diffusion", "main", None),
-        ("prompthero/openjourney", "main", None),
-        ("runwayml/stable-diffusion-v1-5", "fp16", None),
-        ("runwayml/stable-diffusion-v1-5", "main", "composable_stable_diffusion"),
-        ("runwayml/stable-diffusion-inpainting", "fp16", None),
-        ("CompVis/ldm-celebahq-256", "main", None),
-        ("CompVis/ldm-text2im-large-256", "main", None),
-        ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
+
     ]
 
     # this makes sure that all of the diffusers are downloaded and cached
