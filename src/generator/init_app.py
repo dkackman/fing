@@ -64,7 +64,17 @@ async def init():
 
     models = [
         ("stabilityai/stable-diffusion-2", "fp16", None),
-
+        ("stabilityai/stable-diffusion-2-base", "fp16", None),
+        ("stabilityai/stable-diffusion-2-inpainting", "fp16", None),
+        ("stabilityai/stable-diffusion-x4-upscaler", "fp16", None),
+        ("nitrosocke/Future-Diffusion", "main", None),
+        ("prompthero/openjourney", "main", None),
+        ("runwayml/stable-diffusion-v1-5", "fp16", None),
+        ("runwayml/stable-diffusion-v1-5", "main", "composable_stable_diffusion"),
+        ("runwayml/stable-diffusion-inpainting", "fp16", None),
+        ("CompVis/ldm-celebahq-256", "main", None),
+        ("CompVis/ldm-text2im-large-256", "main", None),
+        ("hakurei/waifu-diffusion", "fp16", "lpw_stable_diffusion"),
     ]
 
     # this makes sure that all of the diffusers are downloaded and cached
