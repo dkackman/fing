@@ -66,7 +66,7 @@ async def run_worker():
                         model_name=job["model_name"],
                         pipeline_name="txt2img",
                         format=format,
-                        guidance_scale=job.get("guidance_scale", 7.5),
+                        guidance_scale=job.get("guidance_scale", 12),
                         revision=revision,
                         torch_dtype=torch_dtype,
                         num_inference_steps=job.get("num_inference_steps", 25),
