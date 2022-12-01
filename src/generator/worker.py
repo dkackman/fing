@@ -1,9 +1,6 @@
 from .diffusion.device import Device
 from .diffusion.device_pool import add_device_to_pool, remove_device_from_pool
-from .service.generator import (
-    generate_buffer,
-    image_format_enum,
-)
+from .service.generator import generate_buffer, image_format_enum, get_image
 import torch
 import asyncio
 import logging
@@ -16,6 +13,7 @@ import base64
 import json
 import requests
 from datetime import datetime
+from diffusers import StableDiffusionImg2ImgPipeline
 
 
 settings = load_settings()
@@ -51,26 +49,35 @@ async def run_worker():
 
                 torch_dtype = torch.float16
                 device = remove_device_from_pool()
-                content_type = job.get("contentType", "image/jpeg")
+                content_type = job.get("content_type", "image/jpeg")
                 format = (
                     image_format_enum.png
                     if content_type == "image/png"
                     else image_format_enum.jpeg
                 )
 
+                args = {
+                    "prompt": job["prompt"],
+                    "negative_prompt": job["negative_prompt"],
+                    "model_name": job["model_name"],
+                    "format": format,
+                    "guidance_scale": job.get("guidance_scale", 12),
+                    "revision": revision,
+                    "torch_dtype": torch_dtype,
+                    "num_inference_steps": job.get("num_inference_steps", 25),
+                    "error_on_nsfw": False,
+                }
+
+                # start_image_uri signals to use the img2img workflow
+                if "start_image_uri" in job:
+                    args["init_image"] = get_image(job["start_image_uri"])
+                    args["strength"] = job.get("strength", 0.75)
+                    args["pipeline_type"] = StableDiffusionImg2ImgPipeline                    
+
                 try:
                     buffer, pipeline_config, args = generate_buffer(
                         device,
-                        prompt=job["prompt"],
-                        negative_prompt=job["negative_prompt"],
-                        model_name=job["model_name"],
-                        pipeline_name="txt2img",
-                        format=format,
-                        guidance_scale=job.get("guidance_scale", 12),
-                        revision=revision,
-                        torch_dtype=torch_dtype,
-                        num_inference_steps=job.get("num_inference_steps", 25),
-                        error_on_nsfw=False,
+                        **args,
                     )
 
                     result = {
@@ -78,7 +85,7 @@ async def run_worker():
                         "model_name": job["model_name"],
                         "prompt": job["prompt"],
                         "negative_prompt": job["negative_prompt"],
-                        "contentType": content_type,
+                        "content_type": content_type,
                         "blob": base64.b64encode(buffer.getvalue()).decode("UTF-8"),
                         "nsfw": pipeline_config.get("nsfw", False),
                     }

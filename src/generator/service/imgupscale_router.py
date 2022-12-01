@@ -37,7 +37,6 @@ def get_img(
             device,
             model_name="stabilityai/stable-diffusion-x4-upscaler",
             prompt=prompt,
-            pipeline_name="imgupscale",
             num_inference_steps=num_inference_steps,
             image=get_image(image_uri),
             format=format,

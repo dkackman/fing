@@ -41,7 +41,6 @@ def get_img(
         buffer, pipeline_config, args = generate_buffer(
             device,
             model_name="runwayml/stable-diffusion-v1-5",
-            pipeline_name="img2img",
             guidance_scale=guidance_scale,
             strength=strength,
             num_inference_steps=num_inference_steps,

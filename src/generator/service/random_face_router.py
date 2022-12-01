@@ -44,7 +44,6 @@ def get_img(
         buffer, pipeline_config, args = generate_buffer(
             device,
             model_name="CompVis/ldm-celebahq-256",
-            pipeline_name="faces",
             num_inference_steps=num_inference_steps,
             num_images=num_images,
             format=format,

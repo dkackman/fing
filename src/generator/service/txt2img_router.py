@@ -73,7 +73,6 @@ def get_img(
         buffer, pipeline_config, args = generate_buffer(
             device,
             model_name=model_name,
-            pipeline_name="txt2img",
             guidance_scale=guidance_scale,
             num_inference_steps=num_inference_steps,
             num_images=num_images,

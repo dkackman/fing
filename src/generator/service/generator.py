@@ -11,6 +11,7 @@ from PIL import Image
 import requests
 from enum import Enum
 
+
 class image_format_enum(str, Enum):
     jpeg = "jpeg"
     json = "json"
@@ -68,16 +69,11 @@ def package_metadata(buffer, pipeline_config, args) -> PackageMetaDataModel:
 def generate_buffer(device: Device, **kwargs):
     format = kwargs.pop("format", "JPEG").upper()
     format = format if format != "JSON" else "JPEG"
-    pipeline_name = kwargs.pop("pipeline_name", "unknown pipeline")
     try:
-        logging.info(f"START generating {pipeline_name} on device {device.device_id}")
-
         if "prompt" in kwargs:
             kwargs["prompt"] = clean_prompt(kwargs["prompt"])
 
         image, pipe_config = device(**kwargs)  # type: ignore
-
-        logging.info(f"END generating {pipeline_name} on device {device.device_id}")
     except Exception as e:
         print(e)
 
@@ -97,10 +93,10 @@ def generate_buffer(device: Device, **kwargs):
 
 def get_image(uri):
     response = requests.get(uri)
-    image = Image.open(io.BytesIO(response.content))
-    maxzise = 1024
-    if image.height > maxzise or image.width > maxzise:
-        image.thumbnail((maxzise, maxzise), Image.Resampling.LANCZOS)
+    image = Image.open(io.BytesIO(response.content)).convert("RGB").resize((512, 512))
+    # maxzise = 512
+    # if image.height > maxzise or image.width > maxzise:
+    #    image.thumbnail((maxzise, maxzise), Image.Resampling.LANCZOS)
 
     return image
 
