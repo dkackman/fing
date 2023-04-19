@@ -1,6 +1,7 @@
 # fing
 
 A REST API for stable diffusion
+(though I've stopped owrking on this and now spend more time [over here](https://github.com/dkackman/chiaSWARM)
 
 ## Introduction
 
